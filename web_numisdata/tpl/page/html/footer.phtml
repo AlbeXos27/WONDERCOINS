@@ -1,0 +1,34 @@
+
+	<!-- inner -->
+	
+	<footer class="footer">
+        <img src="<?php echo __WEB_TEMPLATE_WEB__ ?>\page\html\Footer_NUMISMATA.svg" alt="Imagen de fondo del footer" class="img_fondo">
+		<div class= "text-container">
+		<p class="responsive-text">
+		Proyecto TED2021-131704A-I00, WONDERCOINS financiado por MCIN/AEI/10.13039/501100011033 y por la Unión Europea “NextGenerationEU”/PRTR IP: Elena Moreno Pulido
+        </p>
+		</div>
+		<div class="powered_by">
+
+			<p class="dedalo_text">Powered by Dédalo </p>
+			<a href="https://dedalo.dev" target="_blank"><img class="dedalo_image" src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_dedalo_white.svg" ></a>
+			<p class="dedalo_text">Cultural Heritage Management Platform</p>
+			
+		</div>
+        <div class="logo_footer">
+            <img src="<?php echo __WEB_TEMPLATE_WEB__ ?>\page\html\Logo 2 NUMISMATA_p.svg" alt="Logo Footer">
+        </div>
+
+		<div class="footer-section-wrapper" id="footer_dynamic_wraper"></div>
+	</footer>
+	
+<?php page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/page/js/footer'.JS_SUFFIX.'.js'; ?>
+<script>
+dom_ready(function(){
+	footer.set_up({
+		footer_root				: <?php echo json_encode($this->footer_root) ?>,
+		footer_data				: <?php echo json_encode($this->footer_data) ?>,
+		footer_dynamic_wraper	: document.getElementById('footer_dynamic_wraper')
+	})
+})
+</script>

@@ -1,0 +1,264 @@
+/* Estilos para la clase .inner */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Evita el desplazamiento horizontal */
+}
+#main .inner {
+    width: 100%;
+    height: 100%;
+    max-width: 100em;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* Asegura que el padding se incluya en las dimensiones del elemento */
+}
+#main .titulo{
+    display: block;
+    padding-bottom: 2%;
+    padding-top: 2%;
+    font-size: 3vw;
+}
+
+#main h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+
+.golden-separator {
+    height: 4px;
+    background-color: gold;
+    width: 50%;
+    margin: 1rem auto;
+    display: none;
+}
+
+
+#main p {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+    opacity: 1;
+}
+
+
+section.images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+section.images a.image {
+    flex: 1 1 calc(33.333% - 1rem);
+    box-sizing: border-box;
+    margin: 0.5rem;
+    text-align: center;
+}
+
+
+@media (max-width: 736px) {
+    section.images a.image {
+        flex: 1 1 100%;
+        margin: 0.5rem 0;
+    }
+}
+
+.oculto{
+    display: none !important;
+}
+.oculto2{
+    display: none !important;
+}
+.oculto3{
+    display: none !important;
+}
+.oculto4{
+    display: none !important;
+}
+#wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+
+a{
+    text-decoration: none;
+    border: none;
+}
+
+table {
+    width: 75%;
+    border-collapse: collapse;
+    align-items: center;
+    margin: auto;
+    margin-bottom: 2%;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+caption{
+    display: block;
+    margin: 2%;
+    font-size: 2vw;
+}
+th, td, tr {
+    display: flex;
+    background-color: white;
+    border: 1px solid #dddddd;
+    width: 100%;
+    justify-content: center;
+    padding: 8px;
+}
+th {
+    background-color: #ffffff;
+}
+tr:nth-child(even) {
+    background-color: #ffffff;
+}
+table img {
+    width: 100%;
+    height: 100%;
+    max-width: 400px;
+    max-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+
+
+.equipo table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.equipo th, td {
+    padding: 0.5%;
+    text-align: center; /* Centrar el texto horizontalmente */
+    vertical-align: middle; /* Centrar el texto verticalmente */
+}
+
+.equipo h2{
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 1.3em;
+}
+
+
+
+
+
+.finan{
+    padding: 2%;
+}
+.finan td{
+    flex-direction: column;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+
+}
+td.numero {
+    text-align: center;
+    font-size: 2.5em; /* Ajusta el tamaño de la fuente */
+    font-weight: bold; /* Hace que el número sea más grueso */
+}
+
+table img:hover {
+transform: scale(105%);
+transition: 0.25s ease-in-out;
+}
+
+#main {
+    display: flex;
+    overflow: hidden;
+    padding: 0rem;
+    justify-content: center;
+    align-items: center; 
+    margin: 0;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+}
+.fondo {
+    position: absolute; /* Permite que la imagen se posicione en relación al contenedor #main */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra todo el contenedor sin distorsionarse */
+    z-index: 0;
+}
+
+.imagen_fondo {
+    position: absolute; /* Permite que la imagen se posicione en relación al contenedor #main */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra todo el contenedor sin distorsionarse */
+    z-index: 0;
+    opacity: 0.35; /* Ajusta la opacidad para hacer la imagen menos prominente */
+}
+
+.icono_wonder {
+    position: absolute;
+    display: flex;
+    height: 45%;
+    top: 50%; /* Posiciona el centro verticalmente */
+    left: 50%; /* Posiciona el centro horizontalmente */
+    transform: translate(-50%, -52%); /* Ajusta el centro usando transform */
+    z-index: 0;
+    opacity: 1;
+}
+
+.collab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra horizontalmente las columnas */
+    width: 100%; /* Ancho completo del contenedor */
+    padding: 1rem; /* Espacio interno del contenedor */
+    box-sizing: border-box; /* Asegura que el padding se incluya en el tamaño */
+    background-color: #ffffff; /* Color de fondo para visibilidad */
+}
+
+.column {
+    display: flex;
+     /* Alinea los elementos hijos en columna */
+    justify-content: space-between; /* Centra los elementos verticalmente */
+    align-items: center; /* Centra los elementos horizontalmente */
+    flex: 1; /* Cada columna ocupa el mismo espacio horizontal */
+    margin: 1rem; /* Espacio horizontal entre columnas */
+     /* Color de fondo para visibilidad */
+    padding: 1rem; /* Espacio interno */
+    box-sizing: border-box; /* Incluir padding y border en el tamaño total */
+}
+
+.element {
+    background-color: #048c73 ; /* Color de fondo para los elementos */
+    height: 35vh;
+    width: 33%;
+    margin: 0;
+    padding: 1rem; /* Espacio interno de los elementos */
+    box-sizing: border-box; /* Incluir padding y border en el tamaño total */
+    border-radius: 10px;
+    opacity: 0; /* Ocultar elementos */
+}
+
+
+/*# sourceMappingURL=generic.css.map */

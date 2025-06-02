@@ -1,0 +1,249 @@
+<?php
+# REQUIRED FILES
+	$base_path = dirname(dirname(__FILE__));
+	$cwd 	   = basename($base_path); # Current dir name
+
+	// Current controller add
+	require($base_path .'/'. $cwd .'.php');
+?>
+
+<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- header -->
+		<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/header.phtml'; ?>
+		<!-- Main -->
+		
+			<div id="main">
+				<div class="inner">
+				
+
+					<!-- title -->
+						<!-- <h1><?php echo $title ?></h1>
+						<div class="golden-separator"></div> -->
+
+					<!-- main image -->
+						<?php /*<span class="image main"><img src="images/pic13.jpg" alt="" /></span>*/ ?>
+
+					<!-- abstract -->
+						<!-- <p><?php echo $abstract ?></p> -->
+
+					<!-- Images -->
+						<!-- <?php if(!empty($ar_image)) { ?>
+						<section class="images">
+							<?php foreach ($ar_image as $key => $image) { ?>
+								<a href="<?php echo __WEB_BASE_URL__ . $image ?>" class="gallery image fit" rel="noreferrer">
+									<img src="<?php echo __WEB_BASE_URL__ . $image ?>" alt="" class="image_big" />
+								</a>
+							<?php } ?>
+						</section>
+						<?php } ?> -->
+
+					<!-- body -->
+						<!-- <section class="content">
+							<?php echo $body ?>
+							
+						</section> -->
+						<div class= "oculto">
+						<img class="imagen_fondo" src="<?php echo __WEB_TEMPLATE_WEB__ ?>/generic/html/Collage.png" alt="uwu">
+						<a href="https://www.wondercoins.es" target="_blank" rel="noopener noreferrer"><img class="icono_wonder" src="<?php echo __WEB_TEMPLATE_WEB__ ?>/generic/html/Icono_WonderCoins.png" alt="img_wonder"></a>
+						</div>
+
+						<div class= "oculto2" id="oculto2">
+						
+						<table>
+							<caption>Colaboradores de España</caption>
+						
+							<tbody>
+								<tr>
+									<td><a href="https://www.man.es/man/home.html" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_man.png" alt="Imagen 1"></a></td>
+									<td><a href="https://www.museosdeandalucia.es/web/museodecadiz" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_m_cadiz.png" alt="Imagen 2"></a></td>
+									<td><a href="https://www.parquemineroderiotinto.es" target="_blank" ><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_rio_tinto.png" alt="Imagen 3"></a></td>
+								</tr>
+								<tr>
+									<td><a href="https://www.museodechiclana.es" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_de_chiclana.png" alt="Imagen 4"></a></td>
+									<td><a href="https://www.museosdeandalucia.es/web/museodehuelva" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_de_huelva.jpg" alt="Imagen 5"></a></td>
+									<td><a href="https://www.juntadeandalucia.es/cultura/agendaculturaldeandalucia/evento/coleccion-museografica-de-historia-y-arqueologia-de-vejer" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_de_vejer.png" alt="Imagen 6"></a></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<table>
+						<caption>Colaboradores de Portugal</caption>
+						
+						<tbody>
+							<tr>
+								<td><a href="https://cm-beja.pt/pt/menu/545/museu-regional-de-beja--museu-rainha-d-leonor.aspx" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_de_rainha.jpg" alt="Imagen 1"></a></td>
+								<td><a href="https://www.camertola.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_campo_arquelogico_mertola.gif" alt="Imagen 2"></a></td>
+								<td><a href="https://www.cm-faro.pt/3377/convent-of-our-lady-of-the-assumption-faro-municipal-museum.aspx" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_faro.jpg" alt="Imagen 3"></a></td>
+							</tr>
+							<tr>
+								<td><a href="https://www.museunacionalarqueologia.gov.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_port.jpg" alt="Imagen 4"></a></td>
+								<td><a href="https://museudeportimao.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_portimao.jpg" alt="Imagen 5"></a></td>
+								<td><a href="https://www.museucasadamoeda.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_casa_da_moeda.jpg" alt="Imagen 6"></a></td>
+							</tr>
+							<tr>
+								<td><a href="https://www.museudodinheiro.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museu_do_dinheiro.png" alt="Imagen 4"></a></td>
+								<td><a href="http://museumunicipaldetavira.cm-tavira.pt" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/tavira.jpg" alt="Imagen 5"></a></td>
+							</tr>
+						</tbody>
+					</table>	
+
+						<table>
+							<caption>Colaboradores de Marruecos</caption>
+							
+							<tbody>
+								<tr>
+									<td><a href="https://fnm.ma" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/logo_museo_de_tetuan.jpg" alt="Imagen 1"></a></td>
+									<td><a href="https://mapecology.ma/actualites/site-archeologique-de-tamuda-reelle-immersion-coeur-de-lepoque-mauretanienne/" target="_blank"><img src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/Tamuda.jpg" alt="Imagen 2"></a></td>
+								</tr>
+								
+							</tbody>
+						</table>	
+
+							</div>
+
+						
+							<div class="oculto3">
+							<table>
+							<thead>
+								<tr>
+									<th>Proyectos financiadores y asociados</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+
+									<td>PID2023-151382NB-I00. ARQUEOMON. De mano en mano. Ambientes de uso de la moneda en la Bahía de Cádiz en la Antigüedad. IP: Alicia Arévalo González</td>
+								</tr>
+								<tr>
+									
+									<td>TED2021-131704A-I00. WONDERCOINS. Wide Online Numismatic Data Environment and Recognition of Coins. Financiado por MCIN/AEI/10.13039/501100011033 y por la Unión Europea “NextGenerationEU”/PRTR. IP: Elena Moreno Pulido.</td>
+								</tr>
+								<tr>
+									
+									<td>PAIDI-PY20_01295. WONDERCOINS-HIS. Web Online de Numismática. Datos, Entorno y Reconocimiento de Monedas-Hispania, Convocatoria de subvenciones a «proyectos de I+D+i» universidades y entidades públicas de investigación de la Junta de Andalucía. IP: Elena Moreno Pulido.</td>
+								</tr>
+								<tr>
+
+									<td>CNS2022-135815. Corpus nummorum Mauretaniaque: La ceca de Tamuda. IP: Elena Moreno Pulido.</td>
+								</tr>
+								<tr>
+
+									<td>CEI-JD-08. Mare in rure. El paisaje cultural marítimo de la bahía de Cádiz y su interacción con el poblamiento de la depresión fluvial del Guadalete en época romana. IP: Macarena Lara Medina</td>
+								</tr>
+								<tr>
+									
+									<td>MONOM. La Monnaie dans l’Occident Romain. Ecole française de Rome. IP's: Arnaud Suspène, Laurent Callegarin, Antony Hostein et Vivien Prigent.</td>
+								</tr>
+								<tr>
+
+									<td>PID2022-138814OB-I00. Garum en diacronía: aproximación interdisciplinar a la tipología de las salsas fermentadas romanas en el Círculo del Estrecho (GARVM). IP: Darío Bernal Casasola</td>
+								</tr>
+								<tr>
+
+									<td>PID2021-128104NA-I00. Rastreando los orígenes de las producciones salazoneras romanas en el litoral gaditano. IP: José Ángel Expósito Álvarez</td>
+								</tr>
+								<tr>
+									
+									<td>NUMAROC. Numismática y Arqueología de la Antigua Mauritania. Puesta en valor de las monedas y la documentación arqueológica de los museos marroquíes de Tetuán, Tánger-Larache y Rabat. (NUMAROC). Proyectos asociados de la Casa de Velázquez. IP's: Elena Moreno Pulido y Laurent Callegarin.</td>
+								</tr>
+								<tr>
+							
+									<td>HAR2017-89154-P. Del Atlántico al Tirreno (2ª FASE). Los puertos atlánticos béticos y lusitanos y su relación comercial con Ostia Antica. Universidad de Huelva. Programa estatal de fomento de la actividad científica y técnica de excelencia. Subprograma estatal de generación del conocimiento. Ministerio de Economía y Competitividad. IP's: Juan Manuel Campos Carrasco y Javier Bermejo Meléndez.</td>
+								</tr>
+								<tr>
+									
+									<td>CEIJ-C04.2. SAMOiMAR. La moneda en las cetariae del arco occidental bético del Fretum Gaditanum: Onoba, Gadir-Gades, Baelo Claudia y Carteia. Convocatoria de ayudas a proyectos de investigación “Jóvenes investigadores CEI·MAR 2019”. IP: Elena Moreno Pulido.</td>
+								</tr>
+								<tr>
+									
+									<td>EQC2018- 004714-P. Dotación de Equipamiento Científico-Técnico para la investigación del Instituto De Historia y Arqueología Marítimas de la Universidad de Cádiz. Universidad de Cádiz. Subprograma Estatal de Infraestructuras de Investigación y Equipamiento Científico Técnico. IP: Alicia Arévalo González.</td>
+								</tr>
+								<tr>
+									
+									<td>UHU-1260162. "Ciudades Romanas de la Bética. CORPVS VRBIVM BAETICARUM (II) (CUB)". Universidad de Huelva. Convocatoria de ayudas en concurrencia competitiva de proyectos de I+D+i en el marco del Programa Operativo FEDER Andalucía 2014-2020. IP's: Juan Manuel Campos Carrasco y Javier Bermejo Meléndez.</td>
+								</tr>
+								<tr>
+									
+									<td>HAR2014-58326-P. Del Atlántico al Tirreno (1ª FASE). Los puertos atlánticos béticos y lusitanos y su relación comercial con Ostia Antica. Universidad de Huelva. Programa estatal de fomento de la actividad científica y técnica de excelencia. Subprograma estatal de generación del conocimiento. Ministerio de Economía y Competitividad. IP: Juan Manuel Campos Carrasco.</td>
+								</tr>
+								<tr>
+									
+									<td>A1/035965/11. Economía y Artesanado en Tamuda (Tetuán, Cádiz). La recuperación del Barrio Oriental y la ribera fluvial y su integración en el circuito de visita del yacimiento. IP: Dario Bernal Casasola.</td>
+								</tr>
+								<tr>
+
+									<td>HAR2010-16793. Moneda para el Más Allá. Estudio diacrónico del uso y significado de la moneda en las Necrópolis de Gadir, Malaca y Ebusus. IP: Alicia Arévalo González</td>
+								</tr>
+								
+								
+
+							</tbody>
+						</table>
+						
+							</div>
+
+
+							<div class="oculto4">
+							<h1 class="titulo">EQUIPO</h1>
+
+
+
+							<div id="csvData" ></div>
+
+							<script src="tpl\generic\js\script.js"></script>
+
+							</div>
+
+
+
+						</div>
+						
+				</div>
+				<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/footer.phtml'; ?>
+			</div>
+
+		<!-- Footer -->
+		
+	
+
+<?php echo $this->get_header_links('js', ['js_async' => 'defer']) ?>
+<script src="tpl\generic\js\url-handler.js" defer></script>
+    <script defer>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            generic.set_up({
+                row                     : <?php echo json_encode($this->row) ?>,
+                area_name               : <?php echo json_encode($area_name) ?>,
+                export_data_container   : document.getElementById('export_data')
+            });
+
+            // Llamamos a handleURLChange después de la configuración inicial
+            handleURLChange('.oculto', {
+				'proyecto': 'fondo',
+                'fellows': 'hide',
+                'financing': 'hide',
+				'equipo' : 'hide'
+            });
+			handleURLChange('.oculto2', {
+				'proyecto': 'hide',
+				'fellows': 'collab',
+                'financing': 'hide',
+				'equipo' : 'hide'
+            });
+			handleURLChange('.oculto3', {
+				'proyecto': 'hide',
+				'fellows': 'hide',
+                'financing': 'finan',
+				'equipo' : 'hide'
+            });
+			handleURLChange('.oculto4', {
+				'proyecto': 'hide',
+				'fellows': 'hide',
+                'financing': 'hide',
+				'equipo' : 'equipo'
+            });
+        });
+    </script>
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Fondo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1379.75 185.56">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #005f54;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M1379.75,0v58.6h-530.38c-24.11,0-45.28,16.02-51.83,39.21-14.4,50.93-56.05,87.75-105.2,87.75s-90.8-36.82-105.2-87.75c-6.56-23.2-27.73-39.21-51.83-39.21H0V0h1379.75Z"/>
+</svg>

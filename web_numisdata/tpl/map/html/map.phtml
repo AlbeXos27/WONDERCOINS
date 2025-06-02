@@ -1,0 +1,223 @@
+<?php
+# REQUIRED FILES
+	$base_path = dirname(dirname(__FILE__));
+	$cwd 	   = basename($base_path); # Current dir name
+
+	// Current controller add
+	require($base_path .'/'. $cwd .'.php');
+?>
+
+<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- header -->
+			<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/header.phtml'; ?>
+
+		<!-- main -->
+			<div id="main">
+				<div class="inner">
+
+					<!-- title -->
+						<h1><span id='title'></span><img id="search_icon" class="search_icon" src="<?php echo __WEB_TEMPLATE_WEB__ ?>/assets/images/icon_search.svg"></h1>
+
+					<!-- form -->
+						<?php include_once($base_path . '/tool_leaflet_special_tools/search-form.php') ?>
+
+					<!-- map -->
+                                        <div id="map_container" class='map full_width' style='height: 600px;'>
+
+                                        </div>
+
+					<!-- result -->
+						<section id="rows_container" class="result rows_list"></section>
+
+					<!-- export_data -->
+						<div id="export_data" class="export_data_container"></div>
+
+				</div>
+			</div>
+
+
+		<!-- footer -->
+			<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/footer.phtml'; ?>
+
+	</div>
+
+<?php echo $this->get_header_links('js', ['js_async' => 'defer']) ?>
+
+
+<script type="module">
+
+import {render_tool_leaflet_special_tools} from './tpl/map/tool_leaflet_special_tools/js/render_tool_leaflet_special_tools.js';
+import {tool_leaflet_special_tools} from './tpl/map/tool_leaflet_special_tools/js/tool_leaflet_special_tools.js';
+ 
+$(function() {
+
+    $("#range-slider").slider({
+        
+        range: true,
+        min: -515,
+        max: 476,
+        values: [ -515, 476 ],
+        
+        slide: function( event, ui ) {
+
+            $('#range_slider_in').val(ui.values[0]);
+            $('#range_slider_out').val(ui.values[1]);
+
+        }
+    });
+
+    $('#range_slider_in').val(-515);
+    $('#range_slider_out').val(476);
+
+});
+
+const map = L.map('map_container', {
+
+    center: [40.65993615913156, -3.2304345278385687],
+    zoom: 2,
+    scrollWheelZoom: false,
+    minZoom: 0,
+    //maxZoom: 22
+
+});
+
+map._layersMaxZoom = 22;
+
+const map_container = document.getElementById('map_container');
+
+map_container.appendChild(page.render_map_legend());
+
+L.control.fullscreen({
+  position: 'topright',
+  content: null,
+  forceSeparateButton: true,
+  forcePseudoFullscreen: true,
+  fullscreenElement: false
+}).addTo(map);
+
+map.layer_control = L.control.layers.tree();
+
+map.layer_control.addTo(map);
+
+    map.pm.addControls({  
+      position: 'topright',  
+      drawCircleMarker: false,
+      rotateMode: false
+    });
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_objects(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_xyz(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_wms(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_onexone(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_upload(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_map_image_download(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_roman_empire(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_legend(L);
+
+    render_tool_leaflet_special_tools.prototype.load_special_tools_geolocation(L);
+    
+    const special_tools_controls = {
+        
+        Objects: true,
+        XYZ: true,
+        WMS: true,
+        OneXOne: true,
+        Upload: true,
+        MapImageDownload: true,
+        RomanEmpire: true,
+        Legend: true,
+        Geolocation: true
+
+    };
+
+    const special_tools_options = {
+
+        position: "topleft",
+        controls: special_tools_controls
+
+    };
+
+    const self = {};
+
+    <?php 
+    
+    if (filter_has_var(INPUT_GET, 'lang')) {
+        
+        $lang = filter_input(INPUT_GET, 'lang', FILTER_SANITIZE_SPECIAL_CHARS);
+
+        echo "self.section_lang = '" . $lang . "';";
+        
+        if ($lang === 'lg-eng') {
+            
+            echo "map.pm.setLang('en');";
+            
+        } else if ($lang === 'lg-fra') {
+            
+            echo "map.pm.setLang('fr');";
+            
+        } else if ($lang === 'lg-ita') {
+            
+            echo "map.pm.setLang('it');";
+            
+        } else if ($lang === 'lg-por') {
+            
+            echo "map.pm.setLang('pt_br');";
+            
+        } else if ($lang === 'lg-cat') {
+            
+            echo "map.pm.setLang('ca');";
+            
+        } else if ($lang === 'lg-spa') {
+
+            echo "map.pm.setLang('es');";
+
+        } 
+
+    } else {
+
+        echo "self.section_lang = 'lg-spa';";
+        echo "map.pm.setLang('es');";
+
+    }
+    
+    ?>
+
+    self.map = map;
+
+    tool_leaflet_special_tools.prototype.control(self, special_tools_options);
+
+    /**********************************************************************/
+
+    const form_container = document.getElementById('form_container');
+    const search_icon = document.getElementById('search_icon');
+    
+    search_icon.addEventListener('click', function() {
+        
+        const display = form_container.getAttribute('display');
+        
+        if (display === 'none') {
+            
+            form_container.style.display = 'block';
+            form_container.setAttribute('display', 'block');
+            
+        } else  {
+            
+            form_container.style.display = 'none';
+            form_container.setAttribute('display', 'none');
+            
+        }
+        
+    });
+
+</script>

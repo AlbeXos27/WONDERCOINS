@@ -1,0 +1,192 @@
+
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+/*
+#header .logo_big {
+  margin-bottom: -2em !important;
+}
+#header .logo_big img {
+  height: 10em !important;
+}
+  */
+  #wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+#main {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  height: auto; /* Asegura que ocupe solo la altura necesaria */
+  padding: 1em 0;
+  width: 65%;
+  margin: 0 auto; /* Centra el contenedor horizontalmente */
+}
+
+#main > .inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  width: 100%;
+  max-width: 100vw;
+  height: auto; /* Asegura que inner ocupe solo la altura necesaria */
+  overflow: visible;
+  padding: 0; /* Elimina padding si no es necesario */
+  margin: 0;
+}
+#main > .inner > :first-child {
+  transform: translateX(-15%); /* Ajusta el valor según el desplazamiento deseado */
+}
+  /*
+  #main h1 {
+    text-align: center;
+    margin-bottom: 1em; 
+  }
+  */
+  #main img {
+    grid-column: 2 / 3;
+    width: 65%; /* La imagen ocupará el ancho completo de la columna */
+    height: auto; /* Mantiene la proporción de la imagen */
+    display: block; /* Evita espacios abajo de la imagen */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+    margin-left: 30%;
+  }
+  
+
+@media (max-width: 736px) {
+  #form_container {
+      grid-column-start: 1;
+      grid-column-end: 3;
+  }
+}
+#form_container {
+  min-height: 117px;
+}
+#search_form {
+  display: flex;
+  padding-top: 1em;
+}
+#search_form > * {
+  height: 3em;
+}
+#search_form .form-row {
+  width: 80%;
+}
+#search_form .form-group.field.button_submit {
+  margin-top: 0.75em;
+  margin-left: 2em;
+}
+.mint_form {
+  flex: 1 !important;
+  padding-right: 0 !important;
+}
+@media screen and (max-width: 736px) {
+  #main > .inner {
+      display: block;
+  }
+}
+/*
+#main > .inner .img-wrapper {
+  position: relative;
+  display: block;
+  width: 58%;
+  margin: 0;
+  grid-row-start: 1;
+  grid-row-end: 3;
+  border-bottom: none;
+}
+*/
+@media screen and (max-width: 736px) {
+  #main > .inner .img {
+      min-height: 20rem;
+  }
+}
+@media (max-width: 1024px) {
+  #main img {
+    /* La imagen ocupará el ancho completo de la columna */
+    height: auto; /* Mantiene la proporción de la imagen */
+    display: block; /* Evita espacios abajo de la imagen */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+  }
+  #main > .inner > :first-child {
+    transform: translateX(0%); /* Ajusta el valor según el desplazamiento deseado */
+  }
+  #main > .inner {
+    display: block;
+
+  }
+
+}
+
+
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 0;
+  grid-column: 1 / 2; /* Asegura que esta columna esté a la izquierda */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  height: 100%; /* Asegura que ocupe toda la altura disponible */
+  color: #085c54;
+  margin: 0 auto;
+  padding: 0;
+}
+
+
+.texto p{
+  width: 100%; /* Asegura que los elementos ocupen todo el ancho del contenedor */
+  height: 100%;
+  margin: 0; /* Elimina márgenes por defecto */
+  box-sizing: border-box; /* Incluye el padding dentro del ancho */
+  display: flex;
+  align-items: center;
+  font-size: 5vh;
+}
+
+.texto p em{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  height: 100%; /* Asegura que ocupe toda la altura disponible */
+  color: #085c54;
+
+}
+/*
+#main > .inner .img-wrapper img {
+  display: block;
+  width: 100%;
+}
+#main > .inner .img-wrapper .img-text {
+  text-align: center;
+  margin-right: 2.7em;
+}
+#main > .inner .column_right {
+  width: 100%;
+}
+#main > .inner p {
+  grid-row-start: 3;
+  grid-row-end: 5;
+}
+@media (max-width: 736px) {
+  #main > .inner p {
+      grid-column-start: 1;
+      grid-column-end: 3;
+  }
+}
+*/

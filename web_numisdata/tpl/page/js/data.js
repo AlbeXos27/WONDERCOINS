@@ -218,7 +218,6 @@ page.parse_hoard_data = function(data) {
 				parsed_data.push(row)
 				continue;
 			}
-
 			row.map = row.map
 				? JSON.parse(row.map)
 				: null

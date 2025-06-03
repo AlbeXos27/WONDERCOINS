@@ -266,7 +266,7 @@ var catalog = {
 		})
 
 
-		// global_search
+		 // global_search
 			self.form.item_factory({
 				id 			: "global_search",
 				name 		: "global_search",
@@ -307,7 +307,7 @@ var catalog = {
 						}
 					})
 				}
-			})
+			}) 
 
 		// mint
 			self.form.item_factory({

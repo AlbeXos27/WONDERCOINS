@@ -94,6 +94,51 @@ var hoards =  {
 				parent		: form_row
 			})
  */
+
+
+		 // global_search
+			self.form.item_factory({
+				id 			: "global_search",
+				name 		: "global_search",
+				label		: tstring.global_search || "global_search",
+				q_column 	: "name",
+				eq 			: "MATCH",
+				eq_in 		: "",
+				eq_out 		: "",
+				// q_table 	: "mints",
+				class_name	: 'global_search',
+				parent		: form_row,
+				callback	: function(form_item) {
+					const node_input = form_item.node_input
+
+					const button_info = common.create_dom_element({
+						element_type	: "div",
+						class_name		: "search_operators_info",
+						parent			: node_input.parentNode
+					})
+
+					let operators_info
+					button_info.addEventListener('click', function(event) {
+						event.stopPropagation()
+						if (operators_info) {
+							operators_info.remove()
+							operators_info = null
+							return
+						}
+						operators_info = self.form.full_text_search_operators_info()
+						node_input.parentNode.appendChild(operators_info)
+					})
+
+					window.addEventListener('click', function(e){
+						if (operators_info && !node_input.contains(e.target)){
+							// Clicked outside the box
+							operators_info.remove()
+							operators_info = null
+						}
+					})
+				}
+			}) 
+
 		// name
 			self.form.item_factory({
 				id			: "name",
@@ -196,14 +241,15 @@ var hoards =  {
 		}
 
 		const rows_container = self.rows_container
-
+		console.log("Hola Felipe "+ rows_container.innerHTML)
+	
 		// loading start
 			if (!self.pagination.total) {
 				page.add_spinner(rows_container)
 			}else{
 				rows_container.classList.add("loading")
 			}
-
+		
 		return new Promise(function(resolve){
 
 			const table = self.table==='findspots' // hoards | findspots
@@ -217,7 +263,7 @@ var hoards =  {
 			const resolve_portals_custom = {
 				"bibliography_data" : "bibliographic_references"
 			}
-
+			
 			// sql_filter
 				const filter = self.form.build_filter()
 				// parse_sql_filter
@@ -237,7 +283,7 @@ var hoards =  {
 				// 		resolve(false)
 				// 	})
 				// }
-
+				console.log(sql_filter)
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
@@ -258,7 +304,6 @@ var hoards =  {
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
 					const total	= api_response.total
-					console.log("data:",data);
 
 					self.pagination.total	= total
 					self.pagination.offset	= offset

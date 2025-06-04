@@ -15,7 +15,6 @@ acc
 config
 # images
 library.less
-page.css
 logo_head*
 default.jpg
 uni_val_hist.png

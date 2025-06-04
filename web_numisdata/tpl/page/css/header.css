@@ -1,0 +1,265 @@
+#header .pre_alert {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 60px 60px 0 0;
+  border-color: #ff0000 transparent transparent transparent;
+}
+#header .pre_alert:before {
+  content: "PRE";
+  font-size: 14px;
+  color: white;
+  position: absolute;
+  top: -53px;
+  left: 7px;
+  transform: rotate(316deg);
+  font-weight: 500;
+}
+#header > .head_inner > div.logo_big {
+  text-align: center;
+  margin-bottom: 1.8em;
+  padding-top: 1.8em;
+}
+#header > .head_inner > div.logo_big img {
+  height: 23em;
+}
+#header > .head_inner > a.logo {
+  background-color: #4e8a73;
+  background-image: url("../../assets/images/logo_head-06.svg");
+  background-repeat: no-repeat;
+  height: 5em;
+  margin: 0;
+  box-shadow: 0px 3px 20px #a1a1a175;
+}
+#header > .head_inner > a.logo > .title {
+  background-image: url("../../assets/images/logo_head-05.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22em;
+}
+@media screen and (max-width: 520px) {
+  #header > .head_inner > a.logo > .title {
+    background-image: url("../../assets/images/logo_head-08.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 7em;
+  }
+}
+@media screen and (max-width: 736px) {
+  #header > .head_inner > a.logo {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 520px) {
+  #header > .head_inner > a.logo {
+    height: 4em;
+    background-image: url("../../assets/images/logo_head-07.svg");
+    background-repeat: no-repeat;
+  }
+}
+#header nav {
+  top: 0.4vh;
+  right: 0.5vw;
+  display: inline-block;
+}
+
+
+@media (max-width: 854px) {
+
+  .container_links ul li {
+
+    display: none;
+
+  }
+
+  .container_logosRS ul li{
+
+    display: none;
+
+  }
+
+}
+
+#header nav .logo {
+  margin: 0;
+  display: none;
+}
+#header .header_warning {
+  background-color: #f0f0f0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2em;
+}
+#header .header_warning > img {
+  height: 1.2em;
+  margin: 0.5em;
+}
+#header .header_warning > span {
+  font-size: 0.9em;
+  font-weight: 400;
+  color: #aaa;
+  padding: 0.3em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+#header .symbol img {
+  height: 6em !important;
+}
+#header .symbol .title {
+  font-size: 3em !important;
+  text-shadow: -2px -2px 0 #4e8a73, 2px -2px 0 #4e8a73, -2px 2px 0 #4e8a73, 2px 2px 0 #4e8a73;
+}
+@media screen and (max-width: 736px) {
+  #header {
+    padding-top: 0;
+  }
+}
+.cabecera {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr; /* Define tres columnas con diferentes anchos */
+  grid-template-rows: auto; /* Define una sola fila */
+  box-sizing: border-box;
+
+}
+.header-img-container {
+  grid-column: 1 / -1; /* Hace que el contenedor de la imagen ocupe todas las columnas */
+  position: relative;
+  z-index: 2;
+}
+.header-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+}
+.logo_header:hover{
+  transform: scale(1.03);
+  transition: 0.5s ease;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+.overlay .logo_header{
+  position: absolute;
+  left: 45.5%;
+  top: 12%;
+  width: 9%;
+  opacity: 1;
+  z-index: 2;
+}
+.overlay .container_logosRS{
+  position: absolute;
+  right: 6%;
+  width: 12%;
+  height: 31.5%;
+  z-index: 0;
+  overflow: hidden;
+  display: flex; /* Define el contenedor como flexbox */
+  justify-content: center; /* Centra los elementos horizontalmente */
+  align-items: center; /* Centra los elementos verticalmente */
+  z-index: 2;
+}
+
+.container_logosRS ul {
+  list-style-type: none; /* Elimina los puntos de la lista */
+  padding: 0; /* Elimina el padding predeterminado */
+  margin: 0; /* Elimina el margen predeterminado */
+  display: flex; /* Hace que los elementos de la lista se alineen horizontalmente */
+  justify-content: space-between; /* Distribuye los elementos uniformemente */
+  align-items: center; /* Alinea los elementos verticalmente en el centro */
+  width: 100%; /* Asegura que la lista ocupe todo el ancho del contenedor */
+  height: 100%; /* Asegura que la lista ocupe todo el ancho del contenedor */
+  z-index: 2;
+}
+.container_logosRS li {
+  flex: 1; /* Permite que los elementos ocupen el mismo ancho */
+  padding: 0; /* Elimina el padding predeterminado */
+  margin: 0; /* Elimina el margen predeterminado */
+  display: flex; /* Define el elemento como flexbox */
+            justify-content: center; /* Centra los elementos horizontalmente */
+            align-items: center; /* Centra los elementos verticalmente */
+  width: 100%; /* Asegura que la lista ocupe todo el ancho del contenedor */
+  height: 100%; /* Asegura que la lista ocupe todo el ancho del contenedor */
+  z-index: 2;
+}
+.container_logosRS li a {
+  padding: 0; /* Elimina el padding predeterminado */
+  margin: 0; /* Elimina el margen predeterminado */
+  display: flex; /* Hace que el enlace se comporte como un flexbox */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra el contenido verticalmente */
+  width: 100%; /* Asegura que el enlace ocupe todo el ancho del li */
+  height: 100%; /* Asegura que el enlace ocupe toda la altura del li */
+  z-index: 2;
+}
+
+
+.container_logosRS li img {
+  
+  max-height: 50%; /* Asegura que la imagen ocupe toda la altura del li */
+  max-width: 50%; /* Asegura que la imagen ocupe todo el ancho del li */
+  object-fit: contain; /* Mantiene la proporción de la imagen */
+  z-index: 2;
+}
+
+.overlay .container_links{
+  position: absolute;
+  display: flex; /* Define el contenedor como flexbox */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  align-items: center; /* Centra el contenido verticalmente */
+  height: 31%;
+  width: 40%;
+  left: 0%;
+  box-sizing: border-box; /* Incluye el padding en el ancho total */
+  overflow: hidden;      
+
+}             
+
+.container_links ul {                                                  
+  width: 100%; /* Ancho completo del ul */
+  height: 100%; /* Altura completa del ul */
+  padding: 0; /* Elimina el padding predeterminado */
+  margin: 0; /* Elimina el margen predeterminado */
+  padding-left: 2.5vw;
+  list-style-type: none; /* Elimina los puntos de la lista */
+  display: flex; /* Hace que los elementos de la lista se alineen horizontalmente */
+  justify-content: space-around; /* Distribuye los elementos uniformemente */
+  align-items: center;
+}
+
+.container_links li {
+
+  flex: 1; /* Permite que los elementos ocupen el mismo ancho */
+  text-align: center; /* Centra el contenido dentro de cada elemento */
+  height: 100%; /* Altura completa de los elementos de la lista */
+  display: flex; /* Define el elemento como flexbox */
+  align-items: center; /* Centra el contenido verticalmente */
+}
+.overlay a {
+color: white;
+text-decoration: none;
+border: none;
+opacity: 0.75;
+font-size: 1.2vw;
+z-index: 2;
+}
+
+.overlay a:hover {
+  transform: scale(1.1);
+  color: white !important;
+  transition: 0.5s ease;
+  text-decoration: none;
+  opacity: 1;
+}

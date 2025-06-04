@@ -241,7 +241,6 @@ var hoards =  {
 		}
 
 		const rows_container = self.rows_container
-		console.log("Hola Felipe "+ rows_container.innerHTML)
 	
 		// loading start
 			if (!self.pagination.total) {

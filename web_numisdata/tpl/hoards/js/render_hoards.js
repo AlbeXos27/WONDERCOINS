@@ -24,7 +24,7 @@ var render_hoards = {
 				class_name		: "row_wrapper",
 				parent			: fragment
 			})
-
+		console.log("JAJAJAJAJA" + JSON.stringify(row))
 
 		if (row.name !== null && row.name.length>0){
 

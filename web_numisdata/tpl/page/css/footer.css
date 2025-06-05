@@ -1,16 +1,94 @@
-.footer {
-  position: relative;
-  height: 110%;
+#footer {
+  background-color: #045c54;
+  padding: 0;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: grid;
+  grid-template-columns: 1fr 0.75fr 1fr;
+  visibility: visible;
   width: 100%;
-  bottom: 2%;
-  overflow: hidden;
+}
+
+/*@media (max-width: 1000px) {
+  #footer  {
+    display: flex;
+    flex-direction: column; /* Cambia a columna para pantallas más pequeñas 
+    align-items: center; /* Centra los elementos horizontalmente 
+
+  }
+}*/
+#footer > .section-left {
+  display: flex;
+  flex-direction: column; /* Mantiene los elementos en una columna */
+  justify-content: center;
+  align-items: center;
+  padding-top: 0.5%;
+  padding-bottom: 0.5%;
+}
+
+#footer > .section-left > .text-left{
+  color: white;
+  font-size: 1.0rem;
+  justify-content: center;
+  margin: 0 auto;
+
+}
+
+#footer > .section-center{
   display: flex;
   flex-direction: column;
-  align-items: center;
-  overflow-x: hidden;
+  justify-content: center;
+  align-items: center; /* <-- alinea verticalmente */
+  gap: 0.5rem;
+  width: 100%;
 }
+
+
+#footer > .section-center > .dedalo {
+  display: flex;
+  flex-direction: column; /* Cambia a columna para alinear los elementos verticalmente */
+  justify-content: flex-end;
+  margin-top: auto;
+  width: 100%;
+  height: auto;
+}
+#footer > .section-center > .dedalo > .dedalo_container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center; /* Alinea verticalmente */
+}
+#footer > .section-center > .dedalo > .dedalo_container > a > img {
+  margin: auto;
+  width: 35px;
+  height: auto;
+ 
+}
+#footer > .section-center> .dedalo > .dedalo_container > .dedalo_text2{
+ margin:auto;
+ margin-left: 4px;
+ margin-right: 4px;
+
+}
+#footer > .section-center> .dedalo > .dedalo_container > .dedalo_text1{
+ margin: auto;
+ margin-left: 4px;
+ margin-right: 4px;
+
+}
+#footer > .section-center> .dedalo > .dedalo_container > p{
+  font-size: 1.2rem;
+  color: white;
+  text-align: center;
+
+}
+
+
+/*
 .logo_footer{
-display: inline-block; /* Asegura que el div solo ocupe el espacio necesario para su contenido */
+display: inline-block; /* Asegura que el div solo ocupe el espacio necesario para su contenido 
 }
 .logo_footer img {
   position: absolute;
@@ -18,7 +96,7 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
   top: 12%;
   transform:  translateX(-60%) ;
   width: 8.8%;
-  z-index: 2; /* Asegúrate de que el logo esté encima del fondo */
+  z-index: 2; /* Asegúrate de que el logo esté encima del fondo 
 }
 
 .text-container {
@@ -44,7 +122,7 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
 
 .powered_by {
   display: flex;
-  flex-direction: row; /* Mantiene los elementos en una fila */
+  flex-direction: row; /* Mantiene los elementos en una fila 
   bottom: 0;
   padding-top: 0.5%;
   position: absolute;
@@ -57,8 +135,8 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
 .powered_by p {
   color: white;
   font-size: 0.55vw;
-  margin: 0 0.1vw; /* Espacio horizontal entre los elementos */
-  text-align: center; /* Centra el texto */
+  margin: 0 0.1vw; /* Espacio horizontal entre los elementos 
+  text-align: center; /* Centra el texto 
 }
 
 .powered_by .dedalo_image {
@@ -87,49 +165,49 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
     width: 39%;
     bottom: 0;
     list-style-type: none;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente 
+    align-items: center; /* Centra verticalmente 
     box-sizing: border-box;
-    height: 35%; /* Asegura que el contenedor tenga altura completa para centrar verticalmente */
+    height: 35%; /* Asegura que el contenedor tenga altura completa para centrar verticalmente 
   }
   
   .footer-section-wrapper ul {
-    display: flex; /* Asegura que el ul utilice flexbox */
+    display: flex; /* Asegura que el ul utilice flexbox 
     justify-content: center;
     align-items: center;
     margin: 0;
     padding: 0;
     height: 100%;
-    width: 100%; /* Asegura que el ul ocupe todo el ancho del contenedor */
+    width: 100%; /* Asegura que el ul ocupe todo el ancho del contenedor 
   }
   
   .footer-section-wrapper ul li {
     flex: 1;
     height: 100%;
-    display: flex; /* Asegura que los li utilicen flexbox */
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+    display: flex; /* Asegura que los li utilicen flexbox 
+    justify-content: center; /* Centra horizontalmente 
+    align-items: center; /* Centra verticalmente 
   }
   
   .footer-section-wrapper ul li ul {
-    display: flex; /* Asegura que el ul anidado utilice flexbox */
+    display: flex; /* Asegura que el ul anidado utilice flexbox 
     justify-content: center;
     align-items: center;
-    width: 100%; /* Asegura que el ul anidado ocupe todo el ancho del contenedor */
+    width: 100%; /* Asegura que el ul anidado ocupe todo el ancho del contenedor 
   }
   
   .footer-section-wrapper ul li ul li {
     flex: 1;
     height: 100%;
     padding: 0;
-    display: flex; /* Asegura que los li anidados utilicen flexbox */
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
+    display: flex; /* Asegura que los li anidados utilicen flexbox 
+    justify-content: center; /* Centra horizontalmente 
+    align-items: center; /* Centra verticalmente 
   }
   
   .footer-section-wrapper a {
     width: auto;
-    display: flex; /* Asegura que los enlaces utilicen flexbox */
+    display: flex; /* Asegura que los enlaces utilicen flexbox 
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -140,7 +218,7 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
   .footer-section-wrapper li img.footer_image_item {
     max-width: 100%;
     max-height: 100%;
-    display: block; /* Asegura que la imagen se comporte como bloque y pueda ser centrada */
+    display: block; /* Asegura que la imagen se comporte como bloque y pueda ser centrada 
     filter: sepia(100%) saturate(0) brightness(100%);
     opacity: 0.85;
     transition: all 0.35s linear;
@@ -270,6 +348,7 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
 #footer .inner .footer-copyright-wrapper {
   margin: 0 auto;
 }*/
+/*
 #footer .inner .logos {
   margin: auto;
   margin-top: 1em;

@@ -1012,6 +1012,7 @@ nav ul {
   background: white;
   background-image: url('../../assets/images/overlay_white.png');
 }
+
 #wrapper #main {
   min-height: calc(100vh - 33rem);
   padding-top: 12.5%;
@@ -1019,6 +1020,7 @@ nav ul {
 @media screen and (max-width: 1280px) {
   #wrapper #main {
     min-height: calc(100vh - 24.9rem);
+    padding-top: 25%;
   }
 }
 @media screen and (max-width: 736px) {

@@ -219,7 +219,7 @@ transition: 0.25s ease-in-out;
 .icono_wonder {
     position: absolute;
     display: flex;
-    height: 45%;
+    height: 37.5%;
     top: 50%; /* Posiciona el centro verticalmente */
     left: 50%; /* Posiciona el centro horizontalmente */
     transform: translate(-50%, -52%); /* Ajusta el centro usando transform */

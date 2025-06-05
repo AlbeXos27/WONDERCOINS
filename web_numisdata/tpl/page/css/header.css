@@ -26,6 +26,9 @@ header{
   .lista_RRSS li a {
      display: none !important;
   }
+  .huevo_web{
+     display: none !important;
+  }
 }
 
 .container_header {
@@ -78,14 +81,14 @@ color: white !important;
 }
 
 .lista_RRSS {
-  width: 40%;
+  width: 35%;
   height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center; /* <-- Alineación a la izquierda */
   align-items: center;
   margin: 0 auto; /* <-- centra el contenedor dentro del padre */
-  margin-left: 40%;
+  margin-left: 44%;
 }
 
 
@@ -113,8 +116,8 @@ color: white !important;
 }
 
 .lista_RRSS  li a img {
-  height: 100%; /* Ajusta según el tamaño deseado */
-  width: 100%;
+height: 100%; /* Ajusta según el tamaño deseado */
+width: 100%;
 display: block;
 }
 
@@ -122,4 +125,30 @@ display: block;
 .lista_RRSS li a:hover {
   opacity: 1;
   transform: scale(1.1);
+}
+
+
+.huevo_web{
+position: relative;
+width: 100%;
+height: 170%;
+background-image: url(../html/Header_Huevo.svg);
+background-size: contain;
+background-repeat: no-repeat;
+transform: translateY(58.5%);
+background-position: center top; /* 🔥 Esto es clave */
+overflow: visible !important;
+}
+
+.huevo_web > a {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+  width: 9vw;
+  height: 9vw; /* ← Añadí esto */
+  aspect-ratio: 1;
+  z-index: 10;
+  display: block;
+  border-bottom: none;
 }

@@ -20,6 +20,8 @@
 		// page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.css';
 		// page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/assets/lib/jquery-ui/jquery-ui.min.css';
 		page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/page/css/page.css';
+		page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/page/css/header.css';
+		page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/page/css/footer.css';
 		#page::$css_ar_url[] = __WEB_TEMPLATE_WEB__ . '/menu/css/menu.css';
 
 

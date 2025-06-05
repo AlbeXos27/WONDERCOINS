@@ -1014,7 +1014,7 @@ nav ul {
 }
 #wrapper #main {
   min-height: calc(100vh - 33rem);
-  padding: 0;
+  padding-top: 10%;
 }
 @media screen and (max-width: 1280px) {
   #wrapper #main {

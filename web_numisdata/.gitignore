@@ -1,5 +1,4 @@
-config.php
-config.*
+
 !sample.config.php
 config.codekit3
 prepros.config

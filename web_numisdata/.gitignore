@@ -1,7 +1,3 @@
-
-!sample.config.php
-config.codekit3
-prepros.config
 .codekit-cache
 *codekit*
 acc
@@ -11,7 +7,6 @@ acc
 *_OLD.*
 *_old.*
 *_DES
-config
 # images
 library.less
 logo_head*

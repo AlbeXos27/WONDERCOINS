@@ -17,8 +17,6 @@ logo_mciu.jpg
 logo_mib_marron.svg
 logo_render_bn.png
 logo-inc.svg
-!app-min.js.map
-!app-min.js
 # node
 node_modules
 package.json

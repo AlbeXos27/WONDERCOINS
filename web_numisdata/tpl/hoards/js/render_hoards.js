@@ -19,14 +19,15 @@ var render_hoards = {
 		const fragment = new DocumentFragment()
 
 		// wrapper
+
+		if (row.name !== null && row.name.length>0){
+
+
 			const wrapper = common.create_dom_element({
 				element_type	: "div",
 				class_name		: "row_wrapper",
 				parent			: fragment
 			})
-		console.log("JAJAJAJAJA" + JSON.stringify(row))
-
-		if (row.name !== null && row.name.length>0){
 
 			// map_wrapper
 				const map_wrapper = common.create_dom_element({

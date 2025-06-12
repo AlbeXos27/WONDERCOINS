@@ -20,7 +20,7 @@ export const data_manager = function() {
 */
 data_manager.prototype.request = async function(options) {
 
-	// console.log("++++ data_manager request options:", options);
+	//console.log("++++ data_manager request options:", options);
 
 	let url				= options.url || null
 	const method		= options.method || 'POST' // *GET, POST, PUT, DELETE, etc.
@@ -31,7 +31,6 @@ data_manager.prototype.request = async function(options) {
 	const redirect		= options.redirect || 'follow' // manual, *follow, error
 	const referrer		= options.referrer || 'no-referrer' // no-referrer, *client
 	const body			= options.body // body data type must match "Content-Type" header
-
 	// page_globals check for workers
 		const page_globals = typeof window.page_globals!=='undefined'
 			? window.page_globals
@@ -41,7 +40,6 @@ data_manager.prototype.request = async function(options) {
 		if (!url && page_globals) {
 			url = page_globals.JSON_TRIGGER_URL
 		}
-
 	// code defaults
 		if (!body.code && page_globals) {
 			body.code = page_globals.API_WEB_USER_CODE

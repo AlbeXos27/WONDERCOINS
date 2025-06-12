@@ -213,7 +213,6 @@ page.parse_hoard_data = function(data) {
 		for (let i = 0; i < data.length; i++) {
 
 			const row = data[i]
-
 			if (row.parsed===true) {
 				parsed_data.push(row)
 				continue;

@@ -1,3 +1,8 @@
+config.php
+config.*
+!sample.config.php
+config.codekit3
+prepros.config
 .codekit-cache
 *codekit*
 acc
@@ -7,6 +12,7 @@ acc
 *_OLD.*
 *_old.*
 *_DES
+config
 # images
 library.less
 logo_head*
@@ -17,6 +23,8 @@ logo_mciu.jpg
 logo_mib_marron.svg
 logo_render_bn.png
 logo-inc.svg
+!app-min.js.map
+!app-min.js
 # node
 node_modules
 package.json

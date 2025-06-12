@@ -38,8 +38,8 @@ var hoards =  {
 			self.table			= options.table // hoards | findspots
 
 		// form
-			self.form		= new form_factory()
-			const form_node	= self.render_form()
+			self.form		= new form_factory() // obtener operaciones para crear formulario
+			const form_node	= self.render_form() // creacion del formulario para pasarlo a js
 			self.form_container.appendChild(form_node)
 
 		// pagination
@@ -73,7 +73,6 @@ var hoards =  {
 	render_form : function() {
 
 		const self = this
-
 		const fragment = new DocumentFragment()
 
 		const form_row = common.create_dom_element({
@@ -199,7 +198,7 @@ var hoards =  {
 				e.preventDefault()
 				self.pagination = {
 					total	: null,
-					limit	: 10,
+					limit	: 15,
 					offset	: 0,
 					n_nodes	: 8
 				}
@@ -282,7 +281,6 @@ var hoards =  {
 				// 		resolve(false)
 				// 	})
 				// }
-				console.log(sql_filter)
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
@@ -299,6 +297,7 @@ var hoards =  {
 			})
 			.then(function(api_response){
 				console.log("--------------- api_response:",api_response);
+	
 
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)

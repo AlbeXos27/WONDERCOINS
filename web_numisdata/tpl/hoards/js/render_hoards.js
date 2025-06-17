@@ -19,6 +19,7 @@ var render_hoards = {
 		const fragment = new DocumentFragment()
 
 		// wrapper
+		
 
 		if (row.name !== null && row.name.length>0){
 

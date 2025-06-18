@@ -270,7 +270,7 @@ cargarTodoYCrearMapa();
 				id				: "mint",
 				name			: "mint",
 				label			: tstring.mint || "mint",
-				q_column		: "mint",
+				q_column		: "name",
 				value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
 				eq				: "LIKE",
 				eq_in			: "%",
@@ -281,7 +281,7 @@ cargarTodoYCrearMapa();
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'coins'
+						table		: 'mints'
 					})
 				}
 			})
@@ -329,7 +329,7 @@ cargarTodoYCrearMapa();
 				id			: "findspot",
 				name		: "findspot",
 				label		: tstring.findspot || "findspot",
-				q_column	: "findspot",
+				q_column	: "name",
 				eq			: "LIKE",
 				eq_in		: "%",
 				eq_out		: "%",
@@ -337,64 +337,11 @@ cargarTodoYCrearMapa();
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'coins'
+						table		: 'findspots'
 					})
 				}
 			})
 
-		// hoard
-			self.form.item_factory({
-				id			: "hoard",
-				name		: "hoard",
-				label		: tstring.hoard || "hoard",
-				q_column	: "hoard",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'coins'
-					})
-				}
-			})
-
-		// material
-			self.form.item_factory({
-				id			: "material",
-				name		: "material",
-				label		: tstring.material || "Material",
-				q_column	: "material",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'coins'
-					})
-				}
-			})
-
-		// denomination
-			self.form.item_factory({
-				id			: "denomination",
-				name		: "denomination",
-				label		: tstring.denomination || "Denomination",
-				q_column	: "denomination",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'coins'
-					})
-				}
-			})
 
 		// submit button
 			const submit_group = common.create_dom_element({
@@ -465,7 +412,7 @@ cargarTodoYCrearMapa();
 
 		return new Promise(function(resolve){
 
-			const ar_fields = ['section_id','mint_data','hoard_data','findspot_data','type_data']
+			const ar_fields = ["name","map","section_id"]
 
 			// sql_filter
 
@@ -477,6 +424,7 @@ cargarTodoYCrearMapa();
 				const sql_filter	= parsed_filter
 					? '(' + parsed_filter + ')'
 					: null
+
 				if(SHOW_DEBUG===true) {
 					// console.log("-> coins form_submit filter:",filter);
 					// console.log("-> coins form_submit sql_filter:",sql_filter);
@@ -489,12 +437,13 @@ cargarTodoYCrearMapa();
 				// 		resolve(false)
 				// 	})
 				// }
+				console.log("El sql filter es" + sql_filter)
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
-					table			: 'coins',
+					table			: 'mints',
 					ar_fields		: ar_fields,
-					sql_filter		: sql_filter + " AND type_data IS NOT NULL",
+					sql_filter		: `( ${self.form.form_items.mint.q_column} LIKE '%${self.form.form_items.mint.q !== '' ? self.form.form_items.mint.q : self.form.form_items.mint.q_selected}%' AND name !='')`,
 					limit			: 0,
 					count			: false,
 					offset			: 0,
@@ -505,12 +454,20 @@ cargarTodoYCrearMapa();
 			})
 			.then(function(api_response){
 				console.log("--------------- form_submit api_response:", api_response);
+				const location = {
+					lon: null,
+					lat: null
+				};
 
 				if (api_response.result) {
 					
-
+					self.map_container.classList.remove("loading")
+					const datos_location= JSON.parse(api_response.result[0].map)
+					location.lat = datos_location.lat;
+					location.lon = datos_location.lon;
+					self.map_factory_instance.move_map_to_point(location)
 				}
-				self.map_container.classList.remove("loading")
+				
 
 				resolve(true)
 			})

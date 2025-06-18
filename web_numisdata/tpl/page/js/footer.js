@@ -54,8 +54,11 @@ var footer =  {
 		// root level
 			const root_rows = footer_data.filter(el => el.parent===root_term_id)
 			const root_rows_length = root_rows.length
-			for (let i = 0; i < root_rows_length; i++) {
 
+			
+			for (let i = 0; i < root_rows_length; i++) {
+				
+				console.log(root_rows)
 				const item = root_rows[i]
 
 				const child_node = self.build_child_node(item)

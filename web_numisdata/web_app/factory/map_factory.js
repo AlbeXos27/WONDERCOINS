@@ -103,7 +103,7 @@ function map_factory() {
 					if(data_ceca != null){
 
 					const markerHallazgo = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoHallazgo })
-					.bindPopup("<b>Hallazgo</b><br>Otra información.")
+					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
 					.on("click", function () {
 						miFuncionPersonalizada(data.hallazgos.datos[index].name);
 						this.openPopup();  // Abrir popup también
@@ -122,7 +122,7 @@ function map_factory() {
 
 					if(data_ceca != null && data_ceca.lat !==undefined && data_ceca.lon !==undefined  ){
 					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
-					.bindPopup("<b>Ceca</b><br>Otra información.")
+					.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)
 					.on("click", function () {
 						miFuncionPersonalizada(data.cecas.datos[index].name);
 						this.openPopup();  // Abrir popup también
@@ -141,7 +141,7 @@ function map_factory() {
 
 			map.addLayer(markersCluster);
 		
-		}
+		};
 
 		this.create_legend = function(map){
 
@@ -169,8 +169,14 @@ function map_factory() {
 			]
 			}).addTo(map);
 
-		}
+		};
 
+
+		this.move_map_to_point = function(location){
+			console.log(location)
+			this.map.setView([location.lat, location.lon], 11);
+
+		};
 
 
 }//end map_factory

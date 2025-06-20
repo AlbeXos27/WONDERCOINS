@@ -28,8 +28,6 @@ body, html {
   align-items: center;
   overflow: visible;
   height: auto; /* Asegura que ocupe solo la altura necesaria */
-  padding: 1em 0;
-  width: 65%;
   margin: 0 auto; /* Centra el contenedor horizontalmente */
 }
 
@@ -62,7 +60,13 @@ body, html {
     margin-left: 30%;
   }
   
-
+#wrapper #main {
+  min-height: calc(100vh - 33rem);
+  height: 80%;
+  padding: 0;
+  padding-top: 5.5%;
+  width: 75%;
+}
 @media (max-width: 736px) {
   #form_container {
       grid-column-start: 1;
@@ -125,9 +129,18 @@ body, html {
     display: block;
 
   }
+  em{
+    font-size: 2rem;
+  }
 
 }
 
+@media(max-width: 1280px) {
+    #wrapper #main {
+        min-height: calc(100vh - 24.9rem); 
+         padding-top: 20%;
+    }
+}
 
 
 .texto {

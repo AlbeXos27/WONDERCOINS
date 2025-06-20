@@ -135,7 +135,7 @@ height: 170%;
 background-image: url(../html/Header_Huevo.svg);
 background-size: contain;
 background-repeat: no-repeat;
-transform: translateY(58.5%);
+transform: translateY(57.5%);
 background-position: center top; /* 🔥 Esto es clave */
 overflow: visible !important;
 }

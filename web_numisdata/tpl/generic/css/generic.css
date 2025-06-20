@@ -94,7 +94,11 @@ section.images a.image {
     box-sizing: border-box;
 }
 
-
+#wrapper #main {
+  min-height: calc(100vh - 33rem);
+  padding-top: 10%;
+  padding-bottom: 10%;
+}
 a{
     text-decoration: none;
     border: none;
@@ -182,6 +186,9 @@ td.numero {
 table img:hover {
 transform: scale(105%);
 transition: 0.25s ease-in-out;
+}
+header{
+    position: relative;
 }
 
 #main {

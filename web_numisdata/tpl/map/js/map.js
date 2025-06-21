@@ -466,17 +466,36 @@ cargarTodoYCrearMapa();
 					location.lat = datos_location.lat;
 					location.lon = datos_location.lon;
 					self.map_factory_instance.move_map_to_point(location)
+					console.log("Macaco")
+					self.render_rows(api_response.result)
 				}
 				
 
 				resolve(true)
 			})
 		})
-	}//end form_submit
+	},//end form_submit
 
 
+	render_rows : function(row) {
 
-	
+		const self = this
+		
+
+		const fragment = new DocumentFragment()
+
+		const container_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_rows",
+			text_content	: "Ceca",
+			parent			: fragment
+
+		})
+
+		self.rows_container.appendChild(fragment)
+
+	}
+
 
 	
 

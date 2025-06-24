@@ -11,18 +11,18 @@ function map_factory() {
 	this.map_position   = null;
 	this.source_maps    = [];
 	this.map = null
+	this.map_node = null
 	this.result = null
 
 	this.init = function(options) {
 
 		const self = this;
-
+		self.map_node  = options.map_node || null;
 		self.map_container  = options.map_container  || null;
 		self.map_position   = options.map_position   || [36.5297, -6.2924]; // Cádiz por defecto
 		self.popup_options  = options.popup_options  || {};
 		self.source_maps    = options.source_maps    || [];
 		self.result = options.result || null;
-		
 		// Asegurarte de obtener el elemento DOM
 		const containerElement = typeof self.map_container === "string"
 			? document.getElementById(self.map_container)
@@ -41,7 +41,7 @@ function map_factory() {
 			attribution: "© OpenStreetMap contributors"
 		}).addTo(self.map);
 		
-		self.add_markers(self.map,self.result)
+		self.add_markers(self.map,self.result,self.map_node)
 
 		self.create_legend(self.map)
 
@@ -63,7 +63,7 @@ function map_factory() {
 	};
 
 
-		this.add_markers = function(map,data){
+		this.add_markers = function(map,data,map_node){
 
 				const markersCluster = L.markerClusterGroup({
 				maxClusterRadius: 80,
@@ -115,7 +115,7 @@ function map_factory() {
 
 				}
 
-
+				console.log(map_node)
 			 	 for (let index = 0; index < data.cecas.datos.length; index++) {
 
 					const data_ceca = JSON.parse(data.cecas.datos[index].map);
@@ -123,8 +123,12 @@ function map_factory() {
 					if(data_ceca != null && data_ceca.lat !==undefined && data_ceca.lon !==undefined  ){
 					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
 					.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)
-					.on("click", function () {
-						miFuncionPersonalizada(data.cecas.datos[index].name);
+					.on("click", async function () {
+						const monedas = await map_node.cargarMonedasCecas(data.cecas.datos[index].name)
+						while (map_node.rows_container.hasChildNodes()) {
+							map_node.rows_container.removeChild(self.rows_container.lastChild);
+						}
+						map_node.render_rows(data.cecas.datos[index],monedas.result)
 						this.openPopup();  // Abrir popup también
 					});
 					

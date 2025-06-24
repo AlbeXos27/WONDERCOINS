@@ -178,13 +178,13 @@ cargarTodoYCrearMapa : async function(resultado) {
 			}
 		});
 		resultado.cecas.datos = cecas.result;
-
 		self.map_factory_instance = new map_factory();
 		self.map_factory_instance.init({
 			map_container: self.map_container,
 			map_position: [36.5297, -6.2924],
 			source_maps: self.source_maps,
-			result: resultado
+			result: resultado,
+			map_node : this
 		});
 
 	} catch (error) {

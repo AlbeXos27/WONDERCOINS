@@ -1,5 +1,3 @@
-
-
 body, html {
   margin: 0;
   padding: 0;
@@ -7,19 +5,13 @@ body, html {
   height: 100%;
   box-sizing: border-box;
 }
-/*
-#header .logo_big {
-  margin-bottom: -2em !important;
+
+#wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
-#header .logo_big img {
-  height: 10em !important;
-}
-  */
-  #wrapper {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
   
 #main {
   flex: 1 1 auto;
@@ -28,136 +20,209 @@ body, html {
   align-items: center;
   overflow: visible;
   height: auto; /* Asegura que ocupe solo la altura necesaria */
-  margin: 0 auto; /* Centra el contenedor horizontalmente */
-}
-
-#main > .inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  place-items: center;
-  width: 100%;
-  max-width: 100vw;
-  height: auto; /* Asegura que inner ocupe solo la altura necesaria */
-  overflow: visible;
-  padding: 0; /* Elimina padding si no es necesario */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
   margin: 0;
 }
-#main > .inner > :first-child {
-  transform: translateX(-15%); /* Ajusta el valor según el desplazamiento deseado */
+
+
+#footer{
+  margin-top: 0;
 }
-  /*
-  #main h1 {
-    text-align: center;
-    margin-bottom: 1em; 
-  }
-  */
-  #main img {
-    grid-column: 2 / 3;
-    width: 65%; /* La imagen ocupará el ancho completo de la columna */
-    height: auto; /* Mantiene la proporción de la imagen */
-    display: block; /* Evita espacios abajo de la imagen */
-    margin: 0 auto; /* Centra la imagen horizontalmente */
-    margin-left: 30%;
-  }
-  
-#wrapper #main {
-  min-height: calc(100vh - 33rem);
-  height: 80%;
-  padding: 0;
-  padding-top: 5.5%;
-  width: 75%;
-}
-@media (max-width: 736px) {
-  #form_container {
-      grid-column-start: 1;
-      grid-column-end: 3;
-  }
-}
-#form_container {
-  min-height: 117px;
-}
-#search_form {
+
+
+#main > .inner {
+  width: 100%;
+  height: 100%;
   display: flex;
-  padding-top: 1em;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Una sola columna */
+  padding: 0;
+  margin-left: 0;
 }
-#search_form > * {
-  height: 3em;
+
+#wrapper #main {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  position: relative;
+
+  background-image: url("./Moneda_Fondo.png");
+  background-repeat: no-repeat;       /* No repetir la imagen */
+  background-position: calc(100% + 4vw) center;
+  background-size: 100% 110%;      /* Que se ajuste sin deformarse */
+  background-attachment: fixed; 
+
+  transition: opacity 1.0s ease;
 }
-#search_form .form-row {
-  width: 80%;
+
+/*.imagen {
+  position: relative;
+  width: 110%;
+  height: 90vh;  
+  overflow: hidden;
 }
-#search_form .form-group.field.button_submit {
-  margin-top: 0.75em;
-  margin-left: 2em;
+
+.imagen img {
+  position: absolute;
+  top: -5%;
+  left: 45%;
+  transform: translateX(-30%);
+  width: 155%;
+  height: 120%;
+  object-fit: cover;
+}*/
+
+.imagen {
+  display: none;
 }
-.mint_form {
-  flex: 1 !important;
-  padding-right: 0 !important;
+
+button{
+  all: unset;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  width: 5%;
+  height: 12%;
+  margin-top: 3%;
+  background-color:none;
+  outline: none;
+  border-radius: 5px;
+  border: none;
+
+  transition: transform 1.0s ease, opacity 1.0s ease;
 }
+
+button img{
+  width: 100%;
+  height: 100%;
+  filter: brightness(1.2) contrast(1.1); /* Ilumina y realza los colores */
+  transition: filter 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+button img:hover {
+  filter: brightness(1.4) contrast(1.2); /* Más intensidad al pasar el mouse */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05);
+}
+
 @media screen and (max-width: 736px) {
   #main > .inner {
       display: block;
   }
-}
-/*
-#main > .inner .img-wrapper {
-  position: relative;
-  display: block;
-  width: 58%;
-  margin: 0;
-  grid-row-start: 1;
-  grid-row-end: 3;
-  border-bottom: none;
-}
-*/
-@media screen and (max-width: 736px) {
-  #main > .inner .img {
-      min-height: 20rem;
+  .imagen{
+    margin-bottom: 10% !important;
+    margin-top: 7% !important;
+    width: 80% !important;   /* o un ancho fijo si quieres */
+    height: 50% !important;
   }
-}
-@media (max-width: 1024px) {
-  #main img {
-    /* La imagen ocupará el ancho completo de la columna */
-    height: auto; /* Mantiene la proporción de la imagen */
-    display: block; /* Evita espacios abajo de la imagen */
-    margin: 0 auto; /* Centra la imagen horizontalmente */
-  }
-  #main > .inner > :first-child {
-    transform: translateX(0%); /* Ajusta el valor según el desplazamiento deseado */
-  }
-  #main > .inner {
-    display: block;
+  .moneda{
+    width: 60% !important;           /* Tamaño más pequeño */
 
   }
-  em{
-    font-size: 2rem;
-  }
-
 }
+
+
+
 
 @media(max-width: 1280px) {
     #wrapper #main {
         min-height: calc(100vh - 24.9rem); 
          padding-top: 20%;
+          background-image: none;
     }
-}
+    #main > .inner {
+    display: flex;
 
+    }
+    .imagen{
+      width: 30%;   /* o un ancho fijo si quieres */
+      height: 30%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4%;
+      overflow: hidden;
+    }
+
+    .imagen img {
+    width: 100%; 
+    height: 100%; /* Mantiene la proporción de la imagen */
+    display: block; /* Evita espacios abajo de la imagen */
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+    }
+
+    #footer{
+    margin-top: 7%;
+    }
+
+    button{
+      display: none;
+    }
+
+    .siguiente{
+      display: none;
+    }
+
+    .texto{
+      margin-right: 10%;
+    }
+
+    .texto p {
+      font-size: 1.5vh !important;
+    }
+    .texto p em{
+      text-align: left !important;
+    }
+    .texto .image{
+      display: none !important;
+    }
+    .texto .image img{
+      display: none;
+    }
+      
+}
+@media (aspect-ratio <= 4/3) {
+
+  .moneda{
+     /* Ajusta el margen inferior para pantallas con relación de aspecto 4:3 */
+      width: 30%;           /* Tamaño más pequeño */
+      margin-top: 0 !important;
+}
+}
 
 .texto {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  text-align:left;
   z-index: 0;
   grid-column: 1 / 2; /* Asegura que esta columna esté a la izquierda */
-  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  width: 110%; /* Asegura que ocupe todo el ancho disponible */
   height: 100%; /* Asegura que ocupe toda la altura disponible */
   color: #085c54;
-  margin: 0 auto;
-  padding: 0;
+  margin-left: 10%;
+
+  transition: transform 1.0s ease, opacity 1.0s ease;
 }
 
+.texto .image{
+ width: 175px;   /* o un ancho fijo si quieres */
+  height: 175px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4%;
+}
+
+.texto .image img{
+   width: 100%;
+  height: 100%;
+  object-fit: contain;   /* 👈 Asegura que se vea entera sin deformarse */
+  display: block;        /* La imagen ocupará todo el contenedor */
+     /* Si quieres que sea circular */
+}
 
 .texto p{
   width: 100%; /* Asegura que los elementos ocupen todo el ancho del contenedor */
@@ -166,7 +231,7 @@ body, html {
   box-sizing: border-box; /* Incluye el padding dentro del ancho */
   display: flex;
   align-items: center;
-  font-size: 5vh;
+  font-size: 2.0vh;
 }
 
 .texto p em{
@@ -180,26 +245,63 @@ body, html {
   color: #085c54;
 
 }
-/*
-#main > .inner .img-wrapper img {
-  display: block;
+
+
+.opacidad {
+  opacity: 0;
+}
+
+.right{
+  transform: translateX(300px);
+  opacity: 0;
+}
+
+/* Animación para irse a la izquierda */
+.left {
+  transform: translateX(-300px);
+  opacity: 0;
+}
+
+.oculto {
+  display: none;
+}
+
+.ocultar-fondo{
+  opacity: 1;
+  background-image: none !important;
+}
+
+.fondo{
+  opacity: 0;
+  transition: opacity 1.0s ease;
+}
+
+.ima_fondo{
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease;
 }
-#main > .inner .img-wrapper .img-text {
-  text-align: center;
-  margin-right: 2.7em;
+
+.moneda{
+  position: absolute;   /* La colocamos encima */
+  width: 20% ;           /* Tamaño más pequeño */
+  height: auto; 
+  margin-top: 5%;
 }
-#main > .inner .column_right {
-  width: 100%;
+
+
+.fondo.show{
+  opacity: 1;
 }
-#main > .inner p {
-  grid-row-start: 3;
-  grid-row-end: 5;
-}
-@media (max-width: 736px) {
-  #main > .inner p {
-      grid-column-start: 1;
-      grid-column-end: 3;
-  }
-}
-*/
+
+
+/*.background{
+  background-image: url("/web_numisdata/tpl/generic/html/Collage_op.png") !important;
+  background-repeat: no-repeat !important;
+  
+}*/

@@ -39,7 +39,7 @@ var map = {
 
 		map_config : null,
 
-
+		button_state : false,
 
 	/**
 	* SET_UP
@@ -103,53 +103,9 @@ var map = {
 						}
 						};
 
-async function cargarTodoYCrearMapa() {
-	try {
-		const hallazgos = await data_manager.request({
-			body: {
-				dedalo_get: 'records',
-				table: 'findspots',
-				ar_fields: ["*"],
-				sql_filter: "",
-				limit: 0,
-				count: true,
-				offset: 0,
-				order: 'section_id ASC',
-				process_result: null
-			}
-		});
-		resultado.hallazgos.datos = hallazgos.result;
 
-		const cecas = await data_manager.request({
-			body: {
-				dedalo_get: 'records',
-				table: 'mints',
-				ar_fields: ["*"],
-				sql_filter: "",
-				limit: 0,
-				count: true,
-				offset: 0,
-				order: 'name',
-				process_result: null
-			}
-		});
-		resultado.cecas.datos = cecas.result;
 
-		// ✅ Los tres datasets están listos, iniciamos el mapa
-		self.map_factory_instance = new map_factory();
-		self.map_factory_instance.init({
-			map_container: self.map_container,
-			map_position: [36.5297, -6.2924],
-			source_maps: self.source_maps,
-			result: resultado
-		});
-
-	} catch (error) {
-		console.error("Error cargando datos:", error);
-	}
-}
-
-cargarTodoYCrearMapa();
+		this.cargarTodoYCrearMapa(resultado);
 
 
 		// form
@@ -190,7 +146,51 @@ cargarTodoYCrearMapa();
 	},//end set_up
 
 
+cargarTodoYCrearMapa : async function(resultado) {
+	const self = this
+	try {
+		const hallazgos = await data_manager.request({
+			body: {
+				dedalo_get: 'records',
+				table: 'findspots',
+				ar_fields: ["*"],
+				sql_filter: "",
+				limit: 0,
+				count: true,
+				offset: 0,
+				order: 'section_id ASC',
+				process_result: null
+			}
+		});
+		resultado.hallazgos.datos = hallazgos.result;
 
+		const cecas = await data_manager.request({
+			body: {
+				dedalo_get: 'records',
+				table: 'mints',
+				ar_fields: ["*"],
+				sql_filter: "",
+				limit: 0,
+				count: true,
+				offset: 0,
+				order: 'name',
+				process_result: null
+			}
+		});
+		resultado.cecas.datos = cecas.result;
+
+		self.map_factory_instance = new map_factory();
+		self.map_factory_instance.init({
+			map_container: self.map_container,
+			map_position: [36.5297, -6.2924],
+			source_maps: self.source_maps,
+			result: resultado
+		});
+
+	} catch (error) {
+		console.error("Error cargando datos:", error);
+	}
+},
 
 
 
@@ -287,7 +287,7 @@ cargarTodoYCrearMapa();
 			})
 
 		// collection
-			self.form.item_factory({
+		/* 	self.form.item_factory({
 				id			: "collection",
 				name		: "collection",
 				label		: tstring.collection || "collection",
@@ -302,7 +302,7 @@ cargarTodoYCrearMapa();
 						table		: 'coins'
 					})
 				}
-			})
+			}) */
 
 		// // ref_auction
 		// 	self.form.item_factory({
@@ -408,16 +408,15 @@ cargarTodoYCrearMapa();
 			// }else{
 			// 	rows_container.classList.add("loading")
 			// }
-			self.map_container.classList.add("loading")
 
 		return new Promise(function(resolve){
 
-			const ar_fields = ["name","map","section_id"]
+			const ar_fields = ["*"]
 
 			// sql_filter
 
 				const filter = self.form.build_filter()
-				console.log(self.form.form_items) // -----IMPORTANTE-----
+				//console.log(self.form.form_items) // -----IMPORTANTE-----
 				// parse_sql_filter
 				const group			= []
 				const parsed_filter	= self.form.parse_sql_filter(filter, group)
@@ -437,13 +436,57 @@ cargarTodoYCrearMapa();
 				// 		resolve(false)
 				// 	})
 				// }
-				console.log("El sql filter es" + sql_filter)
+
+
+				let table = null
+				let q = null
+				let q_selected = null
+				let label = "name"
+			if(self.form.form_items.mint.q !== "" || self.form.form_items.mint.q_selected.length > 0){
+
+				table = "mints"
+				q = self.form.form_items.mint.q
+				q_selected = self.form.form_items.mint.q_selected
+
+			}else{
+
+				if(self.form.form_items.findspot.q !== "" || self.form.form_items.findspot.q_selected.length > 0){
+
+				table = "findspots"
+				q = self.form.form_items.findspot.q
+				q_selected = self.form.form_items.findspot.q_selected
+				
+				}else{
+
+					if(self.form.form_items.collection.q !== "" || self.form.form_items.collection.q_selected.length > 0){
+
+						table = "coins"
+						q = self.form.form_items.collection.q
+						q_selected = self.form.form_items.collection.q_selected
+						label = "collection"
+					}
+
+				}
+
+			}
+
+
+			let sql_filter_final = ` ${label} LIKE '%${q !== '' ? q : q_selected}%' AND ${label} !=''`
+			if(table == "findspots"){
+				sql_filter_final += " OR typology = tchi2_3"
+			}
+
+			console.log("El sql filter es " + sql_filter_final)
+
+			// HACER LLAMADA A API CON DATA_MANAGER.REQUEST CON EL CAMPO MINT DE LA TABLA COINS -> NOMBRE DE LA CECA PARA RECOGER MONEDA
+
+			if(table){
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
-					table			: 'mints',
+					table			: table,
 					ar_fields		: ar_fields,
-					sql_filter		: `( ${self.form.form_items.mint.q_column} LIKE '%${self.form.form_items.mint.q !== '' ? self.form.form_items.mint.q : self.form.form_items.mint.q_selected}%' AND name !='')`,
+					sql_filter		: sql_filter_final,
 					limit			: 0,
 					count			: false,
 					offset			: 0,
@@ -452,8 +495,8 @@ cargarTodoYCrearMapa();
 					process_result	: null
 				}
 			})
-			.then(function(api_response){
-				console.log("--------------- form_submit api_response:", api_response);
+			.then(async function(api_response){
+				
 				const location = {
 					lon: null,
 					lat: null
@@ -466,16 +509,47 @@ cargarTodoYCrearMapa();
 					location.lat = datos_location.lat;
 					location.lon = datos_location.lon;
 					self.map_factory_instance.move_map_to_point(location)
-					console.log("Macaco")
-					self.render_rows(api_response.result)
+
+					if(api_response.result[0].table == "mints"){
+						const monedas = await self.cargarMonedasCecas(api_response.result[0].name)
+						self.render_rows(api_response.result[0],monedas.result)
+
+					}else{
+
+					self.render_rows(api_response.result[0])
+
+					}
+					
+
 				}
 				
 
 				resolve(true)
-			})
+			})}
 		})
 	},//end form_submit
 
+	cargarMonedasCecas : async function(ceca) {
+		try {
+			const monedas = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'coins',
+					ar_fields: ["*"],
+					sql_filter: `mint_name LIKE '%${ceca}%'`,
+					limit: 15,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return monedas;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
 
 	render_rows : function(row) {
 
@@ -483,14 +557,180 @@ cargarTodoYCrearMapa();
 		
 
 		const fragment = new DocumentFragment()
+		let text_content = null
+		let separador = null
+		if(row.table == "mints"){
+			text_content = "Ceca : " + row.name
+			separador = ","
+		}else{
+			text_content = "Hallazgo : " + row.name
+			separador = "-"
+		}
+
+		const container_titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_title",
+			parent			: fragment
+		})
+
+		const titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle green-color",
+			text_content	: text_content,
+			parent			: container_titulo
+		})
+
+		const imagen = common.create_dom_element({
+			element_type	: "img",
+			class_name		: "imagen",
+			src				: "tpl/assets/images/arrow-right.svg",
+			parent			: container_titulo
+		})
+
+		const separator = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "golden-separator",
+			parent			: fragment
+		})
+		
+		const road = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle mid",
+			text_content	: row.place.split(separador)[0],
+			parent			: fragment
+		})
+
+
+		road.style.display = "none"
+
+		imagen.addEventListener("mousedown", function(){
+
+			if(self.button_state){
+				imagen.style.transform  = "rotate(0deg) translateY(0.75vh)";
+				road.style.display = "none"
+				
+			}else{
+				imagen.style.transform  = "rotate(90deg) translateX(0.75vh)";
+				road.style.display = "block"
+			}
+			self.button_state = !self.button_state
+		})
+
+		self.rows_container.appendChild(fragment)
+
+	},
+
+	render_rows : function(row,coins) {
+
+		const self = this
+		const fragment = new DocumentFragment()
+		let text_content = null
+		let separador = null
+		if(row.table == "mints"){
+			text_content = "Ceca : " + row.name
+			separador = ","
+		}else{
+			text_content = "Hallazgo : " + row.name
+			separador = "-"
+		}
+
+		const container_titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_title",
+			parent			: fragment
+		})
+
+		const titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle green-color",
+			text_content	: text_content,
+			parent			: container_titulo
+		})
+
+		const imagen = common.create_dom_element({
+			element_type	: "img",
+			class_name		: "imagen",
+			src				: "tpl/assets/images/arrow-right.svg",
+			parent			: container_titulo
+		})
+
+		const separator = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "golden-separator",
+			parent			: fragment
+		})
+		
+		const road = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle mid",
+			text_content	: row.place.split(separador)[0],
+			parent			: fragment
+		})
+
+		const text_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "text_coins",
+			text_content	: "Monedas ("+ coins.length + ")" ,
+			parent			: fragment
+		})
 
 		const container_rows = common.create_dom_element({
 			element_type	: "div",
 			class_name		: "container_rows",
-			text_content	: "Ceca",
 			parent			: fragment
-
 		})
+
+		for (let index = 0; index < coins.length; index++) {
+			
+			const info_coin = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "info_coin",
+				parent			: container_rows
+			})
+
+			const container_images = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_images",
+				parent			: info_coin
+			})
+			const parsedCoinData = coins[index];
+			const image_obverse = "https://wondercoins.uca.es" + parsedCoinData.image_obverse
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_observe",
+				src				: image_obverse,
+				parent			: container_images
+			})
+			const image_reverse = "https://wondercoins.uca.es" + parsedCoinData.image_reverse
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_reserve",
+				src				: image_reverse,
+				parent			: container_images
+			})
+			
+		}
+
+
+		road.style.display = "none"
+
+		imagen.addEventListener("mousedown", function(){
+
+			if(self.button_state){
+				imagen.style.transform  = "rotate(0deg) translateY(0.75vh)";
+				road.style.display = "none"
+				
+			}else{
+				imagen.style.transform  = "rotate(90deg) translateX(0.75vh)";
+				road.style.display = "block"
+			}
+			self.button_state = !self.button_state
+		})
+
+
+
+
+
 
 		self.rows_container.appendChild(fragment)
 

@@ -13,4 +13,68 @@
   border: 2px solid #555;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
 }
+
+.line-tittle{
+  font-size: 2em !important
+}
+
+.mid{
+  font-size : 1.5em !important;
+}
+.green-color{
+  color: rgb(0, 95, 84);
+}
+
+.container_title {
+  display: inline-flex;
+  align-items: baseline; /* O center, según lo que se vea mejor */
+  gap: 0.5em; /* Espacio entre texto e imagen */
+}
+.imagen {
+  height: 2em;        /* Escala la imagen al tamaño del texto */
+  width: auto;         /* Mantiene proporción */
+  display: inline-block; /* para que respete bien el tamaño */
+  vertical-align: middle; /* mejor que bottom para centrar */
+  margin-top: 1%;
+  transform: translateY(0.75vh);
+}
+
+.text_coins{
+  padding: 0.5em;
+  padding-left: 1em;
+  margin-bottom: 0.3em;
+  font-size: 1.5em;
+  color: black;
+
+}
+
+.container_rows {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+
+.info_coin{
+  height: 100%;
+  border-right: rgb(0, 95, 84) 2px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.info_coin > .container_images{
+  width: 75%;
+  height: auto;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: center;
+}
+
+.info_coin > .container_images > img{
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  aspect-ratio: 1;
+}
 /*# sourceMappingURL=map.css.map */

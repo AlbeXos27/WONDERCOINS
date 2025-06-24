@@ -173,8 +173,7 @@ function map_factory() {
 
 
 		this.move_map_to_point = function(location){
-			console.log(location)
-			this.map.setView([location.lat, location.lon], 11);
+			this.map.setView([location.lat, location.lon], 14);
 
 		};
 

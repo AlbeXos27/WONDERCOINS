@@ -513,6 +513,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 					if(api_response.result[0].table == "mints"){
 						const monedas = await self.cargarMonedasCecas(api_response.result[0].name)
 						self.render_rows(api_response.result[0],monedas.result)
+						console.log(monedas)
 
 					}else{
 
@@ -626,6 +627,9 @@ cargarTodoYCrearMapa : async function(resultado) {
 		const fragment = new DocumentFragment()
 		let text_content = null
 		let separador = null
+
+		
+
 		if(row.table == "mints"){
 			text_content = "Ceca : " + row.name
 			separador = ","
@@ -667,11 +671,25 @@ cargarTodoYCrearMapa : async function(resultado) {
 			parent			: fragment
 		})
 
-		const text_rows = common.create_dom_element({
+		const container_text_rows = common.create_dom_element({
 			element_type	: "div",
-			class_name		: "text_coins",
-			text_content	: "Monedas ("+ coins.length + ")" ,
+			class_name		: "container_text_rows",
 			parent			: fragment
+		})
+
+		const title_text_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "title_text_rows",
+			text_content	: "Monedas("+coins.length+")",
+			parent			: container_text_rows
+		})
+
+
+		const imagen_flecha_monedas = common.create_dom_element({
+			element_type	: "img",
+			class_name		: "imagen_text_rows",
+			src				: "tpl/assets/images/arrow-right.svg",
+			parent			: container_text_rows
 		})
 
 		const container_rows = common.create_dom_element({
@@ -708,12 +726,60 @@ cargarTodoYCrearMapa : async function(resultado) {
 				src				: image_reverse,
 				parent			: container_images
 			})
+			const container_data = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_data",
+				parent			: info_coin
+			})
+			
+			let weight_text = null
+			if(coins[index].weight != null){
+				weight_text = "Peso: " + coins[index].weight +"g"
+			}else{
+				weight_text= "Peso: N/A"
+			}
+
+			const weight = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "weight",
+				text_content	: weight_text,
+				parent			: container_data
+			})
+			const diameter = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "diameter",
+				text_content	: "Módulo: "+ coins[index].diameter +"mm" ,
+				parent			: container_data
+			})
+
+			const catalogue_type = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "catalogue_type",
+				text_content	: "Colección: "+ coins[index].collection ,
+				parent			: container_data
+			})
+
+			let findspot_text = coins[index].findspot.split(" | ")[0]
+			const findspot = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "findspot",
+				text_content	:  "Hallazgo: "+ findspot_text,
+				parent			: info_coin
+			})
+
+			const tipo = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "type",
+				text_content	:  "Tipo: "+ coins[index].type_full_value,
+				parent			: info_coin
+			})
 			
 		}
 
 
 		road.style.display = "none"
-
+		container_rows.style.display = "none"
+		let container_rows_state = false
 		imagen.addEventListener("mousedown", function(){
 
 			if(self.button_state){
@@ -727,9 +793,18 @@ cargarTodoYCrearMapa : async function(resultado) {
 			self.button_state = !self.button_state
 		})
 
+		imagen_flecha_monedas.addEventListener("mousedown", function(){
 
-
-
+			if(container_rows_state){
+				imagen_flecha_monedas.style.transform  = "rotate(0deg) translateY(0.60vh)";
+				container_rows.style.display = "none"
+				
+			}else{
+				imagen_flecha_monedas.style.transform  = "rotate(90deg) translateX(0.60vh)";
+				container_rows.style.display = "grid"
+			}
+			container_rows_state = !container_rows_state
+		})
 
 
 		self.rows_container.appendChild(fragment)

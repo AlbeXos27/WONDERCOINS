@@ -35,8 +35,16 @@
   width: auto;         /* Mantiene proporción */
   display: inline-block; /* para que respete bien el tamaño */
   vertical-align: middle; /* mejor que bottom para centrar */
-  margin-top: 1%;
   transform: translateY(0.75vh);
+}
+
+
+.imagen_text_rows {
+  height: 1.5em;        /* Escala la imagen al tamaño del texto */
+  width: auto;         /* Mantiene proporción */
+  display: inline-block; /* para que respete bien el tamaño */
+  vertical-align: middle; /* mejor que bottom para centrar */
+  transform: translateY(0.60vh);
 }
 
 .text_coins{
@@ -48,10 +56,24 @@
 
 }
 
+.container_text_rows {
+  display: inline-flex;
+  align-items: baseline; /* O center, según lo que se vea mejor */
+}
+
+.title_text_rows{
+
+  padding: 0.5em;
+  padding-left: 1em;
+  margin-bottom: 0.3em;
+  font-size: 1.5em;
+  color: black;
+}
+
 .container_rows {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0;
 }
 
@@ -61,6 +83,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-bottom: black 1px solid;
+  border-top: black 1px solid;
+  border-left: black 1px solid;
 }
 
 .info_coin > .container_images{
@@ -69,6 +94,8 @@
   display: grid;
   grid-template-columns: auto auto;
   justify-content: center;
+  padding-bottom: 2%;
+  padding-top: 2%;
 }
 
 .info_coin > .container_images > img{
@@ -76,5 +103,47 @@
   height: auto;
   object-fit: contain;
   aspect-ratio: 1;
+  padding-top: 1%;
+  padding-bottom: 1%;
 }
 /*# sourceMappingURL=map.css.map */
+#wrapper .inner{
+  max-width: 100%;
+}
+
+.container_data{
+  width: 100%;
+  display: grid;
+  margin: 0;
+  min-height: 8vh;
+  justify-content: center;
+  align-items: center;
+  grid-template-columns: repeat(3,1fr);
+  border-top: 1px solid black;
+  padding-top: 1%;
+  border-bottom: 1px solid black;
+  padding-bottom: 1%;
+}
+
+.container_data > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* máximo de 2 líneas */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2em; /* puedes ajustar esto si lo necesitas */
+  max-height: calc(1.2em * 2); /* 2 líneas de altura */
+}
+
+
+
+
+.findspot{
+  align-self: start;
+}
+
+
+
+h1{
+  margin-top: 5vh;
+}

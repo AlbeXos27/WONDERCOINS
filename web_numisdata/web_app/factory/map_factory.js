@@ -30,7 +30,7 @@ function map_factory() {
 
 		if (!containerElement) {
 			console.error("Contenedor del mapa no válido.");
-			return;
+			return;// FILTRO PARA HALLAZGOS ESTA BUGGED NO SE PORQUE?
 		}
 
 		// Crear el mapa con Leaflet centrado en Cádiz

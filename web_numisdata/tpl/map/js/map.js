@@ -272,9 +272,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 				label			: tstring.mint || "mint",
 				q_column		: "name",
 				value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
-				eq				: "LIKE",
-				eq_in			: "%",
-				eq_out			: "%",
+				sql_filter		: ` name LIKE '%%' AND name !='' `	, // FILTRO PARA HALLAZGOS ESTA BUGGED NO SE PORQUE?
 				is_term			: true,
 				q_selected_eq	: "LIKE",
 				parent			: form_row,
@@ -330,9 +328,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 				name		: "findspot",
 				label		: tstring.findspot || "findspot",
 				q_column	: "name",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
+				sql_filter	: ` name LIKE 'C%' AND name !='' `, // FILTRO PARA CECAS AUNQUE SEA HALLAZGOS ESTA BUGGED NO SE PORQUE?
+				q_selected_eq	: "LIKE",
 				parent		: form_row,
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
@@ -455,6 +452,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 				table = "findspots"
 				q = self.form.form_items.findspot.q
 				q_selected = self.form.form_items.findspot.q_selected
+
+
 				
 				}else{
 
@@ -472,11 +471,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 
 			let sql_filter_final = ` ${label} LIKE '%${q !== '' ? q : q_selected}%' AND ${label} !=''`
-			if(table == "findspots"){
-				sql_filter_final += " OR typology = tchi2_3"
-			}
 
-			console.log("El sql filter es " + sql_filter_final)
+			console.log("El sql filter es " + sql_filter_final + " " + table)
 
 			// HACER LLAMADA A API CON DATA_MANAGER.REQUEST CON EL CAMPO MINT DE LA TABLA COINS -> NOMBRE DE LA CECA PARA RECOGER MONEDA
 
@@ -513,11 +509,10 @@ cargarTodoYCrearMapa : async function(resultado) {
 					if(api_response.result[0].table == "mints"){
 						const monedas = await self.cargarMonedasCecas(api_response.result[0].name)
 						self.render_rows(api_response.result[0],monedas.result)
-						console.log(monedas)
 
 					}else{
 
-					self.render_rows(api_response.result[0])
+					self.render_rows_hallazgo(api_response.result[0])
 
 					}
 					
@@ -552,10 +547,10 @@ cargarTodoYCrearMapa : async function(resultado) {
 		}
 	},
 
-	render_rows : function(row) {
+	render_rows_hallazgo : function(row) {
 
 		const self = this
-		
+		console.log(row)
 
 		const fragment = new DocumentFragment()
 		let text_content = null

@@ -328,7 +328,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 				name		: "findspot",
 				label		: tstring.findspot || "findspot",
 				q_column	: "name",
-				sql_filter	: ` name LIKE 'C%' AND name !='' `, // FILTRO PARA CECAS AUNQUE SEA HALLAZGOS ESTA BUGGED NO SE PORQUE?
+				sql_filter	: ` name LIKE '%%' AND name !='' `, // FILTRO PARA CECAS AUNQUE SEA HALLAZGOS ESTA BUGGED NO SE PORQUE?
 				q_selected_eq	: "LIKE",
 				parent		: form_row,
 				callback	: function(form_item) {
@@ -512,6 +512,9 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 					}else{
 
+					const hijosHallazgos = await self.cargarHijosHallazgos(api_response.result[0].section_id)
+					const tamañoshijosHallazgos = hijosHallazgos
+					console.log(tamañoshijosHallazgos)
 					self.render_rows_hallazgo(api_response.result[0])
 
 					}
@@ -541,6 +544,27 @@ cargarTodoYCrearMapa : async function(resultado) {
 				}
 			});
 			return monedas;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
+	cargarHijosHallazgos : async function(hallazgo) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'findspots',
+					ar_fields: ["*"],
+					sql_filter: `parents LIKE '%"${hallazgo}"%'`,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
 
 		} catch (error) {
 			console.error("Error cargando datos:", error);

@@ -511,18 +511,14 @@ cargarTodoYCrearMapa : async function(resultado) {
 						self.render_rows(api_response.result[0],monedas.result)
 
 					}else{
-
-					const hijosHallazgos = await self.cargarHijosHallazgos(api_response.result[0].section_id)
-					const tamañoshijosHallazgos = hijosHallazgos
-					console.log(tamañoshijosHallazgos)
-					self.render_rows_hallazgo(api_response.result[0])
+						
+						await self.render_rows_hallazgo(api_response.result[0])
 
 					}
 					
 
 				}
 				
-
 				resolve(true)
 			})}
 		})
@@ -570,12 +566,53 @@ cargarTodoYCrearMapa : async function(resultado) {
 			console.error("Error cargando datos:", error);
 		}
 	},
+	createfindspot_Tree : async function (findspot){
 
-	render_rows_hallazgo : function(row) {
+		const findspots_tree = []
+		const findspot_sons = await this.cargarHijosHallazgos(findspot.section_id)
+		findspots_tree.push({info_nodo: findspot, padre : null})
+
+		for (let index = 0; index < findspot_sons.result.length; index++) {
+
+			const parent_node = JSON.parse(findspot_sons.result[index].parents)
+			findspots_tree.push({ info_nodo: findspot_sons.result[index], padre: parent_node[0]});
+						
+		}
+
+		return findspots_tree
+
+	},
+	generate_Tree : function(tree,node,node_parent,padding){
+
+	
+		const info_node = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "container_prueba",
+					text_content	: node.info_nodo.name,
+					parent			: node_parent
+		})
+		info_node.style.paddingLeft = `${padding}em`
+		if(node.info_nodo.children == null){
+
+
+		}else{
+
+			for (let index = 0; index < tree.length; index++) {
+				if (tree[index].info_nodo.parent == '["'+node.info_nodo.section_id+'"]') {
+					
+					tree[index].padre = "'"+node.info_nodo.section_id+"'"
+					this.generate_Tree(tree,tree[index],info_node,1.5)
+				}
+				
+			}
+
+		}
+
+	},
+
+	render_rows_hallazgo : async function(row) {
 
 		const self = this
-		console.log(row)
-
 		const fragment = new DocumentFragment()
 		let text_content = null
 		let separador = null
@@ -620,6 +657,12 @@ cargarTodoYCrearMapa : async function(resultado) {
 			parent			: fragment
 		})
 
+
+		const findspot_tree = await this.createfindspot_Tree(row)
+
+		console.log(findspot_tree)
+
+		this.generate_Tree(findspot_tree,findspot_tree[0],fragment,0)
 
 		road.style.display = "none"
 

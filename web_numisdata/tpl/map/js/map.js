@@ -505,17 +505,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 					location.lat = datos_location.lat;
 					location.lon = datos_location.lon;
 					self.map_factory_instance.move_map_to_point(location)
-
-					if(api_response.result[0].table == "mints"){
-						const monedas = await self.cargarMonedasCecas(api_response.result[0].name)
-						self.render_rows(api_response.result[0],monedas.result)
-
-					}else{
-						
-						await self.render_rows_hallazgo(api_response.result[0])
-
-					}
-					
+					self.render_rows(api_response.result[0])
 
 				}
 				
@@ -610,19 +600,28 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 	},
 
+	render_rows : async function(row){
+
+		if(row.table === "mints"){
+			const coins = await this.cargarMonedasCecas(row.name)
+			await this.render_rows_cecas(row,coins.result)
+		}else{
+			await this.render_rows_hallazgo(row)
+		}
+
+
+	},
+
 	render_rows_hallazgo : async function(row) {
 
 		const self = this
 		const fragment = new DocumentFragment()
 		let text_content = null
 		let separador = null
-		if(row.table == "mints"){
-			text_content = "Ceca : " + row.name
-			separador = ","
-		}else{
-			text_content = "Hallazgo : " + row.name
-			separador = "-"
-		}
+
+		text_content = "Hallazgo : " + row.name
+		separador = "-"
+		
 
 		const container_titulo = common.create_dom_element({
 			element_type	: "div",
@@ -683,22 +682,16 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 	},
 
-	render_rows : function(row,coins) {
+	render_rows_cecas : async function(row,coins) {
 
 		const self = this
 		const fragment = new DocumentFragment()
 		let text_content = null
 		let separador = null
 
-		
+		text_content = "Ceca : " + row.name
+		separador = ","
 
-		if(row.table == "mints"){
-			text_content = "Ceca : " + row.name
-			separador = ","
-		}else{
-			text_content = "Hallazgo : " + row.name
-			separador = "-"
-		}
 
 		const container_titulo = common.create_dom_element({
 			element_type	: "div",
@@ -834,6 +827,20 @@ cargarTodoYCrearMapa : async function(resultado) {
 				class_name		: "type",
 				text_content	:  "Tipo: "+ coins[index].type_full_value,
 				parent			: info_coin
+			})
+
+			const container_links = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_links",
+				parent			: info_coin
+			})
+
+			const type_link = common.create_dom_element({
+				element_type	: "a",
+				class_name		: "type_link",
+				href			: "/web_numisdata/type/"+ coins[index].type,
+				text_content	: "TIPO",
+				parent			: container_links
 			})
 			
 		}

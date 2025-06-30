@@ -95,13 +95,17 @@ function map_factory() {
 				console.log("Se hizo clic en:", tipo);
 				// Aquí puedes hacer cualquier otra lógica
 				}
-			
-				
+				console.log(data.hallazgos.datos.length)
 				for (let index = 0; index < data.hallazgos.datos.length; index++) {
+					let data_ceca = null
+					try {
+						 data_ceca = JSON.parse(data.hallazgos.datos[index].map)
+					} catch (error) {
+						data_ceca  = data.hallazgos.datos[index].map
+					}
+					
 
-					const data_ceca = JSON.parse(data.hallazgos.datos[index].map);
 					if(data_ceca != null){
-
 					const markerHallazgo = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoHallazgo })
 					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
 					.on("click", function () {
@@ -114,12 +118,11 @@ function map_factory() {
 					}
 
 				}
-
-				console.log(map_node)
+				
 			 	 for (let index = 0; index < data.cecas.datos.length; index++) {
 
 					const data_ceca = JSON.parse(data.cecas.datos[index].map);
-
+					
 					if(data_ceca != null && data_ceca.lat !==undefined && data_ceca.lon !==undefined  ){
 					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
 					.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)

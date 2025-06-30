@@ -64,42 +64,16 @@ var map = {
 			self.export_data_container.appendChild(export_data_buttons)
 			self.export_data_container.classList.add('hide')
 
-		// map
-			self.source_maps = [
-
-				{
-					name	: "OSM",
-					url		: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-					options	: {
-						maxZoom	: 19
-					}
-				},
-				{
-					name	: 'Map Tiles',
-					// url	: 'https://api.maptiler.com/maps/basic/{z}/{x}/{y}@2x.png?key=udlBrEEE2SPm1In5dCNb', // 512 ...
-					url		: 'https://api.maptiler.com/maps/basic/256/{z}/{x}/{y}@2x.png?key=udlBrEEE2SPm1In5dCNb', // 256 ok
-					// url	: 'https://api.maptiler.com/maps/9512807c-ffd5-4ee0-9781-c354711d15e5/style.json?key=udlBrEEE2SPm1In5dCNb', // vector grey
-					options	: {
-						maxZoom	: 20
-					},
-					default	: true
-				},
-				{
-					name	: "ARCGIS",
-					url		: '//server.arcgisonline.com/ArcGIS/' + 'rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-					options	: {}
-				}
-			]
 
 						let resultado = {
 						hallazgos: {
-							datos: null
+							datos: []
 						},
 						cecas: {
-							datos: null
+							datos: []
 						},
 						complejo: {
-							datos: null
+							datos: []
 						}
 						};
 
@@ -182,7 +156,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 		self.map_factory_instance.init({
 			map_container: self.map_container,
 			map_position: [36.5297, -6.2924],
-			source_maps: self.source_maps,
+			source_maps: page.maps_config.source_maps,
 			result: resultado,
 			map_node : this
 		});

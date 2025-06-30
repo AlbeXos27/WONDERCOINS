@@ -281,12 +281,13 @@ var hoards =  {
 				// 		resolve(false)
 				// 	})
 				// }
+				console.log(sql_filter)
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
 					table			: table,
 					ar_fields		: ar_fields,
-					sql_filter		: sql_filter,
+					sql_filter		: `name !='' ` ,
 					limit			: limit,
 					count			: count,
 					offset			: offset,
@@ -302,7 +303,6 @@ var hoards =  {
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
 					const total	= api_response.total
-
 					self.pagination.total	= total
 					self.pagination.offset	= offset
 

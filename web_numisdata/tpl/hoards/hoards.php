@@ -7,7 +7,8 @@
 		array_unshift(page::$css_ar_url,
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/markercluster/MarkerCluster.css',
-			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/fullscreen/leaflet.fullscreen.css'
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/fullscreen/leaflet.fullscreen.css',
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.css'
 		);
 
 
@@ -17,6 +18,7 @@
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.js';
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/markercluster/leaflet.markercluster.js';
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/fullscreen/Leaflet.fullscreen.min.js';
+		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.js';
 		// page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/mints/js/mints'.JS_SUFFIX.'.js';
 		// page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/mint/js/mint_row'.JS_SUFFIX.'.js';
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/hoards/js/render_hoards'.JS_SUFFIX.'.js';

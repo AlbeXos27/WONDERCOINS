@@ -22,7 +22,20 @@ var render_hoards = {
 		
 
 		if (row.name !== null && row.name.length>0){
-
+			
+			let resultado = {
+						hallazgos: {
+							datos: []
+						},
+						cecas: {
+							datos: []
+						},
+						complejo: {
+							datos: []
+						}
+						};
+				
+						resultado.hallazgos.datos.push(row)
 
 			const wrapper = common.create_dom_element({
 				element_type	: "div",
@@ -33,7 +46,7 @@ var render_hoards = {
 			// map_wrapper
 				const map_wrapper = common.create_dom_element({
 					element_type 	: "div",
-					class_name		: "map_wrapper hide_opacity",
+					class_name		: "map_wrapper",
 					parent 			: wrapper
 				})
 				if (row.map) {
@@ -51,33 +64,10 @@ var render_hoards = {
 								map.init({
 									map_container		: map_wrapper,
 									map_position		: map_position,
-									popup_builder		: page.map_popup_builder,
-									popup_options		: page.maps_config.popup_options,
 									source_maps			: page.maps_config.source_maps,
-									add_layer_control	: false // removes layer selector button
+									result				: resultado
 								})
-								// draw points
-									let map_data_clean
-									if (row.georef_geojson) {
-										// from geojson
-										const popup_data = {
-											section_id	: row.section_id,
-											title		: row.name,
-											description	: row.public_info.trim(),
-											type		: row.table==='findspots'
-												? 'findspot'
-												: 'hoard'
-										}
-										map_data_clean = hoards.map_data_geojson(row.georef_geojson, popup_data)
-									}else{
-										// from single map point
-										map_data_clean = hoards.map_data_point(row.map, row.name)
-									}
-
-								map.parse_data_to_map(map_data_clean, null)
-								.then(function(){
-									container.classList.remove("hide_opacity")
-								})
+								
 							}
 						}, { threshold: [0] });
 						observer.observe(map_wrapper);

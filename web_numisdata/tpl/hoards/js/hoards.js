@@ -287,7 +287,7 @@ var hoards =  {
 					dedalo_get		: 'records',
 					table			: table,
 					ar_fields		: ar_fields,
-					sql_filter		: `name !='' ` ,
+					sql_filter		: `name !='' AND map != ''` ,
 					limit			: limit,
 					count			: count,
 					offset			: offset,

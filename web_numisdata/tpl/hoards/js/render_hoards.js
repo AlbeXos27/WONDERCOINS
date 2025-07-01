@@ -19,9 +19,7 @@ var render_hoards = {
 		const fragment = new DocumentFragment()
 
 		// wrapper
-		
-
-		if (row.name !== null && row.name.length>0){
+	
 			
 			let resultado = {
 						hallazgos: {
@@ -36,7 +34,7 @@ var render_hoards = {
 						};
 				
 						resultado.hallazgos.datos.push(row)
-
+			console.log(row)
 			const wrapper = common.create_dom_element({
 				element_type	: "div",
 				class_name		: "row_wrapper",
@@ -123,7 +121,7 @@ var render_hoards = {
 				// total_coins
 					if (row.coins && row.coins.length>0) {
 						const n_coins = row.coins.length
-						common.create_dom_element ({
+						const total_coins = common.create_dom_element ({
 							element_type	: 'span',
 							class_name		: '',
 							inner_html		: (tstring.total_coins || 'Total coins') + ': ' + n_coins,
@@ -131,15 +129,37 @@ var render_hoards = {
 						})
 					}
 
-				// public_info
-					// const public_info = row.public_info || ""
-					// common.create_dom_element ({
-					// 	element_type	: "span",
-					// 	inner_html		: public_info,
-					// 	class_name		: "",
-					// 	parent			: info_text_wrap
-					// })
+					if(row.date_in != null || row.date_out != null){
+							
+						common.create_dom_element ({
+							element_type	: 'span',
+							class_name		: '',
+							inner_html		: ('Cronologia del tipo : ( ') + (row.date_in != null ? row.date_in : "N/A") + " / " + (row.date_out != null ? row.date_out : "N/A") + ")",
+							parent			: info_wrap
+						})
+					}
 
+
+					
+					/* if(row.date_in != null || row.date_out != null){
+							
+						common.create_dom_element ({
+							element_type	: 'span',
+							class_name		: '',
+							inner_html		: ('Cronologia del tipo : ( ') + (row.date_in != null ? row.date_in : "N/A") + " / " + (row.date_out != null ? row.date_out : "N/A") + ")",
+							parent			: info_wrap
+						})
+					}
+					*/ 
+
+					/*  const public_info = row.public_info || ""
+					 common.create_dom_element ({
+					 	element_type	: "span",
+					 	inner_html		: '\n'+public_info,
+						class_name		: "",
+					 	parent			: info_wrap
+					 })
+ */
 				// link
 					// const link = row.link || ''
 					// common.create_dom_element ({
@@ -150,7 +170,7 @@ var render_hoards = {
 					// 	target			: '_blank',
 					// 	parent			: info_text_wrap
 					// })
-		}
+		
 
 
 		return fragment

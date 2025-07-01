@@ -95,7 +95,6 @@ function map_factory() {
 				console.log("Se hizo clic en:", tipo);
 				// Aquí puedes hacer cualquier otra lógica
 				}
-				console.log(data.hallazgos.datos.length)
 				for (let index = 0; index < data.hallazgos.datos.length; index++) {
 					let data_ceca = null
 					try {

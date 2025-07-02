@@ -509,6 +509,27 @@ cargarTodoYCrearMapa : async function(resultado) {
 			console.error("Error cargando datos:", error);
 		}
 	},
+	cargarMonedasHallazgos : async function(ceca) {
+		try {
+			const monedas = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'coins',
+					ar_fields: ["*"],
+					sql_filter: `findspot LIKE '%${ceca}%'`,
+					limit: 15,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return monedas;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
 	cargarHijosHallazgos : async function(hallazgo) {
 		try {
 			const hijos = await data_manager.request({
@@ -546,7 +567,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 		return findspots_tree
 
 	},
-	generate_Tree : function(tree,node,node_parent,padding){
+	generate_Tree : async function(tree,node,node_parent,padding){
 
 	
 		const info_node = common.create_dom_element({
@@ -555,22 +576,131 @@ cargarTodoYCrearMapa : async function(resultado) {
 					text_content	: node.info_nodo.name,
 					parent			: node_parent
 		})
+		
 		info_node.style.paddingLeft = `${padding}em`
-		if(node.info_nodo.children == null){
+
+		if(node.info_nodo.coins != null){
+						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
+						const container_rows = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "container_rows",
+							parent			: info_node
+						})
+						container_rows.style.paddingLeft = `${1}em`
+						this.generate_rows_findspot(container_rows,coins.result)
+		}
 
 
-		}else{
+		if(node.info_nodo.children != null){
 
-			for (let index = 0; index < tree.length; index++) {
+				for (let index = 0; index < tree.length; index++) {
 				if (tree[index].info_nodo.parent == '["'+node.info_nodo.section_id+'"]') {
 					
 					tree[index].padre = "'"+node.info_nodo.section_id+"'"
-					this.generate_Tree(tree,tree[index],info_node,1.5)
+					await this.generate_Tree(tree,tree[index],info_node,1.5)
 				}
 				
 			}
-
 		}
+
+	},
+
+
+/*  */
+
+	generate_rows_findspot : function(parent,coins){
+			for (let index = 0; index < coins.length; index++) {
+			
+			const info_coin = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "info_coin",
+				parent			: parent
+			})
+
+			const container_images = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_images",
+				parent			: info_coin
+			})
+			const parsedCoinData = coins[index];
+			const image_obverse = "https://wondercoins.uca.es" + parsedCoinData.image_obverse
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_observe",
+				src				: image_obverse,
+				parent			: container_images
+			})
+			const image_reverse = "https://wondercoins.uca.es" + parsedCoinData.image_reverse
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_reserve",
+				src				: image_reverse,
+				parent			: container_images
+			})
+			const container_data = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_data",
+				parent			: info_coin
+			})
+			
+			let weight_text = null
+			if(coins[index].weight != null){
+				weight_text = "Peso: " + coins[index].weight +"g"
+			}else{
+				weight_text= "Peso: N/A"
+			}
+
+			const weight = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "weight",
+				text_content	: weight_text,
+				parent			: container_data
+			})
+			const diameter = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "diameter",
+				text_content	: "Módulo: "+ coins[index].diameter +"mm" ,
+				parent			: container_data
+			})
+
+			const catalogue_type = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "catalogue_type",
+				text_content	: "Colección: "+ coins[index].collection ,
+				parent			: container_data
+			})
+
+			let findspot_text = coins[index].findspot.split(" | ")[0]
+			const findspot = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "findspot",
+				text_content	:  "Hallazgo: "+ findspot_text,
+				parent			: info_coin
+			})
+
+			const tipo = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "type",
+				text_content	:  "Tipo: "+ coins[index].type_full_value,
+				parent			: info_coin
+			})
+
+			const container_links = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_links",
+				parent			: info_coin
+			})
+
+			const type_link = common.create_dom_element({
+				element_type	: "a",
+				class_name		: "type_link",
+				href			: "/web_numisdata/type/"+ coins[index].type,
+				text_content	: "TIPO",
+				parent			: container_links
+			})
+			
+		}
+
 
 	},
 
@@ -632,10 +762,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 
 		const findspot_tree = await this.createfindspot_Tree(row)
-
-		console.log(findspot_tree)
-
-		this.generate_Tree(findspot_tree,findspot_tree[0],fragment,0)
+		await this.generate_Tree(findspot_tree,findspot_tree[0],fragment,0)
 
 		road.style.display = "none"
 
@@ -655,6 +782,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 		self.rows_container.appendChild(fragment)
 
 	},
+
+	
 
 	render_rows_cecas : async function(row,coins) {
 

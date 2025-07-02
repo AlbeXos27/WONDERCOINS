@@ -911,6 +911,7 @@ body {
   letter-spacing: 0.5px;
   font-weight: 200;
   overflow-x: hidden;
+  margin: 0;
 }
 /*
 a {
@@ -1011,6 +1012,10 @@ nav ul {
 #wrapper {
   background: white;
   background-image: url('../../assets/images/overlay_white.png');
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+
 }
 
 #wrapper #main {

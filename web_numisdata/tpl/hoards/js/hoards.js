@@ -179,7 +179,46 @@ var hoards =  {
 					})
 				}
 			})
-
+		// typology
+			self.form.item_factory({
+				id			: "typology",
+				name		: "typology",
+				label		: tstring.typology || "Typology",
+				q_column	: "typology",
+				eq			: "LIKE",
+				eq_in		: "%",
+				eq_out		: "%",
+				parent		: form_row,
+				callback	: function(form_item) {
+					const table = self.table==='publications' // hoards | findspots
+						? 'publications'
+						: 'publications'
+					self.form.activate_autocomplete({
+						form_item	: form_item,
+						table		: table
+					})
+				}
+			})
+		// indexation
+			self.form.item_factory({
+				id			: "indexation",
+				name		: "indexation",
+				label		: tstring.indexation || "Indexation",
+				q_column	: "indexation",
+				eq			: "LIKE",
+				eq_in		: "%",
+				eq_out		: "%",
+				parent		: form_row,
+				callback	: function(form_item) {
+					const table = self.table==='findspots' // hoards | findspots
+						? 'findspots'
+						: 'hoards'
+					self.form.activate_autocomplete({
+						form_item	: form_item,
+						table		: table
+					})
+				}
+			})
 		// submit button
 			const submit_group = common.create_dom_element({
 				element_type	: "div",
@@ -261,18 +300,24 @@ var hoards =  {
 			const resolve_portals_custom = {
 				"bibliography_data" : "bibliographic_references"
 			}
-			
-			// sql_filter
-				const filter = self.form.build_filter()
+
+			//sql_filter
+			const filter = self.form.build_filter()
 				// parse_sql_filter
 				const group			= []
 				const parsed_filter	= self.form.parse_sql_filter(filter, group)
+				const base_filter = "(name != '' AND map != '')"
+				let final_filter = base_filter
 				const sql_filter	= parsed_filter
 					? '(' + parsed_filter + ')'
 					: null
 				if(SHOW_DEBUG===true) {
 					console.log("-> coins form_submit sql_filter:",sql_filter);
 				}
+				if (sql_filter) {
+					final_filter = base_filter + ' AND ' + sql_filter
+				}
+			
 				// if (!sql_filter|| sql_filter.length<3) {
 				// 	return new Promise(function(resolve){
 				// 		// loading ends
@@ -287,7 +332,7 @@ var hoards =  {
 					dedalo_get		: 'records',
 					table			: table,
 					ar_fields		: ar_fields,
-					sql_filter		: `name !='' AND map != ''` ,
+					sql_filter		: final_filter ,
 					limit			: limit,
 					count			: count,
 					offset			: offset,

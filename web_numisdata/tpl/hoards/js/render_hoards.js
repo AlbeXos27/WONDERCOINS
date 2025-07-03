@@ -18,10 +18,13 @@ var render_hoards = {
 
 		const fragment = new DocumentFragment()
 
+		
+
+
+
 		// wrapper
-	
 			
-			let resultado = {
+			/* let resultado = {
 						hallazgos: {
 							datos: []
 						},
@@ -34,7 +37,6 @@ var render_hoards = {
 						};
 				
 						resultado.hallazgos.datos.push(row)
-			console.log(row)
 			const wrapper = common.create_dom_element({
 				element_type	: "div",
 				class_name		: "row_wrapper",
@@ -171,7 +173,7 @@ var render_hoards = {
 					// 	parent			: info_text_wrap
 					// })
 		
-
+ 
 
 		return fragment
 	}//end draw_item

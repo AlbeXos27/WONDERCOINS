@@ -293,8 +293,6 @@ var hoards =  {
 				? 'findspots'
 				: 'hoards'
 			const ar_fields	= ['*']
-			const limit		= self.pagination.limit
-			const offset	= self.pagination.offset
 			const count		= true
 			const order		= "name"
 			const resolve_portals_custom = {
@@ -333,9 +331,9 @@ var hoards =  {
 					table			: table,
 					ar_fields		: ar_fields,
 					sql_filter		: final_filter ,
-					limit			: limit,
+					limit			: 0,
 					count			: count,
-					offset			: offset,
+					offset			: 0,
 					order			: order,
 					process_result	: null,
 					resolve_portals_custom : resolve_portals_custom,
@@ -348,8 +346,7 @@ var hoards =  {
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
 					const total	= api_response.total
-					self.pagination.total	= total
-					self.pagination.offset	= offset
+					const random = Math.floor(Math.random() * (total));
 
 					if (!data) {
 						rows_container.classList.remove("loading")
@@ -363,22 +360,61 @@ var hoards =  {
 						}
 						rows_container.classList.remove("loading")
 					})()
+					const estructura = common.create_dom_element({
+						element_type	: "div",
+						class_name		: "grid-stack",
+						parent			: rows_container
+					})
 
-				// render
-					self.list = self.list || new list_factory() // creates / get existing instance of list
-					self.list.init({
-						data			: data,
-						fn_row_builder	: self.list_row_builder,
-						pagination		: self.pagination,
-						caller			: self
-					})
-					self.list.render_list()
-					.then(function(list_node){
-						if (list_node) {
-							rows_container.appendChild(list_node)
+					const grid = GridStack.init(estructura);
+					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[200].name}`})
+					const contentDiv = titulo.querySelector('.grid-stack-item-content');
+					contentDiv.id = "titulo-ficha";
+
+					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[200].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
+					img_ident.id = "img_ident"
+
+
+								const map = new map_factory() // creates / get existing instance of map
+								
+
+					grid.addWidget({w:4,h:10,content: ""})
+					grid.addWidget({w:4,h:4,content: `${api_response.result[200].public_info}`})
+					const ubicacion=grid.addWidget({w:2,h:2,content: ``}) //ubicacion
+
+					 let resultado = {
+						hallazgos: {
+							datos: []
+						},
+						cecas: {
+							datos: []
+						},
+						complejo: {
+							datos: []
 						}
-						resolve(list_node)
-					})
+						};
+				
+						resultado.hallazgos.datos.push(api_response.result[200])
+
+
+					map.init({
+									map_container		: ubicacion,
+									map_position		: api_response.result[200].map,
+									source_maps			: page.maps_config.source_maps,
+									result				: resultado,
+									findspot			: true
+								})
+
+					grid.addWidget({w:2,h:2,content: ``}) //imagenes
+					grid.addWidget({w:2,h:1,content: ``})
+					grid.addWidget({w:2,h:1,content: ``})
+					grid.addWidget({w:2,h:1,content: ``})
+					grid.addWidget({w:2,h:1,content: ``})
+					grid.addWidget({w:4,h:1,content: ``})
+					grid.addWidget({w:8,h:4,content: `${api_response.result[200].public_info}`})
+					grid.addWidget({w:8,h:3,content: ``})
+					grid.addWidget({w:4,h:3,content: ``})
 			})
 
 			// scrool to head result
@@ -387,101 +423,7 @@ var hoards =  {
 				div_result.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
 			}
 		})
-	},//end form_submit
-
-
-
-	/**
-	* LIST_ROW_BUILDER
-	* This function is a callback defined when list_factory is initialized (!)
-	* @param object data (db row parsed)
-	* @param object caller (instance of class caller like coin)
-	* @return DocumentFragment node
-	*/
-	list_row_builder : function(data){
-
-		const self = this
-
-		return render_hoards.draw_item(data)
-	},//end list_row_builder
-
-
-
-	/**
-	* MAP_DATA_geojson
-	* Parses row.geojson points
-	* @return array map_points
-	*/
-	map_data_geojson : function(data, popup_data) {
-		// console.log("data:",data);
-		// console.log("popup_data:",popup_data);
-
-		const markerIcon = (function(){
-			switch(popup_data.type) {
-				case 'findspot':
-					return page.maps_config.markers.findspot
-				case 'hoard':
-					return page.maps_config.markers.hoard
-				default:
-					return page.maps_config.markers.mint
-			}
-		})()
-
-		const ar_data = Array.isArray(data)
-			? data
-			: [data]
-
-		const map_points = []
-		for (let i = 0; i < ar_data.length; i++) {
-
-			const geojson = [ar_data[i]]
-
-			const item = {
-				lat			: null,
-				lon			: null,
-				geojson		: geojson,
-				marker_icon	: markerIcon,
-				data		: popup_data
-			}
-			map_points.push(item)
-		}
-		// console.log("--map_data_geojson map_points:",map_points);
-
-		return map_points
-	},//end map_data_geojson
-
-
-
-	/**
-	* MAP_DATA_POINT
-	* Parses row.map point
-	* @return object data_clean
-	*/
-	map_data_point : function(data, name) {
-
-		const ar_data = Array.isArray(data)
-			? data
-			: [data]
-
-		const data_clean = []
-		for (let i = 0; i < ar_data.length; i++) {
-
-			const item = {
-				lat			: ar_data[i].lat,
-				lon			: ar_data[i].lon,
-				marker_icon	: page.maps_config.markers.hoard,
-				data		: {
-					section_id	: null,
-					title		: name, // provisional
-					description	: ' '
-				}
-			}
-			data_clean.push(item)
-		}
-
-		return data_clean
-	},//end map_data_point
-
+	}//end form_submit
 
 
 }//end hoards

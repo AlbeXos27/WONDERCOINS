@@ -13,6 +13,7 @@ function map_factory() {
 	this.map = null
 	this.map_node = null
 	this.result = null
+	this.findspot = false
 
 	this.init = function(options) {
 
@@ -23,6 +24,7 @@ function map_factory() {
 		self.popup_options  = options.popup_options  || {};
 		self.source_maps    = options.source_maps    || [];
 		self.result = options.result || null;
+		self.findspot = options.findspot || false;
 		// Asegurarte de obtener el elemento DOM
 		const containerElement = typeof self.map_container === "string"
 			? document.getElementById(self.map_container)
@@ -37,13 +39,20 @@ function map_factory() {
 		self.map = L.map(containerElement).setView(self.map_position, 8);
 		self.add_layer_control(self.map,self.source_maps)
 		// (Opcional) Añadir capa base (por ejemplo OpenStreetMap)
+		if(!self.findspot){
 		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			attribution: "© OpenStreetMap contributors"
 		}).addTo(self.map);
+		self.create_legend(self.map)
+		
+		}else{
+			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(self.map);
+		}
+
 		
 		self.add_markers(self.map,self.result,self.map_node)
 
-		self.create_legend(self.map)
+		
 
 		return self.map;
 

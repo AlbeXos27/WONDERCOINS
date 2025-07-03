@@ -8,7 +8,7 @@
       let elemento5 = document.getElementById('fondo2');
 
       // Aplicamos la animación
-      elemento1.classList.add('left');
+      elemento1.classList.add('right');
       elemento2.classList.add('opacidad');
       elemento4.classList.add('right');
 

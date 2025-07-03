@@ -34,10 +34,8 @@ body, html {
   width: 100%;
   height: 100%;
   display: flex;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Una sola columna */
   padding: 0;
-  margin-left: 0;
+  margin-right: 0;
 }
 
 #wrapper #main {
@@ -47,9 +45,9 @@ body, html {
   width: 100%;
   position: relative;
 
-  background-image: url("./Moneda_Fondo.png");
+  background-image: url("./moneda_fondo.png");
   background-repeat: no-repeat;       /* No repetir la imagen */
-  background-position: calc(100% + 4vw) center;
+  background-position: calc(100% - 4vw) center;
   background-size: 100% 110%;      /* Que se ajuste sin deformarse */
   background-attachment: fixed; 
 
@@ -96,7 +94,7 @@ button{
 button img{
   width: 100%;
   height: 100%;
-  filter: brightness(1.2) contrast(1.1); /* Ilumina y realza los colores */
+  filter: brightness(0.9) contrast(1.1); /* Ilumina y realza los colores */
   transition: filter 0.3s ease;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -125,7 +123,7 @@ button img:hover {
 
 
 
-@media(max-width: 1280px) {
+@media(aspect-ratio <= 4/3) {
     #wrapper #main {
         min-height: calc(100vh - 24.9rem); 
          padding-top: 20%;
@@ -133,6 +131,9 @@ button img:hover {
     }
     #main > .inner {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
 
     }
     .imagen{
@@ -165,11 +166,14 @@ button img:hover {
     }
 
     .texto{
-      margin-right: 10%;
+      width: 90% !important; /* Asegura que ocupe todo el ancho disponible */
+      height: 100% !important; /* Asegura que ocupe toda la altura disponible */
+      margin-right: 5% !important;
+      margin-left: 5% !important;
     }
 
     .texto p {
-      font-size: 1.5vh !important;
+      font-size: 1.7vh !important;
     }
     .texto p em{
       text-align: left !important;
@@ -191,6 +195,11 @@ button img:hover {
 }
 }
 
+.izq{
+  width: 100%;
+  height: 100%;
+}
+
 .texto {
   display: flex;
   flex-direction: column;
@@ -198,11 +207,11 @@ button img:hover {
   align-items: center;
   text-align:left;
   z-index: 0;
-  grid-column: 1 / 2; /* Asegura que esta columna esté a la izquierda */
-  width: 110%; /* Asegura que ocupe todo el ancho disponible */
-  height: 100%; /* Asegura que ocupe toda la altura disponible */
+  width: 50%; /* Asegura que ocupe todo el ancho disponible */
+  height: 50%; /* Asegura que ocupe toda la altura disponible */
   color: #085c54;
-  margin-left: 10%;
+  margin-left: 44%;
+
 
   transition: transform 1.0s ease, opacity 1.0s ease;
 }

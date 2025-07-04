@@ -339,7 +339,7 @@ var hoards =  {
 					resolve_portals_custom : resolve_portals_custom,
 				}
 			})
-			.then(function(api_response){
+			.then( async function(api_response){
 				console.log("--------------- api_response:",api_response);
 	
 
@@ -376,12 +376,12 @@ var hoards =  {
 					img_ident.id = "img_ident"
 
 
-								const map = new map_factory() // creates / get existing instance of map
+								const map_fact = new map_factory() // creates / get existing instance of map
 								
 
-					grid.addWidget({w:4,h:10,content: ""})
+					grid.addWidget({w:4,h:12,content: ""})
 					grid.addWidget({w:4,h:4,content: `${api_response.result[200].public_info}`})
-					const ubicacion=grid.addWidget({w:2,h:2,content: ``}) //ubicacion
+					const ubicacion=grid.addWidget({w:4,h:4,content: ``}) //ubicacion
 
 					 let resultado = {
 						hallazgos: {
@@ -398,23 +398,27 @@ var hoards =  {
 						resultado.hallazgos.datos.push(api_response.result[200])
 
 
-					map.init({
+					map_fact.init({
 									map_container		: ubicacion,
 									map_position		: api_response.result[200].map,
 									source_maps			: page.maps_config.source_maps,
 									result				: resultado,
 									findspot			: true
 								})
+						
+					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[200])
 
-					grid.addWidget({w:2,h:2,content: ``}) //imagenes
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:4,h:1,content: ``})
 					grid.addWidget({w:8,h:4,content: `${api_response.result[200].public_info}`})
-					grid.addWidget({w:8,h:3,content: ``})
-					grid.addWidget({w:4,h:3,content: ``})
+					const nodo_arbol_no_coins = grid.addWidget({w:8,h:5,content: ``})
+					const hijo_nodo_arbol_no_coins = nodo_arbol_no_coins.querySelector('.grid-stack-item-content')
+					hijo_nodo_arbol_no_coins.id = "arbol_no_moneda"
+					hijo_nodo_arbol_no_coins.appendChild(arbol_no_coins)
+					grid.addWidget({w:4,h:4,content: ``})
 			})
 
 			// scrool to head result
@@ -423,7 +427,88 @@ var hoards =  {
 				div_result.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
 			}
 		})
-	}//end form_submit
+	},//end form_submit
+
+
+
+	render_rows_hallazgo : async function(row) {
+		console.log(row)
+		const fragment = new DocumentFragment()
+
+		const findspot_tree = await this.createfindspot_Tree(row)
+		this.generate_Tree(findspot_tree,findspot_tree[0],fragment,0)
+
+		return fragment
+	},
+
+
+	createfindspot_Tree : async function (findspot){
+
+		const findspots_tree = []
+		const findspot_sons = await this.cargarHijosHallazgos(findspot.section_id)
+		findspots_tree.push({info_nodo: findspot, padre : null})
+
+		for (let index = 0; index < findspot_sons.result.length; index++) {
+
+			const parent_node = JSON.parse(findspot_sons.result[index].parents)
+			findspots_tree.push({ info_nodo: findspot_sons.result[index], padre: parent_node[0]});
+						
+		}
+
+		return findspots_tree
+
+	},
+	cargarHijosHallazgos : async function(hallazgo) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'findspots',
+					ar_fields: ["*"],
+					sql_filter: `parents LIKE '%"${hallazgo}"%'`,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
+	generate_Tree : function(tree,node,node_parent,padding){
+
+	
+		const info_node = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "container_prueba",
+					text_content	: node.info_nodo.name,
+					parent			: node_parent
+		})
+		
+		info_node.style.paddingLeft = `${padding}em`
+
+
+		if(node.info_nodo.children != null){
+
+				for (let index = 0; index < tree.length; index++) {
+				if (tree[index].info_nodo.parent == '["'+node.info_nodo.section_id+'"]') {
+					
+					tree[index].padre = "'"+node.info_nodo.section_id+"'"
+					this.generate_Tree(tree,tree[index],info_node,1.5)
+				}
+				
+			}
+		}
+
+	},
+
+
+
+
 
 
 }//end hoards

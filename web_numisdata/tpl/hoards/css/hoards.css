@@ -19,7 +19,7 @@
     align-content: center;
     border-radius: 10px;
     inset: 10px  !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 #titulo-ficha{
@@ -34,6 +34,18 @@
     -ms-touch-action: none;
     touch-action: none;
     border-radius: 10px !important;
-    height: 14% !important;
+    height: 24% !important;
+    width: 32% !important;
+    margin-left: 8px;
     margin-top: 10px;
+}
+
+
+#arbol_no_moneda{
+    text-align: start;
+    align-self: baseline;
+    text-size-adjust: auto;
+    text-transform: uppercase;
+    font-weight: bold;
+    height: 96%;
 }

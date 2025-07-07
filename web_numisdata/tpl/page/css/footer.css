@@ -176,14 +176,17 @@
   align-items: center;
   box-sizing: border-box;
   overflow: hidden;
+  height: 100%;
 }
 
 .section-right ul {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr; /* 4 columnas */
   margin: 0;
+  margin-top: 0;
   padding: 0;
   width: 100%;
+  height: auto;
   list-style: none;
 }
 
@@ -206,6 +209,10 @@
   object-fit: contain;
 }
 
+.section-right ul li a img.small-img {
+  max-width: 40%;
+  max-height: 60%;
+}
   
 /*
 .logo_footer{
@@ -299,7 +306,7 @@ display: inline-block; /* Asegura que el div solo ocupe el espacio necesario par
     margin: 0;
     padding: 0;
     height: 100%;
-    width: 100%; /* Asegura que el ul ocupe todo el ancho del contenedor 
+    width: 100%; /* Asegura que el ul ocupe todo el anildo del contenedor 
   }
   
   .footer-section-wrapper ul li {

@@ -9,7 +9,8 @@
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/markercluster/MarkerCluster.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/fullscreen/leaflet.fullscreen.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.css',
-			__WEB_TEMPLATE_WEB__ . '/assets/lib/gridstack/gridstack.min.css'
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/gridstack/gridstack.min.css',
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/swiper/swiper-bundle.min.css'
 		);
 
 
@@ -24,6 +25,7 @@
 		// page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/mint/js/mint_row'.JS_SUFFIX.'.js';
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/hoards/js/render_hoards'.JS_SUFFIX.'.js';
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/gridstack/gridstack-all.js';
+		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/swiper/swiper-bundle.min.js';
 
 
 	// page basic vars

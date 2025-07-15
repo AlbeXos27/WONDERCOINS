@@ -367,11 +367,11 @@ var hoards =  {
 					})
 
 					const grid = GridStack.init(estructura);
-					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[40].name}`})
+					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[199].name}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
-					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[40].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[199].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
 					img_ident.id = "img_ident"
 
@@ -380,7 +380,7 @@ var hoards =  {
 								
 
 					grid.addWidget({w:4,h:12,content: ""})
-					grid.addWidget({w:4,h:4,content: `${api_response.result[40].public_info}`})
+					grid.addWidget({w:4,h:4,content: `${api_response.result[199].public_info}`})
 					const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
 
 					 let resultado = {
@@ -395,25 +395,25 @@ var hoards =  {
 						}
 						};
 				
-						resultado.hallazgos.datos.push(api_response.result[40])
+						resultado.hallazgos.datos.push(api_response.result[199])
 
 
 					map_fact.init({
 									map_container		: ubicacion,
-									map_position		: api_response.result[40].map,
+									map_position		: api_response.result[199].map,
 									source_maps			: page.maps_config.source_maps,
 									result				: resultado,
 									findspot			: true
 								})
 						
-					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[40])
+					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[199])
 	
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:4,h:1,content: ``})
-					grid.addWidget({w:8,h:4,content: `${api_response.result[40].public_info}`})
+					grid.addWidget({w:8,h:4,content: `${api_response.result[199].public_info}`})
 					const nodo_arbol_no_coins = grid.addWidget({w:8,h:5,content: ``})
 					const hijo_nodo_arbol_no_coins = nodo_arbol_no_coins.querySelector('.grid-stack-item-content')
 					hijo_nodo_arbol_no_coins.id = "arbol_no_moneda"
@@ -440,7 +440,7 @@ var hoards =  {
 					})
 					
 
-					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[40]))
+					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[199]))
 
 
 
@@ -492,6 +492,7 @@ var hoards =  {
 		return findspots_tree
 
 	},
+
 	cargarHijosHallazgos : async function(hallazgo) {
 		try {
 			const hijos = await data_manager.request({
@@ -513,6 +514,7 @@ var hoards =  {
 			console.error("Error cargando datos:", error);
 		}
 	},
+
 	generate_Tree : function(tree,node,node_parent,padding){
 
 	
@@ -562,7 +564,7 @@ var hoards =  {
 		}
 	},
 
-		generate_Tree_completo : async function(tree,node,node_parent,padding){
+	generate_Tree_completo : async function(tree,node,node_parent,padding){
 
 	
 		const info_node = common.create_dom_element({
@@ -571,18 +573,27 @@ var hoards =  {
 					text_content	: node.info_nodo.name,
 					parent			: node_parent
 		})
-		
+	
 		info_node.style.paddingLeft = `${padding}em`
-		console.log(node)
+		
 		if(node.info_nodo.coins != null){
-						
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
+						const button_display = common.create_dom_element({
+							element_type	: "img",
+							class_name		: "button_display",
+							src				: "tpl/assets/images/arrow-right.svg",
+							parent			: info_node
+						})
+
+
+						button_display.classList.add(`button_display_${node.info_nodo.section_id}`)
+
 						const container_swiper = common.create_dom_element({
 							element_type	: "div",
 							class_name		: `swiper swiper_${node.info_nodo.section_id}`,
 							parent			: info_node
 						})
-
+						container_swiper.style.display = "none"
 						const swiper = common.create_dom_element({
 							element_type	: "div",
 							class_name		: `swiper-wrapper`,
@@ -598,9 +609,11 @@ var hoards =  {
 						// Flip card container
 						const flipCard1 = common.create_dom_element({
 							element_type: "div",
-							class_name: "flip-card",
+							class_name: `flip-card`,
 							parent: slide1
 						});
+
+						flipCard1.classList.add(`flip-card_${node.info_nodo.section_id}`)
 
 						// Flip inner
 						const flipInner1 = common.create_dom_element({
@@ -688,9 +701,7 @@ var hoards =  {
 
 
 
-
 						container_swiper.style.paddingLeft = `${1}em`
-
 
 						new Swiper(`.swiper_${node.info_nodo.section_id}`, {
 										loop: true,
@@ -703,14 +714,35 @@ var hoards =  {
 											prevEl: `.swiper-prev-${node.info_nodo.section_id}`,
 										}
 										});
+
 						document.addEventListener("click", (e) => {
-							const card = e.target.closest(".flip-card");
+							const card = e.target.closest(`.flip-card_${node.info_nodo.section_id}`);
 							if (card) {
 								card.classList.toggle("flipped");
 							}
-							});
+						});
 
-						//this.generate_rows_findspot(container_rows,coins.result)
+						let estado_mostrar_monedas = false
+
+						document.addEventListener("mousedown", (e) => {
+							const button = e.target.closest(`.button_display_${node.info_nodo.section_id}`);
+
+
+							if(estado_mostrar_monedas){
+
+								button.style.transform  = "rotate(0deg) translateY(20%) translateX(30%)";
+								container_swiper.style.display = "none"
+							}else{
+
+								button.style.transform  = "rotate(90deg) translateX(30%) translateY(-20%)";
+								container_swiper.style.display = "block"
+
+							}
+
+							estado_mostrar_monedas = !estado_mostrar_monedas
+						});
+
+						
 		}
 
 
@@ -728,102 +760,7 @@ var hoards =  {
 
 	},
 
-	generate_rows_findspot : function(parent,coins){
-			for (let index = 0; index < coins.length; index++) {
-			
-			const info_coin = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "info_coin",
-				parent			: parent
-			})
-
-			const container_images = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "container_images",
-				parent			: info_coin
-			})
-			const parsedCoinData = coins[index];
-			const image_obverse = "https://wondercoins.uca.es" + parsedCoinData.image_obverse
-			common.create_dom_element({
-				element_type	: "img",
-				class_name		: "img_observe",
-				src				: image_obverse,
-				parent			: container_images
-			})
-			const image_reverse = "https://wondercoins.uca.es" + parsedCoinData.image_reverse
-			common.create_dom_element({
-				element_type	: "img",
-				class_name		: "img_reserve",
-				src				: image_reverse,
-				parent			: container_images
-			})
-			const container_data = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "container_data",
-				parent			: info_coin
-			})
-			
-			let weight_text = null
-			if(coins[index].weight != null){
-				weight_text = "Peso: " + coins[index].weight +"g"
-			}else{
-				weight_text= "Peso: N/A"
-			}
-
-			const weight = common.create_dom_element({
-				element_type	: "span",
-				class_name		: "weight",
-				text_content	: weight_text,
-				parent			: container_data
-			})
-			const diameter = common.create_dom_element({
-				element_type	: "span",
-				class_name		: "diameter",
-				text_content	: "Módulo: "+ coins[index].diameter +"mm" ,
-				parent			: container_data
-			})
-
-			const catalogue_type = common.create_dom_element({
-				element_type	: "span",
-				class_name		: "catalogue_type",
-				text_content	: "Colección: "+ coins[index].collection ,
-				parent			: container_data
-			})
-
-			let findspot_text = coins[index].findspot.split(" | ")[0]
-			const findspot = common.create_dom_element({
-				element_type	: "span",
-				class_name		: "findspot",
-				text_content	:  "Hallazgo: "+ findspot_text,
-				parent			: info_coin
-			})
-
-			const tipo = common.create_dom_element({
-				element_type	: "span",
-				class_name		: "type",
-				text_content	:  "Tipo: "+ coins[index].type_full_value,
-				parent			: info_coin
-			})
-
-			const container_links = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "container_links",
-				parent			: info_coin
-			})
-
-			const type_link = common.create_dom_element({
-				element_type	: "a",
-				class_name		: "type_link",
-				href			: "/web_numisdata/type/"+ coins[index].type,
-				text_content	: "TIPO",
-				parent			: container_links
-			})
-			
-		}
-
-
-	},
-
+	
 
 
 

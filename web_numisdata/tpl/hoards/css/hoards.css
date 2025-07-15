@@ -124,6 +124,10 @@ margin: 0.5em 0 0.2em 0 !important;
   cursor: pointer;
 
 }
+.button_display{
+  width: 1.8%;
+  transform: translateX(30%) translateY(20%);
+}
 
 .flip-card-inner {
   position: relative;

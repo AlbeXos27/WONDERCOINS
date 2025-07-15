@@ -161,7 +161,8 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .flip-card-front img {
-  max-width: 45%;
+  max-width: 30%;
+  height: auto;
   margin: 0 5px;
 }
 
@@ -173,4 +174,206 @@ margin: 0.5em 0 0.2em 0 !important;
   box-sizing: border-box;
   text-align: left;
   font-size: 1rem;
+  font-family: helvetica sans-serif;
+}
+
+.type_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
+
+.type_link {
+  color: #005f54;
+  text-decoration: none;
+  font-size: 25px;
+  text-align: center;
+  border-bottom: none !important;
+}
+
+.type_link:hover {
+  color: #00b9a3 !important;
+  border-bottom: 1px dotted #005f54 !important;
+}
+
+.descriptive_title {
+  flex: 0 0 auto;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-left: 8px;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.findspot_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-top: black 1px solid;
+  border-right: black 1px solid;
+  border-left: black 1px solid;
+  border-bottom: black 1px solid;
+}
+
+.findspot_text {
+  flex: 1;
+  text-align: center;
+  transform: translateX(-10%);
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.date_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-right: black 1px solid;
+  border-left: black 1px solid;
+  border-bottom: black 1px solid;
+}
+
+.date_text {
+  transform: translateX(-8.5%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.weigdia_container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-right: black 1px solid;
+  border-left: black 1px solid;
+  border-bottom: black 1px solid;
+}
+
+.weight_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-right: black 1px solid;
+}
+
+.weight_text {
+  transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.diameter_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.diameter_text {
+   transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.dico_container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-right: black 1px solid;
+  border-left: black 1px solid;
+  border-bottom: black 1px solid;
+}
+
+.dies_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-right: black 1px solid;
+}
+
+.dies_text {
+  transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.collection_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.collection_text {
+  transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.finsec_container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-right: black 1px solid;
+  border-left: black 1px solid;
+  border-bottom: black 1px solid;
+}
+
+.fin_type_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-right: black 1px solid;
+}
+
+.fin_type_text {
+  transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.section_id_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.section_id_text {
+  transform: translateX(-10%);
+  flex: 1;
+  text-align: center;
+  font-size: 1.4rem;
+  color: #00b9a3;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }

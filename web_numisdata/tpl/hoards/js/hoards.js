@@ -629,17 +629,21 @@ var hoards =  {
 							parent: flipInner1
 						});
 
-						// Ejemplo: imágenes del anverso y reverso de la moneda
+						//imágenes del anverso y reverso de la moneda
+						const image_obverse = "https://wondercoins.uca.es" + coins.result[0].image_obverse;
+						const image_reverse = "https://wondercoins.uca.es" + coins.result[0].image_reverse;
+
 						common.create_dom_element({
 							element_type: "img",
+							class_name: "img_obverse",
 							parent: flipFront1,
-							src: "https://placehold.co/400"
+							src: image_obverse
 						});
 
 						common.create_dom_element({
 							element_type: "img",
 							parent: flipFront1,
-							src: "https://placehold.co/400"
+							src: image_reverse
 						});
 
 						// Back
@@ -650,28 +654,237 @@ var hoards =  {
 						});
 
 						// Información de la moneda
+						c// Información de la moneda
+
+						let value = [coins.result[0].type_data];
+						let innerArray = JSON.parse(value[0]); // resultado: ["18817"]
+						let coin_type = parseInt(innerArray[0], 10); // resultado: 18817
+
+						console.log(coin_type);
+						// Coint Type
+						const type_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "type_container",
+							parent: flipBack1
+						});
+
 						common.create_dom_element({
-							element_type: "h3",
-							text_content: "Moneda Romana",
+							element_type: "a",
+							class_name: "type_link",
+							href: `/web_numisdata/coin/${coin_type}`,
+							text_content: coins.result[0].type_full_value, 
+							parent: type_container
+						});
+
+						// Findspot
+						const findspot_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "findspot_container",
 							parent: flipBack1
 						});
 
 						common.create_dom_element({
 							element_type: "p",
-							text_content: "Año: 1800",
+							class_name: "descriptive_title",
+							text_content: "Excavación:",
+							parent: findspot_container
+						});
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "findspot_text",
+							text_content: coins.result[0].findspot.split(" | ")[0],
+							parent: findspot_container
+						});
+
+						//Date
+						const date_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "date_container",
 							parent: flipBack1
 						});
 
 						common.create_dom_element({
 							element_type: "p",
-							text_content: "Metal: Oro",
+							class_name: "descriptive_title",
+							text_content: "Datación: ",
+							parent: date_container
+						});
+
+							const dateIn = coins.result[0].date_in;
+							const dateOut = coins.result[0].date_out;
+
+							const formattedDateIn = (dateIn.includes('-') ? Math.abs(parseInt(dateIn)) + " A.C." : dateIn + " D.C.");
+							const formattedDateOut = (dateOut.includes('-') ? Math.abs(parseInt(dateOut)) + " A.C." : dateOut + " D.C.");
+
+							const dateText = formattedDateIn + " - " + formattedDateOut;
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "date_text",
+							text_content: dateText,
+							parent: date_container
+						});
+
+						// Weight + Diameter
+
+						const weidia_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "weigdia_container",
 							parent: flipBack1
+						});
+
+						// Weight
+
+						const weight_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "weight_container",
+							parent: weidia_container
+						});
+						
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "descriptive_title",
+							text_content: "Peso: ",
+							parent: weight_container
+						});
+
+						const weightText = coins.result[0].weight ? coins.result[0].weight + " gramos" : "N/A";
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "weight_text",
+							text_content: weightText,
+							parent: weight_container
+						});
+
+						// Diameter
+						const diameter_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "diameter_container",
+							parent: weidia_container
 						});
 
 						common.create_dom_element({
 							element_type: "p",
-							text_content: "País: Roma",
+							class_name: "descriptive_title",
+							text_content: "Diametro: ",
+							parent: diameter_container
+						});
+
+						const diameterText = coins.result[0].diameter ? coins.result[0].diameter + " mm" : "N/A";
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "diameter_text",
+							text_content: diameterText,
+							parent: diameter_container
+						});
+
+						//Dies + Collection
+
+						const dico_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "dico_container",
 							parent: flipBack1
+						});
+
+						// Dies
+						const dies_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "dies_container",
+							parent: dico_container
+						});
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "descriptive_title",
+							text_content: "Cuñas totales: ",
+							parent: dies_container
+						});
+
+						const diesText = coins.result[0].dies ? coins.result[0].dies : "N/A";
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "dies_text",
+							text_content: diesText,
+							parent: dies_container
+						});
+
+						// Collection
+						const collection_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "collection_container",
+							parent: dico_container
+						});
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "descriptive_title",
+							text_content: "Colección: ",
+							parent: collection_container
+						});
+
+						const collectionText = coins.result[0].collection ? coins.result[0].collection : "N/A";
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "collection_text",
+							text_content: collectionText,
+							parent: collection_container
+						});
+
+						// Findspot type + section_id
+						const finsec_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "finsec_container",
+							parent: flipBack1
+						});
+
+						// Findspot type
+						const find_type_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "fin_type_container",
+							parent: finsec_container
+						});
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "descriptive_title",
+							text_content: "Tipo de deposito: ",
+							parent: find_type_container
+						});
+
+						const findspotTypeText = coins.result[0].find_type ? coins.result[0].find_type : "N/A";
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "fin_type_text",
+							text_content: findspotTypeText,
+							parent: find_type_container
+						});
+
+						// Section ID
+						const section_id_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "section_id_container",
+							parent: finsec_container
+						});
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "descriptive_title",
+							text_content: "Nº de inventario: ",
+							parent: section_id_container
+						});
+
+						const sectionIdText = coins.result[0].section_id ? coins.result[0].section_id : "N/A";
+
+						common.create_dom_element({
+							element_type: "p",
+							class_name: "section_id_text",
+							text_content: sectionIdText,
+							parent: section_id_container
 						});
 
 						common.create_dom_element({

@@ -578,6 +578,7 @@ var hoards =  {
 		
 		if(node.info_nodo.coins != null){
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
+
 						const button_display = common.create_dom_element({
 							element_type	: "img",
 							class_name		: "button_display",
@@ -600,299 +601,314 @@ var hoards =  {
 							parent			: container_swiper
 						})
 
-						const slide1 = common.create_dom_element({
-							element_type: "div",
-							class_name: "swiper-slide",
-							parent: swiper
-						});
+						for (let index = 0; index < coins.result.length; index++) {
+							console.log(coins.result[index])
+							const slide1 = common.create_dom_element({
+								element_type: "div",
+								class_name: "swiper-slide",
+								parent: swiper
+							});
 
-						// Flip card container
-						const flipCard1 = common.create_dom_element({
-							element_type: "div",
-							class_name: `flip-card`,
-							parent: slide1
-						});
+							// Flip card container
+							const flipCard1 = common.create_dom_element({
+								element_type: "div",
+								class_name: `flip-card`,
+								parent: slide1
+							});
 
-						flipCard1.classList.add(`flip-card_${node.info_nodo.section_id}`)
+							flipCard1.classList.add(`flip-card_${coins.result[index].section_id}`)
 
-						// Flip inner
-						const flipInner1 = common.create_dom_element({
-							element_type: "div",
-							class_name: "flip-card-inner",
-							parent: flipCard1
-						});
+							// Flip inner
+							const flipInner1 = common.create_dom_element({
+								element_type: "div",
+								class_name: "flip-card-inner",
+								parent: flipCard1
+							});
 
-						// Front
-						const flipFront1 = common.create_dom_element({
-							element_type: "div",
-							class_name: "flip-card-front",
-							parent: flipInner1
-						});
+							// Front
+							const flipFront1 = common.create_dom_element({
+								element_type: "div",
+								class_name: "flip-card-front",
+								parent: flipInner1
+							});
 
-						//imágenes del anverso y reverso de la moneda
-						const image_obverse = "https://wondercoins.uca.es" + coins.result[0].image_obverse;
-						const image_reverse = "https://wondercoins.uca.es" + coins.result[0].image_reverse;
+							//imágenes del anverso y reverso de la moneda
+							const image_obverse = "https://wondercoins.uca.es" + coins.result[index].image_obverse;
+							const image_reverse = "https://wondercoins.uca.es" + coins.result[index].image_reverse;
 
-						common.create_dom_element({
-							element_type: "img",
-							class_name: "img_obverse",
-							parent: flipFront1,
-							src: image_obverse
-						});
+							common.create_dom_element({
+								element_type: "img",
+								class_name: "img_obverse",
+								parent: flipFront1,
+								src: image_obverse
+							});
 
-						common.create_dom_element({
-							element_type: "img",
-							parent: flipFront1,
-							src: image_reverse
-						});
+							common.create_dom_element({
+								element_type: "img",
+								parent: flipFront1,
+								src: image_reverse
+							});
 
-						// Back
-						const flipBack1 = common.create_dom_element({
-							element_type: "div",
-							class_name: "flip-card-back",
-							parent: flipInner1
-						});
+							// Back
+							const flipBack1 = common.create_dom_element({
+								element_type: "div",
+								class_name: "flip-card-back",
+								parent: flipInner1
+							});
 
-						// Información de la moneda
-						c// Información de la moneda
+							// Información de la moneda
+							// Información de la moneda
 
-						let value = [coins.result[0].type_data];
-						let innerArray = JSON.parse(value[0]); // resultado: ["18817"]
-						let coin_type = parseInt(innerArray[0], 10); // resultado: 18817
+							let value = [coins.result[index].type_data];
+							let innerArray = 0
+							try {
+								let innerArray = JSON.parse(value[0]); // resultado: ["18817"]
+							} catch (error) {
+								let innerArray = 0
+							}
+							console.log(innerArray)
+							
+							let coin_type = parseInt(innerArray[0], 10); // resultado: 18817
+							// Coint Type
+							const type_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "type_container",
+								parent: flipBack1
+							});
 
-						console.log(coin_type);
-						// Coint Type
-						const type_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "type_container",
-							parent: flipBack1
-						});
+							common.create_dom_element({
+								element_type: "a",
+								class_name: "type_link",
+								href: `/web_numisdata/coin/${coin_type}`,
+								text_content: coins.result[index].type_full_value, 
+								parent: type_container
+							});
 
-						common.create_dom_element({
-							element_type: "a",
-							class_name: "type_link",
-							href: `/web_numisdata/coin/${coin_type}`,
-							text_content: coins.result[0].type_full_value, 
-							parent: type_container
-						});
+							// Findspot
+							const findspot_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "findspot_container",
+								parent: flipBack1
+							});
 
-						// Findspot
-						const findspot_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "findspot_container",
-							parent: flipBack1
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Excavación:",
+								parent: findspot_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Excavación:",
-							parent: findspot_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "findspot_text",
+								text_content: coins.result[index].findspot.split(" | ")[0],
+								parent: findspot_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "findspot_text",
-							text_content: coins.result[0].findspot.split(" | ")[0],
-							parent: findspot_container
-						});
+							//Date
+							const date_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "date_container",
+								parent: flipBack1
+							});
 
-						//Date
-						const date_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "date_container",
-							parent: flipBack1
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Datación: ",
+								parent: date_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Datación: ",
-							parent: date_container
-						});
+								const dateIn = coins.result[index].date_in ? coins.result[index].date_in : "N/A";
+								const dateOut = coins.result[index].date_out ? coins.result[index].date_out : "N/A";;
 
-							const dateIn = coins.result[0].date_in;
-							const dateOut = coins.result[0].date_out;
+								const formattedDateIn = (dateIn.includes('-') ? Math.abs(parseInt(dateIn)) + " A.C." : dateIn + " D.C.");
+								const formattedDateOut = (dateOut.includes('-') ? Math.abs(parseInt(dateOut)) + " A.C." : dateOut + " D.C.");
 
-							const formattedDateIn = (dateIn.includes('-') ? Math.abs(parseInt(dateIn)) + " A.C." : dateIn + " D.C.");
-							const formattedDateOut = (dateOut.includes('-') ? Math.abs(parseInt(dateOut)) + " A.C." : dateOut + " D.C.");
+								const dateText = formattedDateIn + " - " + formattedDateOut;
 
-							const dateText = formattedDateIn + " - " + formattedDateOut;
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "date_text",
+								text_content: dateText,
+								parent: date_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "date_text",
-							text_content: dateText,
-							parent: date_container
-						});
+							// Weight + Diameter
 
-						// Weight + Diameter
+							const weidia_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "weigdia_container",
+								parent: flipBack1
+							});
 
-						const weidia_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "weigdia_container",
-							parent: flipBack1
-						});
+							// Weight
 
-						// Weight
+							const weight_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "weight_container",
+								parent: weidia_container
+							});
+							
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Peso: ",
+								parent: weight_container
+							});
 
-						const weight_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "weight_container",
-							parent: weidia_container
-						});
-						
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Peso: ",
-							parent: weight_container
-						});
+							const weightText = coins.result[index].weight ? coins.result[index].weight + " gramos" : "N/A";
 
-						const weightText = coins.result[0].weight ? coins.result[0].weight + " gramos" : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "weight_text",
+								text_content: weightText,
+								parent: weight_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "weight_text",
-							text_content: weightText,
-							parent: weight_container
-						});
+							// Diameter
+							const diameter_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "diameter_container",
+								parent: weidia_container
+							});
 
-						// Diameter
-						const diameter_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "diameter_container",
-							parent: weidia_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Diametro: ",
+								parent: diameter_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Diametro: ",
-							parent: diameter_container
-						});
+							const diameterText = coins.result[index].diameter ? coins.result[index].diameter + " mm" : "N/A";
 
-						const diameterText = coins.result[0].diameter ? coins.result[0].diameter + " mm" : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "diameter_text",
+								text_content: diameterText,
+								parent: diameter_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "diameter_text",
-							text_content: diameterText,
-							parent: diameter_container
-						});
+							//Dies + Collection
 
-						//Dies + Collection
+							const dico_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "dico_container",
+								parent: flipBack1
+							});
 
-						const dico_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "dico_container",
-							parent: flipBack1
-						});
+							// Dies
+							const dies_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "dies_container",
+								parent: dico_container
+							});
 
-						// Dies
-						const dies_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "dies_container",
-							parent: dico_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Cuñas totales: ",
+								parent: dies_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Cuñas totales: ",
-							parent: dies_container
-						});
+							const diesText = coins.result[index].dies ? coins.result[index].dies : "N/A";
 
-						const diesText = coins.result[0].dies ? coins.result[0].dies : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "dies_text",
+								text_content: diesText,
+								parent: dies_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "dies_text",
-							text_content: diesText,
-							parent: dies_container
-						});
+							// Collection
+							const collection_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "collection_container",
+								parent: dico_container
+							});
 
-						// Collection
-						const collection_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "collection_container",
-							parent: dico_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Colección: ",
+								parent: collection_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Colección: ",
-							parent: collection_container
-						});
+							const collectionText = coins.result[index].collection ? coins.result[index].collection : "N/A";
 
-						const collectionText = coins.result[0].collection ? coins.result[0].collection : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "collection_text",
+								text_content: collectionText,
+								parent: collection_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "collection_text",
-							text_content: collectionText,
-							parent: collection_container
-						});
+							// Findspot type + section_id
+							const finsec_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "finsec_container",
+								parent: flipBack1
+							});
 
-						// Findspot type + section_id
-						const finsec_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "finsec_container",
-							parent: flipBack1
-						});
+							// Findspot type
+							const find_type_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "fin_type_container",
+								parent: finsec_container
+							});
 
-						// Findspot type
-						const find_type_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "fin_type_container",
-							parent: finsec_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Tipo de deposito: ",
+								parent: find_type_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Tipo de deposito: ",
-							parent: find_type_container
-						});
+							const findspotTypeText = coins.result[index].find_type ? coins.result[index].find_type : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "fin_type_text",
+								text_content: findspotTypeText,
+								parent: find_type_container
+							});
 
-						const findspotTypeText = coins.result[0].find_type ? coins.result[0].find_type : "N/A";
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "fin_type_text",
-							text_content: findspotTypeText,
-							parent: find_type_container
-						});
+							// Section ID
+							const section_id_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "section_id_container",
+								parent: finsec_container
+							});
 
-						// Section ID
-						const section_id_container = common.create_dom_element({
-							element_type: "div",
-							class_name: "section_id_container",
-							parent: finsec_container
-						});
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Nº de inventario: ",
+								parent: section_id_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "descriptive_title",
-							text_content: "Nº de inventario: ",
-							parent: section_id_container
-						});
+							const sectionIdText = coins.result[index].section_id ? coins.result[index].section_id : "N/A";
 
-						const sectionIdText = coins.result[0].section_id ? coins.result[0].section_id : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "section_id_text",
+								text_content: sectionIdText,
+								parent: section_id_container
+							});
 
-						common.create_dom_element({
-							element_type: "p",
-							class_name: "section_id_text",
-							text_content: sectionIdText,
-							parent: section_id_container
-						});
+							
 
-						common.create_dom_element({
-							element_type	: "div",
-							class_name		: `swiper-slide`,
-							text_content	: "Slide - 2",
-							parent			: swiper
-						})
+							document.addEventListener("click", (e) => {
+
+								const card = e.target.closest(`.flip-card_${coins.result[index].section_id}`);
+								if (card) {
+									card.classList.toggle("flipped");
+								}
+
+							});
+
+						}
+
+	
 
 						common.create_dom_element({
 							element_type	: "div",
@@ -917,7 +933,6 @@ var hoards =  {
 						container_swiper.style.paddingLeft = `${1}em`
 
 						new Swiper(`.swiper_${node.info_nodo.section_id}`, {
-										loop: true,
 										pagination: {
 											el: `.swiper-pagination-${node.info_nodo.section_id}`,
 											clickable: true,
@@ -928,31 +943,24 @@ var hoards =  {
 										}
 										});
 
-						document.addEventListener("click", (e) => {
-							const card = e.target.closest(`.flip-card_${node.info_nodo.section_id}`);
-							if (card) {
-								card.classList.toggle("flipped");
-							}
-						});
+
 
 						let estado_mostrar_monedas = false
 
 						document.addEventListener("mousedown", (e) => {
 							const button = e.target.closest(`.button_display_${node.info_nodo.section_id}`);
 
+							if (!button || !container_swiper) return;
 
-							if(estado_mostrar_monedas){
-
-								button.style.transform  = "rotate(0deg) translateY(20%) translateX(30%)";
-								container_swiper.style.display = "none"
-							}else{
-
-								button.style.transform  = "rotate(90deg) translateX(30%) translateY(-20%)";
-								container_swiper.style.display = "block"
-
+							if (estado_mostrar_monedas) {
+								button.style.transform = "rotate(0deg) translateY(20%) translateX(30%)";
+								container_swiper.style.display = "none";
+							} else {
+								button.style.transform = "rotate(90deg) translateX(30%) translateY(-20%)";
+								container_swiper.style.display = "block";
 							}
 
-							estado_mostrar_monedas = !estado_mostrar_monedas
+							estado_mostrar_monedas = !estado_mostrar_monedas;
 						});
 
 						

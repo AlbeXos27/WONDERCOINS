@@ -324,7 +324,7 @@ var hoards =  {
 				// 		resolve(false)
 				// 	})
 				// }
-				console.log(sql_filter)
+		
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',
@@ -346,7 +346,7 @@ var hoards =  {
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
 					const total	= api_response.total
-					const random = Math.floor(Math.random() * (total));
+					const hallazgo_resultado = final_filter == base_filter ? Math.floor(Math.random() * (total)) : 0;
 
 					if (!data) {
 						rows_container.classList.remove("loading")
@@ -367,11 +367,11 @@ var hoards =  {
 					})
 
 					const grid = GridStack.init(estructura);
-					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[199].name}`})
+					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].name}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
-					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[199].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
 					img_ident.id = "img_ident"
 
@@ -380,7 +380,7 @@ var hoards =  {
 								
 
 					grid.addWidget({w:4,h:12,content: ""})
-					grid.addWidget({w:4,h:4,content: `${api_response.result[199].public_info}`})
+					grid.addWidget({w:4,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
 					const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
 
 					 let resultado = {
@@ -395,25 +395,25 @@ var hoards =  {
 						}
 						};
 				
-						resultado.hallazgos.datos.push(api_response.result[199])
+						resultado.hallazgos.datos.push(api_response.result[hallazgo_resultado])
 
 
 					map_fact.init({
 									map_container		: ubicacion,
-									map_position		: api_response.result[199].map,
+									map_position		: api_response.result[hallazgo_resultado].map,
 									source_maps			: page.maps_config.source_maps,
 									result				: resultado,
 									findspot			: true
 								})
 						
-					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[199])
+					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[hallazgo_resultado])
 	
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:4,h:1,content: ``})
-					grid.addWidget({w:8,h:4,content: `${api_response.result[199].public_info}`})
+					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
 					const nodo_arbol_no_coins = grid.addWidget({w:8,h:5,content: ``})
 					const hijo_nodo_arbol_no_coins = nodo_arbol_no_coins.querySelector('.grid-stack-item-content')
 					hijo_nodo_arbol_no_coins.id = "arbol_no_moneda"
@@ -440,7 +440,7 @@ var hoards =  {
 					})
 					
 
-					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[199]))
+					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[hallazgo_resultado]))
 
 
 

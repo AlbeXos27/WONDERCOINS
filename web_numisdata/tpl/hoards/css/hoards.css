@@ -174,7 +174,6 @@ margin: 0.5em 0 0.2em 0 !important;
   box-sizing: border-box;
   text-align: left;
   font-size: 1rem;
-  font-family: helvetica sans-serif;
 }
 
 .type_container {
@@ -187,7 +186,7 @@ margin: 0.5em 0 0.2em 0 !important;
 
 
 .type_link {
-  color: #005f54;
+  color: #9b6c29;
   text-decoration: none;
   font-size: 25px;
   text-align: center;
@@ -195,7 +194,7 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .type_link:hover {
-  color: #00b9a3 !important;
+  color: #997f5a !important;
   border-bottom: 1px dotted #005f54 !important;
 }
 
@@ -224,7 +223,7 @@ margin: 0.5em 0 0.2em 0 !important;
   text-align: center;
   transform: translateX(-10%);
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -244,7 +243,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -270,7 +269,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -287,7 +286,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -313,7 +312,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -326,11 +325,10 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .collection_text {
-  transform: translateX(-10%);
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -356,7 +354,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }
@@ -373,7 +371,7 @@ margin: 0.5em 0 0.2em 0 !important;
   flex: 1;
   text-align: center;
   font-size: 1.4rem;
-  color: #00b9a3;
+  color: black;;
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
 }

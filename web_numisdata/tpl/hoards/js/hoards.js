@@ -423,7 +423,7 @@ var hoards =  {
 					const titulo_arbol = common.create_dom_element({
 						element_type	: "h1",
 						class_name 		: "title",
-						text_content	: "Árbol del Hallazgo",
+						text_content	: "Hallazgo Jerarquizado",
 						parent 			: rows_container
 					})
 					
@@ -660,27 +660,24 @@ var hoards =  {
 							// Información de la moneda
 
 							let value = [coins.result[index].type_data];
-							let innerArray = 0
-							try {
-								let innerArray = JSON.parse(value[0]); // resultado: ["18817"]
-							} catch (error) {
-								let innerArray = 0
-							}
-							console.log(innerArray)
-							
-							let coin_type = parseInt(innerArray[0], 10); // resultado: 18817
+
+	
+							let innerArray = value ? JSON.parse(value[0]) : "0" ; // resultado: ["18817"]
+
+							let coin_type = parseInt(innerArray[0], 10);
+							console.log("tipo de moneda" + coin_type)
 							// Coint Type
 							const type_container = common.create_dom_element({
 								element_type: "div",
 								class_name: "type_container",
 								parent: flipBack1
 							});
-
+							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination + coins.result[index].type_full_value.split(`${coins.result[index].denomination}`)[1] : coins.result[index].type_full_value;
 							common.create_dom_element({
 								element_type: "a",
 								class_name: "type_link",
-								href: `/web_numisdata/coin/${coin_type}`,
-								text_content: coins.result[index].type_full_value, 
+								href: `/web_numisdata/type/${coin_type}`,
+								text_content: type_full_val, 
 								parent: type_container
 							});
 
@@ -807,7 +804,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Cuñas totales: ",
+								text_content: "Posición de cuños: ",
 								parent: dies_container
 							});
 

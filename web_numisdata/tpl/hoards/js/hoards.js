@@ -360,7 +360,8 @@ var hoards =  {
 						}
 						rows_container.classList.remove("loading")
 					})()
-					const estructura = common.create_dom_element({
+					if(window.innerWidth > 768){
+								const estructura = common.create_dom_element({
 						element_type	: "div",
 						class_name		: "grid-stack",
 						parent			: rows_container
@@ -419,6 +420,8 @@ var hoards =  {
 					hijo_nodo_arbol_no_coins.id = "arbol_no_moneda"
 					hijo_nodo_arbol_no_coins.appendChild(arbol_no_coins)
 					grid.addWidget({w:4,h:4,content: ``})
+					}
+			
 
 					const titulo_arbol = common.create_dom_element({
 						element_type	: "h1",
@@ -469,7 +472,7 @@ var hoards =  {
 
 		const fragment = new DocumentFragment()
 		var findspot_tree = await this.createfindspot_Tree(row)
-		this.generate_Tree_completo(findspot_tree,findspot_tree[0],fragment,0)
+		this.generate_Tree_completo(findspot_tree,findspot_tree[0],fragment,0,0,2)
 
 		return fragment
 
@@ -564,9 +567,30 @@ var hoards =  {
 		}
 	},
 
-	generate_Tree_completo : async function(tree,node,node_parent,padding){
+	generate_Tree_completo : async function(tree,node,node_parent,padding,level,font_size){
+			const Shades = [
+			"#453000ff", // un poco más oscuro que antes para contraste
+			"#5a3f00ff",
+			"#6d4d00ff",
+			"#7f5b00ff",
+			"#916900ff",
+			"#a37800ff",
+			"#b48600ff",
+			"#c49400ff",
+			"#d5a200ff",
+			"#e6b000ff",
+			"#f7be00ff",
+			"#f9cb15ff",
+			"#f9d733ff",
+			"#f9e152ff",
+			"#f9eb70ff",
+			"#faf58eff",
+			"#fafaabff",
+			"#fcfdc8ff",
+			"#feffe5ff",
+			"#ffffffcc"
+			];
 
-	
 		const info_node = common.create_dom_element({
 					element_type	: "div",
 					class_name		: "container_prueba",
@@ -575,7 +599,12 @@ var hoards =  {
 		})
 	
 		info_node.style.paddingLeft = `${padding}em`
-		
+		info_node.style.fontSize = `${font_size}rem`
+		info_node.style.textTransform = "uppercase"
+		info_node.style.fontWeight = "bold"
+		info_node.style.color = `${Shades[level]}`
+
+
 		if(node.info_nodo.coins != null){
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
 
@@ -588,7 +617,7 @@ var hoards =  {
 
 
 						button_display.classList.add(`button_display_${node.info_nodo.section_id}`)
-
+						button_display.style.transform = ` translateX(30%) translateY(18%)`
 						const container_swiper = common.create_dom_element({
 							element_type	: "div",
 							class_name		: `swiper swiper_${node.info_nodo.section_id}`,
@@ -617,7 +646,8 @@ var hoards =  {
 							});
 
 							flipCard1.classList.add(`flip-card_${coins.result[index].section_id}`)
-
+							flipCard1.style.fontWeight = "normal"
+							
 							// Flip inner
 							const flipInner1 = common.create_dom_element({
 								element_type: "div",
@@ -657,16 +687,10 @@ var hoards =  {
 							});
 
 							// Información de la moneda
-							// Información de la moneda
+							let value = coins.result[index].type_data ? coins.result[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
+							let coin_type = value
 
-							let value = [coins.result[index].type_data];
-
-	
-							let innerArray = value ? JSON.parse(value[0]) : "0" ; // resultado: ["18817"]
-
-							let coin_type = parseInt(innerArray[0], 10);
-							console.log("tipo de moneda" + coin_type)
-							// Coint Type
+							// Coin Type
 							const type_container = common.create_dom_element({
 								element_type: "div",
 								class_name: "type_container",
@@ -970,7 +994,12 @@ var hoards =  {
 				if (tree[index].info_nodo.parent == '["'+node.info_nodo.section_id+'"]') {
 					
 					tree[index].padre = "'"+node.info_nodo.section_id+"'"
-					this.generate_Tree_completo(tree,tree[index],info_node,1.5)
+					if(window.innerWidth > 768){
+						this.generate_Tree_completo(tree,tree[index],info_node,2,level+1,font_size-0.1)
+					}else{
+						this.generate_Tree_completo(tree,tree[index],info_node,0.4,level+1,font_size-0.2)
+					}
+					
 				}
 				
 			}

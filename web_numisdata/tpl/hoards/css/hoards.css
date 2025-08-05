@@ -175,6 +175,7 @@ margin: 0.5em 0 0.2em 0 !important;
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  text-transform: none;
 }
 
 .type_container {
@@ -217,9 +218,26 @@ margin: 0.5em 0 0.2em 0 !important;
   text-align: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  border: 1px solid black;
   min-width: 0;
 }
+
+
+.diameter_container,
+.collection_container,
+.section_id_container {
+  border-left: 1.3px solid black;
+}
+
+.findspot_container,
+.date_container
+{
+
+  border-right: 1.3px solid black;
+  border-left: 1.3px solid black;
+  border-top: 1.3px solid black;
+
+}
+
 
 .findspot_text,
 .date_text,
@@ -242,9 +260,12 @@ margin: 0.5em 0 0.2em 0 !important;
 .finsec_container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border-right: 1px solid black;
-  border-left: 1px solid black;
-  border-bottom: 1px solid black;
+  border-right: 1.3px solid black;
+  border-left: 1.3px solid black;
+  border-top: 1.3px solid black;
+}
+.finsec_container{
+  border-bottom: 1.3px solid black;
 }
 
 /* ✅ RESPONSIVE: Ajustes suaves sin escalar */

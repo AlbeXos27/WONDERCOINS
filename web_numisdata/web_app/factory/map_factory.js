@@ -104,6 +104,8 @@ function map_factory() {
 				console.log("Se hizo clic en:", tipo);
 				// Aquí puedes hacer cualquier otra lógica
 				}
+
+				
 				for (let index = 0; index < data.hallazgos.datos.length; index++) {
 					let data_ceca = null
 					try {
@@ -116,8 +118,12 @@ function map_factory() {
 					if(data_ceca != null){
 					const markerHallazgo = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoHallazgo })
 					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
-					.on("click", function () {
-						miFuncionPersonalizada(data.hallazgos.datos[index].name);
+					.on("click", async function () {
+						const monedas = await map_node.cargarMonedasHallazgos(data.hallazgos.datos[index].name)
+						while (map_node.rows_container.hasChildNodes()) {
+							map_node.rows_container.removeChild(self.rows_container.lastChild);
+						}
+						map_node.render_rows(data.hallazgos.datos[index],monedas.result)
 						this.openPopup();  // Abrir popup también
 					});
 					

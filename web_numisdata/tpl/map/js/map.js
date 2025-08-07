@@ -623,14 +623,14 @@ cargarTodoYCrearMapa : async function(resultado) {
 				parent			: info_coin
 			})
 			const parsedCoinData = coins[index];
-			const image_obverse = "https://wondercoins.uca.es" + parsedCoinData.image_obverse
+			const image_obverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
 			common.create_dom_element({
 				element_type	: "img",
 				class_name		: "img_observe",
 				src				: image_obverse,
 				parent			: container_images
 			})
-			const image_reverse = "https://wondercoins.uca.es" + parsedCoinData.image_reverse
+			const image_reverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
 			common.create_dom_element({
 				element_type	: "img",
 				class_name		: "img_reserve",
@@ -753,12 +753,30 @@ cargarTodoYCrearMapa : async function(resultado) {
 			parent			: fragment
 		})
 		
+		let text_road = ""
+		if(row.parents_text){
+
+			for (let index = 0; index < JSON.parse(row.parents_text).length-1; index++) {
+
+				if(index < JSON.parse(row.parents_text).length-2){
+					text_road += JSON.parse(row.parents_text)[index]+","
+				}else{
+					text_road += JSON.parse(row.parents_text)[index]
+				}
+			
+			}
+
+		}
+
 		const road = common.create_dom_element({
 			element_type	: "div",
 			class_name		: "line-tittle mid",
-			text_content	: row.place.split(separador)[0],
+			text_content	: text_road != "" ? text_road : row.name,
 			parent			: fragment
+
 		})
+
+	
 
 
 		const findspot_tree = await this.createfindspot_Tree(row)
@@ -870,14 +888,14 @@ cargarTodoYCrearMapa : async function(resultado) {
 				parent			: info_coin
 			})
 			const parsedCoinData = coins[index];
-			const image_obverse = "https://wondercoins.uca.es" + parsedCoinData.image_obverse
+			const image_obverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
 			common.create_dom_element({
 				element_type	: "img",
 				class_name		: "img_observe",
 				src				: image_obverse,
 				parent			: container_images
 			})
-			const image_reverse = "https://wondercoins.uca.es" + parsedCoinData.image_reverse
+			const image_reverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
 			common.create_dom_element({
 				element_type	: "img",
 				class_name		: "img_reserve",

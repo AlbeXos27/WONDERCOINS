@@ -955,11 +955,13 @@ cargarTodoYCrearMapa : async function(resultado) {
 				class_name		: "container_links",
 				parent			: info_coin
 			})
-
+			let value = coins[index].type_data ? coins[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
+			let coin_type = value;
+			console.log ("Tipo Moneda: "+coin_type)
 			const type_link = common.create_dom_element({
 				element_type	: "a",
 				class_name		: "type_link",
-				href			: "/web_numisdata/type/"+ coins[index].type,
+				href			: "/web_numisdata/type/"+ coin_type,
 				text_content	: "TIPO",
 				parent			: container_links
 			})

@@ -697,11 +697,12 @@ var hoards =  {
 								parent: flipBack1
 							});
 							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination + coins.result[index].type_full_value.split(`${coins.result[index].denomination}`)[1] : coins.result[index].type_full_value;
+							const type_none = type_full_val ? type_full_val : "Tipo";
 							common.create_dom_element({
 								element_type: "a",
 								class_name: "type_link",
 								href: `/web_numisdata/type/${coin_type}`,
-								text_content: type_full_val, 
+								text_content: type_none, 
 								parent: type_container
 							});
 
@@ -740,13 +741,18 @@ var hoards =  {
 								parent: date_container
 							});
 
-								const dateIn = coins.result[index].date_in ? coins.result[index].date_in : "N/A";
-								const dateOut = coins.result[index].date_out ? coins.result[index].date_out : "N/A";;
+								const dateInRaw = coins.result[index].date_in;
+								const dateOutRaw = coins.result[index].date_out;
 
-								const formattedDateIn = (dateIn.includes('-') ? Math.abs(parseInt(dateIn)) + " A.C." : dateIn + " D.C.");
-								const formattedDateOut = (dateOut.includes('-') ? Math.abs(parseInt(dateOut)) + " A.C." : dateOut + " D.C.");
+								const hasDateIn = !!dateInRaw;
+								const hasDateOut = !!dateOutRaw;
 
-								const dateText = formattedDateIn + " - " + formattedDateOut;
+								const dateIn = hasDateIn ? (dateInRaw.includes('-') ? Math.abs(parseInt(dateInRaw)) + " A.C." : dateInRaw + " D.C.") : "N/A";
+								const dateOut = hasDateOut ? (dateOutRaw.includes('-') ? Math.abs(parseInt(dateOutRaw)) + " A.C." : dateOutRaw + " D.C.") : "N/A";
+
+								const dateText = !hasDateIn && !hasDateOut
+								? "N/A - N/A"
+								: dateIn + " - " + dateOut;
 
 							common.create_dom_element({
 								element_type: "p",

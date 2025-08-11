@@ -72,7 +72,7 @@ var map = {
 						cecas: {
 							datos: []
 						},
-						complejo: {
+						complejos: {
 							datos: []
 						}
 						};
@@ -152,6 +152,24 @@ cargarTodoYCrearMapa : async function(resultado) {
 			}
 		});
 		resultado.cecas.datos = cecas.result;
+
+
+		const complejos = await data_manager.request({
+			body: {
+				dedalo_get: 'records',
+				table: 'hoards',
+				ar_fields: ["*"],
+				sql_filter: "",
+				limit: 0,
+				count: true,
+				offset: 0,
+				order: 'name',
+				process_result: null
+			}
+		});
+		resultado.complejos.datos = complejos.result;
+
+
 		self.map_factory_instance = new map_factory();
 		self.map_factory_instance.init({
 			map_container: self.map_container,

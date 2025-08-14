@@ -40,8 +40,7 @@ var mints_hierarchy =  {
     const cecas = await this.get_data_mints(ind);
 
     for (let index = 0; index < cecas.total; index++) {
-		
-		console.log ("Estoy en el nivel: "+nivel);
+	
         const info_node = common.create_dom_element({
             element_type: "div",
             class_name: "container_cecas",
@@ -51,6 +50,7 @@ var mints_hierarchy =  {
 
 
         let label = cecas.result[index].term_section_label;
+		console.log ("Label: "+label);
 
 		if (typeof label === "string" && label.trim().startsWith("[")) {
 		try {
@@ -60,33 +60,35 @@ var mints_hierarchy =  {
 		}
 		}
 
-		if (Array.isArray(label)&& (label.includes("Tipos") || label.includes("Cecas"))) {
-			
+		if (Array.isArray(label) && (label.includes("Tipos") || label.includes("Cecas"))) {
+
 			let type = cecas.result[index].term_data ? cecas.result[index].term_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
+
 			const enlace = common.create_dom_element({
 				element_type: "a",
 				text_content: cecas.result[index].term,
 				parent: info_node
 			});
 
-			if(label.includes("Tipos")){
-
+			if (label.includes("Tipos")) {
 				enlace.href = `/web_numisdata/type/${type}`;
-
-			}else if(label.includes("Cecas")){
-
+				enlace.style.fontWeight = "normal";   // <- aquí fuerzas normal
+			} else if (label.includes("Cecas")) {
 				enlace.href = `/web_numisdata/mint/${type}`;
-
+				enlace.style.fontWeight = "bold";     // <- aquí fuerzas negrita
 			}
 
 		} else {
-			if (nivel == 0){
-				info_node.style.fontWeight = "bold"
-			}else{
+			info_node.textContent = cecas.result[index].term;
+			if (label.includes("Tipos")) {
+				info_node.style.fontWeight = "normal";
+			} else if (nivel === 0 || label.includes("Cecas"))  {
+				info_node.style.fontWeight = "bold";
+			} else {
 				info_node.style.fontWeight = "normal";
 			}
-			info_node.textContent = cecas.result[index].term;
 		}
+
 
         if (cecas.result[index].children) {
             const button_display = common.create_dom_element({

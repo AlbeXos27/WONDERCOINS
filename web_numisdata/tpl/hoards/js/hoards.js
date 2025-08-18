@@ -368,7 +368,7 @@ var hoards =  {
 					})
 
 					const grid = GridStack.init(estructura);
-					const titulo = grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].name}`})
+					const titulo = grid.addWidget({w:4,h:2,content: `${api_response.result[hallazgo_resultado].name}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
@@ -391,7 +391,7 @@ var hoards =  {
 						cecas: {
 							datos: []
 						},
-						complejo: {
+						complejos: {
 							datos: []
 						}
 						};
@@ -406,20 +406,43 @@ var hoards =  {
 									result				: resultado,
 									findspot			: true
 								})
-						
-					const arbol_no_coins= await self.render_rows_hallazgo(api_response.result[hallazgo_resultado])
 	
+					grid.addWidget({w:2,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
+					grid.addWidget({w:2,h:1,content: `${api_response.result[hallazgo_resultado].date_in} / ${api_response.result[hallazgo_resultado].date_out}`})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
-					grid.addWidget({w:2,h:1,content: ``})
-					grid.addWidget({w:2,h:1,content: ``})
-					grid.addWidget({w:4,h:1,content: ``})
+					grid.addWidget({w:8,h:1,content: ``})
 					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
-					const nodo_arbol_no_coins = grid.addWidget({w:8,h:5,content: ``})
-					const hijo_nodo_arbol_no_coins = nodo_arbol_no_coins.querySelector('.grid-stack-item-content')
-					hijo_nodo_arbol_no_coins.id = "arbol_no_moneda"
-					hijo_nodo_arbol_no_coins.appendChild(arbol_no_coins)
-					grid.addWidget({w:4,h:4,content: ``})
+
+					let bibliografia_array = []
+
+					for (let index = 0; index < api_response.result[hallazgo_resultado].bibliography_data.length; index++) {
+						
+						bibliografia_array.push(api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_title +" / "+api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_authors + " / (" + api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_date + ")")
+					}
+
+					let bibliografia = ""
+					bibliografia = bibliografia_array.join("\n")
+
+					grid.addWidget({
+						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.5rem;">${bibliografia}</div>`
+					});
+
+					let nombres_array = []
+					let total_autores = api_response.result[hallazgo_resultado].authorship_names.split("|").length
+
+					for (let index = 0; index < total_autores; index++) {
+
+						nombres_array.push(api_response.result[hallazgo_resultado].authorship_names.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
+				
+					}
+
+					let nombres_autores = ""
+
+					nombres_autores = nombres_array.join("\n");
+
+
+					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.5rem;">${nombres_autores}</div>`})
 					}
 			
 

@@ -22,6 +22,27 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+.ceca-widget {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 👈 empieza desde arriba */
+  align-items: flex-start;     /* 👈 alineado a la izquierda */
+  height: 100%;                /* para que ocupe todo el widget */
+  width: 100%;
+}
+
+.coin-card{
+  text-align: center;
+  color: #997f5a;
+}
+
+.coin-img{
+
+  width: 200px !important;
+  height: 200px !important;
+
+}
+
 #titulo-ficha{
     font-size: 1.75em;
     text-transform: uppercase;
@@ -121,7 +142,6 @@ margin: 0.5em 0 0.2em 0 !important;
   width: 100%;
   height: 100%;
   cursor: pointer;
-
 }
 .button_display{
   width: 2.35rem;
@@ -142,6 +162,7 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .flip-card-front, .flip-card-back {
+  background-color: white ;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -151,6 +172,7 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .flip-card-front {
+  
   color: black;
   display: flex;
   justify-content: center;
@@ -165,7 +187,7 @@ margin: 0.5em 0 0.2em 0 !important;
 }
 
 .flip-card-back {
-  background-color: #eee;
+  background-color: #ffffff;
   color: black;
   transform: rotateY(180deg);
   padding: 1rem;

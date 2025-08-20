@@ -380,7 +380,36 @@ var hoards =  {
 								const map_fact = new map_factory() // creates / get existing instance of map
 								
 
-					grid.addWidget({w:4,h:12,content: ""})
+					//console.log ("Nombre de la Ceca 2: "+api_response.result[hallazgo_resultado].name);
+					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].name);
+					console.log ("Largo: "+coin.result.length);
+
+					 let content = `<div class="ceca-widget">`;
+
+					coin.result.forEach(coin => {
+						const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
+						const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
+						const name = coin.type_full_value || "Moneda sin nombre";
+
+						content += `
+							<div class="coin-card">
+								<div class = "coin-imagenes">
+								<img src="${image_obverse}" alt="anverso" class="coin-img">
+								<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
+								<p class="coin-name">${name}</p>
+							</div>
+						`;
+					});
+
+					content += `</div>`;
+
+					// 4. Finalmente añadimos el widget al grid
+					grid.addWidget({
+						w: 4,
+						h: 12,
+						content: content
+					});
+
 					grid.addWidget({w:4,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
 					const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
 
@@ -429,7 +458,8 @@ var hoards =  {
 					});
 
 					let nombres_array = []
-					let total_autores = api_response.result[hallazgo_resultado].authorship_names.split("|").length
+					const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
+					let total_autores = rawAutores ? rawAutores.split("|").length : 0;
 
 					for (let index = 0; index < total_autores; index++) {
 
@@ -465,7 +495,7 @@ var hoards =  {
 						parent		 : rows_container
 					})
 					
-
+					console.log (api_response.result[hallazgo_resultado]);
 					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[hallazgo_resultado]))
 
 
@@ -617,19 +647,27 @@ var hoards =  {
 		const info_node = common.create_dom_element({
 					element_type	: "div",
 					class_name		: "container_prueba",
-					text_content	: node.info_nodo.name,
 					parent			: node_parent
 		})
-	
-		info_node.style.paddingLeft = `${padding}em`
-		info_node.style.fontSize = `${font_size}rem`
-		info_node.style.textTransform = "uppercase"
-		info_node.style.fontWeight = "bold"
-		info_node.style.color = `${Shades[level]}`
+
+		const link_node = common.create_dom_element({
+					element_type: "a",
+					class_name: "info_link",
+					text_content: node.info_nodo.name,
+					href: `/web_numisdata/findspot/${node.info_nodo.section_id}`,
+					parent: info_node
+		});
+
+		info_node.style.paddingLeft = `${padding}em`;
+		link_node.style.fontSize = `${font_size}rem`;
+		link_node.style.textTransform = "uppercase";
+		link_node.style.fontWeight = "bold";
+		link_node.style.color = `${Shades[level]}`;
 
 
 		if(node.info_nodo.coins != null){
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
+						console.log ("Nombre de ceca: "+node.info_nodo.name);
 
 						const button_display = common.create_dom_element({
 							element_type	: "img",
@@ -654,7 +692,7 @@ var hoards =  {
 						})
 
 						for (let index = 0; index < coins.result.length; index++) {
-							console.log(coins.result[index])
+							//console.log(coins.result[index])
 							const slide1 = common.create_dom_element({
 								element_type: "div",
 								class_name: "swiper-slide",

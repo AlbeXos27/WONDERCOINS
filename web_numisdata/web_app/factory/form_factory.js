@@ -664,7 +664,7 @@ function form_factory() {
 	* @param object filter
 	* @return string
 	*/
-	this.parse_sql_filter = function(filter, group){
+	this.parse_sql_filter = function(filter, group, recursive){
 
 		const self = this
 
@@ -679,13 +679,15 @@ function form_factory() {
 				for (let i = 0; i < ar_query_length; i++) {
 
 					const item = ar_query[i]
-
 					const item_op = Object.keys(item)[0]
 					if(item_op==="$and" || item_op==="$or") {
 
 						// recursion
-						const current_filter_line = "" + self.parse_sql_filter(item, group) + ""
-						ar_filter.push(current_filter_line)
+						if(recursive){
+							const current_filter_line = "" + self.parse_sql_filter(item, group,recursive) + ""
+							ar_filter.push(current_filter_line)
+						}
+
 						continue;
 					}
 
@@ -695,13 +697,13 @@ function form_factory() {
 							: item.field
 
 					let filter_line
-					// if (item.op==='MATCH') {
-					// 	filter_line = "MATCH (" + item.field + ") AGAINST ("+item.value+" IN BOOLEAN MODE)"
-					// }else{
-					// 	filter_line = (item.field.indexOf("AS")!==-1)
-					// 		? "" +item.field+""  +" "+ item.op +" "+ item.value
-					// 		: "`"+item.field+"`" +" "+ item.op +" "+ item.value
-					// }
+					/*  if (item.op==='MATCH') {
+						filter_line = "MATCH (" + item.field + ") AGAINST ("+item.value+" IN BOOLEAN MODE)"
+					 }else{
+					 	filter_line = (item.field.indexOf("AS")!==-1)
+							? "" +item.field+""  +" "+ item.op +" "+ item.value
+							: "`"+item.field+"`" +" "+ item.op +" "+ item.value
+					} */
 					if (item.sql_filter && item.sql_filter.length>0) {
 						filter_line = item.sql_filter
 					}else if (item.op==='MATCH') {
@@ -711,7 +713,11 @@ function form_factory() {
 							? "(" +item_field+""  +" "+ item.op +" "+ item.value + (" AND "+item_field+"!='')")
 							: "(`"+item_field+"`" +" "+ item.op +" "+ item.value	+ (" AND `"+item_field+"`!='')")
 					}
+					if(item_field == "term"){
+							filter_line += ` AND term_section_label LIKE '%Grupo numismático%' AND parent LIKE  '["21057"]'`;
+					}
 
+					
 					ar_filter.push(filter_line)
 
 					// group
@@ -729,7 +735,7 @@ function form_factory() {
 				return ar_filter.join(" "+boolean_op+" ")
 			  })()
 			: null
-			// console.log("sql_filter:",sql_filter);
+			 //console.log("sql_filter:",sql_filter);
 
 		return sql_filter
 	}//end parse_sql_filter
@@ -849,6 +855,8 @@ function form_factory() {
 
 		// options
 			const form_item		= options.form_item;
+			const id			= options.id || false;
+			const label 		= options.label || "";
 			const limit			= options.limit || 30;
 			const table			= options.table || form_item.table;
 			const cross_filter	= options.cross_filter || true; // look the other form values to generate the sql filter (default true)
@@ -925,7 +933,7 @@ function form_factory() {
 			delay		: 150,
 			minLength	: 0,
 			html		: true,
-			source		: function( request, response ) {
+			source		: async function( request, response ) {
 
 				const term = request.term
 
@@ -1029,7 +1037,7 @@ function form_factory() {
 						}
 
 					// sql_filter
-						const sql_filter = self.parse_sql_filter(filter) // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
+						const sql_filter = self.parse_sql_filter(filter,undefined) // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
 
 					// table resolved
 						const table_resolved = typeof table==="function" ? table() : table;
@@ -1037,21 +1045,41 @@ function form_factory() {
 					// field
 						const field_beats = q_column.split(' AS ')
 						const plain_field = field_beats[0]
-
+						let section_id  = ""
 					// search
-						data_manager.request({
+						if(id){
+					
+							await data_manager.request({
+							body : {
+								dedalo_get	: 'records',
+								table		: table_resolved,
+								ar_fields	: [plain_field + " AS name","section_id"],
+								sql_filter	: !id  ? sql_filter : " `term` LIKE '%" + label + "%'",
+								group		: plain_field, // q_column,
+								limit		: limit,
+								order		: order
+							}
+							}).then((api_response) => {
+
+								section_id = api_response.result[0].section_id
+
+							})
+
+
+						}
+						await data_manager.request({
 							body : {
 								dedalo_get	: 'records',
 								table		: table_resolved,
 								ar_fields	: [plain_field + " AS name"],
-								sql_filter	: sql_filter,
+								sql_filter	: !id  ? sql_filter : `parent LIKE  '["${section_id}"]'` ,
 								group		: plain_field, // q_column,
 								limit		: limit,
 								order		: order
 							}
 						})
 						.then((api_response) => { // return results in standard format (label, value)
-							// console.log("-->autocomplete api_response:", api_response);
+							 //console.log("-->autocomplete api_response:", api_response);
 
 							const ar_result	= []
 
@@ -1311,7 +1339,7 @@ function form_factory() {
 			}
 
 		// sql_filter
-			const sql_filter = self.parse_sql_filter(filter)
+			const sql_filter = self.parse_sql_filter(filter,undefined,true)
 
 
 		return sql_filter

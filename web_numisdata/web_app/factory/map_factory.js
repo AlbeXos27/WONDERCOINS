@@ -98,25 +98,25 @@ function map_factory() {
 					iconAnchor: [16, 32], 
 					popupAnchor: [0, -32] 
 					});
+			
+			const iconoComplejo = L.icon({
+					iconUrl: 'tpl/assets/images/map/orange.png',
+					iconSize: [32, 32], 
+					iconAnchor: [16, 32], 
+					popupAnchor: [0, -32] 
+					});
 
-
-			function miFuncionPersonalizada(tipo) {
-				console.log("Se hizo clic en:", tipo);
-				// Aquí puedes hacer cualquier otra lógica
-				}
-
-				
 				for (let index = 0; index < data.hallazgos.datos.length; index++) {
-					let data_ceca = null
+					let data_hallazgo = null
 					try {
-						 data_ceca = JSON.parse(data.hallazgos.datos[index].map)
+						 data_hallazgo = JSON.parse(data.hallazgos.datos[index].map)
 					} catch (error) {
-						data_ceca  = data.hallazgos.datos[index].map
+						data_hallazgo  = data.hallazgos.datos[index].map
 					}
 					
 
-					if(data_ceca != null){
-					const markerHallazgo = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoHallazgo })
+					if(data_hallazgo != null){
+					const markerHallazgo = L.marker([data_hallazgo.lat, data_hallazgo.lon], { icon: iconoHallazgo })
 					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
 					.on("click", async function () {
 						const monedas = await map_node.cargarMonedasHallazgos(data.hallazgos.datos[index].name)
@@ -153,9 +153,39 @@ function map_factory() {
 
 					}
 
-				}  
+				}
+				console.log(data)
+				if(data.complejos.datos != null){
+				for (let index = 0; index < data.complejos.datos.length; index++) {
 
+					let data_complejos = null
+					try {
+						 data_complejos = JSON.parse(data.complejos.datos[index].map)
+					} catch (error) {
+						data_complejos  = data.complejos.datos[index].map
+					}
+					
 
+					if(data_complejos != null){
+						
+					const markerComplejo = L.marker([data_complejos.lat, data_complejos.lon], { icon: iconoComplejo })
+					.bindPopup(`<b>Complejo</b><br>${data.complejos.datos[index].name}`)
+					.on("click", async function () {
+						const monedas = await map_node.cargarMonedasComplejos(data.complejos.datos[index].name)
+						while (map_node.rows_container.hasChildNodes()) {
+							map_node.rows_container.removeChild(self.rows_container.lastChild);
+						}
+						map_node.render_rows(data.complejos.datos[index],monedas.result)
+						this.openPopup();  // Abrir popup también
+					});
+					
+					markersCluster.addLayer(markerComplejo); 
+
+					}
+
+				}
+
+			}
 
 
 			

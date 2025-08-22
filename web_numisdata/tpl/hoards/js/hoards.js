@@ -303,7 +303,7 @@ var hoards =  {
 			const filter = self.form.build_filter()
 				// parse_sql_filter
 				const group			= []
-				const parsed_filter	= self.form.parse_sql_filter(filter, group)
+				const parsed_filter	= self.form.parse_sql_filter(filter, group,true)
 				const base_filter = "(name != '' AND map != '')"
 				let final_filter = base_filter
 				const sql_filter	= parsed_filter

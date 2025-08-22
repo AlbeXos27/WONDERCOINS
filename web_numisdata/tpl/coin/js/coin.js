@@ -17,73 +17,54 @@ var coin = {
 	* When the HTML page is loaded
 	* @param object options
 	*/
-	set_up : function(options) {
+set_up: function(options) {
+    const self = this;
 
-		const self = this
+    self.section_id = options.section_id;
+    self.export_data_container = options.export_data_container;
 
-		// options
-			self.section_id				= options.section_id
-			self.export_data_container	= options.export_data_container
+    const export_data_buttons = page.render_export_data_buttons();
+    self.export_data_container.appendChild(export_data_buttons);
+    self.export_data_container.classList.add('hide');
 
-		// export_data_buttons added once
-			const export_data_buttons = page.render_export_data_buttons()
-			self.export_data_container.appendChild(export_data_buttons)
-			self.export_data_container.classList.add('hide')
+    const contact_form_button = page.create_suggestions_button();
+    self.export_data_container.appendChild(contact_form_button);
 
-			//suggestions_form_button
-			const contact_form_button = page.create_suggestions_button()
-			self.export_data_container.appendChild(contact_form_button)
+    if (self.section_id && self.section_id > 0) {
+        self.get_row_data({ section_id: self.section_id })
+            .then(function(data) {
+                if (!data || data.length === 0) {
+                    console.error("No hay datos para section_id:", self.section_id);
+                    return;
+                }
+                const row = data[0];
 
-		// trigger render coin with current options.section_id
-			if (self.section_id || self.section_id<1) {
+                // asegurarse de que los campos null tengan un valor seguro
+                const safe_row = {
+                    ...row,
+                    legend_obverse: row.legend_obverse || "",
+                    legend_reverse: row.legend_reverse || "",
+                    countermark_obverse: row.countermark_obverse || "",
+                    countermark_reverse: row.countermark_reverse || "",
+                    auction_data: row.auction_data || []
+                };
 
-				// search by section_id
-					self.get_row_data({
-						section_id : self.section_id
-					})
-					.then(function(data){
+                const target = document.getElementById('row_detail');
+                if (target) {
+                    self.render_row({ target: target, row: safe_row })
+                        .then(function() {
+                            const images_gallery_container = target.querySelector('.gallery');
+                            page.activate_images_gallery(images_gallery_container);
+                            self.export_data_container.classList.remove('hide');
+                        });
+                }
+            });
+    } else {
+        console.error("section_id inválido: ", options);
+    }
 
-						// draw row
-						const target = document.getElementById('row_detail')
-						if (target) {
-
-							// row . Note data is an array of one row, already parsed
-								const row = data[0];
-
-							// render row nodes
-								self.render_row({
-									target	: target,
-									row		: row
-								})
-								.then(function(){
-
-									// activate images gallery light box
-										const images_gallery_container = target.querySelector('.gallery')
-										page.activate_images_gallery(images_gallery_container)
-
-									// show export buttons
-										self.export_data_container.classList.remove('hide')
-								})
-						}
-					})
-			}else{
-				console.error("Invalid section_id: ", options);
-			}
-
-		// navigate across records group
-			// document.onkeyup = function(e) {
-			// 	if (e.which == 37) { // arrow left <-
-			// 		let button = document.getElementById("go_prev")
-			// 		if (button) button.click()
-			// 	}else if (e.which == 39) { // arrow right ->
-			// 		let button = document.getElementById("go_next")
-			// 		if (button) button.click()
-			// 	}
-			// }
-
-
-		return true
-	},//end set_up
+    return true;
+},//end set_up
 
 
 
@@ -152,38 +133,28 @@ var coin = {
 	/**
 	* RENDER_ROW
 	*/
-	render_row : function(options) {
+	render_row: function(options) {
+    const self = this;
+    const row = options.row;
+    const container = options.target;
+    self.row = row;
 
-		const self = this
+    return new Promise(function(resolve) {
+        while (container.firstChild) container.removeChild(container.firstChild);
 
-		// options
-			const row		= options.row
-			const container	= options.target
+        // envolver draw_coin en try/catch para evitar errores por campos null
+        let coin_row_wrapper;
+        try {
+            coin_row_wrapper = coin_row.draw_coin(row);
+        } catch (err) {
+            console.error("Error al dibujar la moneda:", err, row);
+            coin_row_wrapper = document.createElement('div');
+            coin_row_wrapper.textContent = "Error mostrando datos de la moneda.";
+        }
 
-		// fix row
-			self.row = row
-
-		// debug
-			if(SHOW_DEBUG===true) {
-				// console.log("coin row:",row);
-			}
-
-		return new Promise(function(resolve){
-
-			// container. clean container div
-				while (container.hasChildNodes()) {
-					container.removeChild(container.lastChild);
-				}
-
-			// draw row coin
-				const coin_row_wrapper = coin_row.draw_coin(row)
-
-			// container final fragment add
-				container.appendChild(coin_row_wrapper)
-
-
-			resolve(container)
-		})
+        container.appendChild(coin_row_wrapper);
+        resolve(container);
+		});
 	}//end render_row
 
 

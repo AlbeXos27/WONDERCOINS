@@ -257,7 +257,7 @@ var coin_row = {
 				// label_collection.push(tstring.number || "Number")
 				value_collection.push(row.number)
 			}
-			console.log(row)
+			
 			const label_collection_node = common.create_dom_element({
 				element_type	: "label",
 				class_name		: "left-labels",
@@ -277,18 +277,17 @@ var coin_row = {
 				text_content	: "Hallazgo",
 				parent			: info_container
 			})
-			let num_link= JSON.parse(row.findspot_data);
+			const num_link = row.findspot_data ? JSON.parse(row.findspot_data)[0] : ""
 			const value_findspot_node = common.create_dom_element({
 				element_type	: "a",
 				class_name		: "rigth-values type_label",
 				inner_html		: row.findspot + " " + "<a class=\"icon_link\"></a> ",
-				href 			: page_globals.__WEB_ROOT_WEB__ + "/findspot/"+ num_link[0]  ,
+				href 			: page_globals.__WEB_ROOT_WEB__ + "/findspot/"+ num_link  ,
 				target 			: "_blank",
 				parent			: info_container
 			})
 
-	
-
+		
 		// auctions
 			// const value_auctions = []
 			// if (row.ref_auction_group && row.ref_auction_group.length>0) {
@@ -379,6 +378,7 @@ var coin_row = {
 					value_equivalents.push(current_value_equivalents.join(' | '))
 				}
 			}
+
 			const value_equivalents_node = common.create_dom_element({
 				element_type	: "span",
 				class_name		: "rigth-values",
@@ -494,15 +494,13 @@ var coin_row = {
 			for (let i = 0; i < row.catalogue_type_mint.length; i++) {
 				const catalogue = row.catalogue_type_mint[i]
 				if(catalogue === page_globals.OWN_CATALOG_ACRONYM ) continue;
-
 				const value_type_node = common.create_dom_element({
 					element_type	: "span",
 					class_name		: "rigth-values equivalents",
-					inner_html		: catalogue+' '+row.type[i],
+					inner_html		: catalogue+' '+ row.type_data[0].section_id,
 					parent			: info_container
 				})
 			}
-
 		// obverse
 			common.create_dom_element({
 				element_type	: "label",

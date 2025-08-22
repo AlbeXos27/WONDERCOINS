@@ -1812,7 +1812,7 @@ export const type_row_fields = {
 		// map_container
 			const map_container = common.create_dom_element({
 				element_type	: "div",
-				class_name		: "map_container hide_opacity map",
+				class_name		: "map_container map",
 				parent			: line
 			})
 

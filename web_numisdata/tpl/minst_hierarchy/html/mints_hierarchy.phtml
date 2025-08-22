@@ -13,7 +13,8 @@
 		<!-- header -->
 			<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/header.phtml'; ?>
 
-		<!-- main -->
+
+		<!-- Main -->
 			<div id="main">
 				<div class="inner">
 
@@ -21,18 +22,17 @@
 						<h1><?php echo $title ?></h1>
 						<div class="golden-separator"></div>
 
+					<!-- Form -->
+						<div id="form_container"></div>
+
 					<!-- Result -->
-						<section class="result">
-							<div id="row_detail"> <span>Loading row..</span> </div>
-							<div id="map_container" class="map_container map"></div>
-							<section id="rows_container" class="rows_container result rows_list"></section>
-							<?php /*<div id="export_data" class="export_data_container"></div>*/ ?>
-						</section>
+						<section id="rows_container" class="result"></section>
 
 				</div>
 			</div>
 
-		<!-- footer -->
+
+		<!-- Footer -->
 			<?php include dirname(dirname(dirname(__FILE__))) . '/page/html/footer.phtml'; ?>
 
 	</div>
@@ -40,11 +40,9 @@
 <?php echo $this->get_header_links('js', ['js_async' => 'defer']) ?>
 <script>
 dom_ready(function(){
-	hoard.set_up({
-		table					: '<?php echo $table ?>',
-		section_id				: '<?php echo $section_id ?>',
-		export_data_container	: document.getElementById('export_data'),
-		row_detail_container	: document.getElementById('row_detail')
+	mints.set_up({
+		form_container	: document.getElementById('form_container'),
+		rows_container	: document.getElementById('rows_container')
 	})
 })
 </script>

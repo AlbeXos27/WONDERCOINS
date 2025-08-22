@@ -360,6 +360,134 @@ var hoards =  {
 						}
 						rows_container.classList.remove("loading")
 					})()
+
+					const movil = common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "findspot_mobile",
+						parent 			: rows_container
+					})
+
+					const titulo_movil = common.create_dom_element({
+						element_type	: "a",
+						class_name 		: "title_mobile",
+						text_content	: `${api_response.result[hallazgo_resultado].name}`,
+						href			: `/web_numisdata/findspot/${api_response.result[hallazgo_resultado].section_id}`,
+						parent 			: movil
+					})
+
+					const mapa_movil = common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "mapa_mobile",
+						parent 			: movil
+					})
+
+					let resultado = {
+						hallazgos: {
+							datos: []
+						},
+						cecas: {
+							datos: []
+						},
+						complejos: {
+							datos: []
+						}
+						};
+				
+					resultado.hallazgos.datos.push(api_response.result[hallazgo_resultado])
+
+					const map_fact = new map_factory() // creates / get existing instance of map
+
+					const map = map_fact.init({
+						map_container : mapa_movil,
+						map_position  : api_response.result[hallazgo_resultado].map,
+						source_maps   : page.maps_config.source_maps,
+						result        : resultado,
+						findspot      : true
+						});
+
+
+					const title_info = common.create_dom_element({
+						element_type	: "h2",
+						class_name 		: "title_info",
+						text_content	: "Información Pública",
+						parent 			: movil
+					})
+
+					common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "golden-separator",
+						parent 			: title_info
+					})
+
+					const info_mobile = common.create_dom_element({
+						element_type	: "p",
+						class_name 		: "info_mobile",
+						parent 			: movil
+					})
+					info_mobile.innerHTML = api_response.result[hallazgo_resultado].public_info;
+					const title_bibliografia = common.create_dom_element({
+						element_type	: "h2",
+						class_name 		: "title_info",
+						text_content	: "Bibliografía",
+						parent 			: movil
+					})
+
+					common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "golden-separator",
+						parent 			: title_bibliografia
+					})
+
+					let bibliografia_array = []
+
+					for (let index = 0; index < api_response.result[hallazgo_resultado].bibliography_data.length; index++) {
+						
+						bibliografia_array.push(api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_title +" / "+api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_authors + " / (" + api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_date + ")")
+					}
+
+					let bibliografia = ""
+					bibliografia = bibliografia_array.join("\n")
+
+					const bibliografia_mobile = common.create_dom_element({
+						element_type	: "p",
+						class_name 		: "bilbiografia_mobile",
+						parent 			: movil,
+						text_content	: bibliografia
+					})
+
+					const title_autores = common.create_dom_element({
+						element_type	: "h2",
+						class_name 		: "title_info",
+						text_content	: "Autores",
+						parent 			: movil
+					})
+					common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "golden-separator",
+						parent 			: title_autores
+					})
+
+					let nombres_array = []
+					const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
+					let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+
+					for (let index = 0; index < total_autores; index++) {
+
+						nombres_array.push(api_response.result[hallazgo_resultado].authorship_names.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
+				
+					}
+
+					let nombres_autores = ""
+
+					nombres_autores = nombres_array.join("\n");
+
+					const autores_mobile = common.create_dom_element({
+						element_type	: "p",
+						class_name 		: "autores_mobile",
+						parent 			: movil,
+						text_content	: nombres_autores
+					})
+
 					if(window.innerWidth > 768){
 								const estructura = common.create_dom_element({
 						element_type	: "div",
@@ -377,7 +505,7 @@ var hoards =  {
 					img_ident.id = "img_ident"
 
 
-								const map_fact = new map_factory() // creates / get existing instance of map
+					const map_fact = new map_factory() // creates / get existing instance of map
 								
 
 					//console.log ("Nombre de la Ceca 2: "+api_response.result[hallazgo_resultado].name);
@@ -440,8 +568,8 @@ var hoards =  {
 					grid.addWidget({w:2,h:1,content: `${api_response.result[hallazgo_resultado].date_in} / ${api_response.result[hallazgo_resultado].date_out}`})
 					grid.addWidget({w:2,h:1,content: ``})
 					grid.addWidget({w:2,h:1,content: ``})
-					grid.addWidget({w:8,h:1,content: ``})
-					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
+					grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
+					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].abstract}`})
 
 					let bibliografia_array = []
 

@@ -76,7 +76,51 @@ margin: 0.5em 0 0.2em 0 !important;
 
 }
 
+.findspot_mobile{
+  display: none;
+}
 
+.title_mobile{
+  font-size: 1.6rem;
+  color : #9b6c29;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin: 0.5rem 0 0.2rem 0 !important;
+}
+
+.mapa_mobile {
+  min-width: 95%;
+  min-height: 300px; /* asegura que nunca sea 0 */
+  height: 40vh;      /* 40% de la altura de la ventana */
+  z-index: 1;
+  align-items: center;
+  margin: 0 !important;
+}
+
+.title_info{
+  font-size: 1.2rem;
+  text-align: left;
+  text-transform: none;
+  margin: 1.5rem 0 0.2rem 0 !important;
+}
+
+.info_mobile{
+  font-size: 1.0rem;
+  text-align: left;
+  margin: 1.5rem 0 0.2rem 0 !important;
+}
+
+.bilbiografia_mobile{
+  font-size: 0.8rem;
+  text-align: left;
+  margin: 1.5rem 0 0.2rem 0 !important;
+}
+
+.autores_mobile{
+  font-size: 1.0rem;
+  text-align: left;
+  margin: 1.5rem 0 0.2rem 0 !important;
+}
 
 /*# sourceMappingURL=map.css.map */
 #wrapper .inner{
@@ -134,7 +178,38 @@ margin: 0.5em 0 0.2em 0 !important;
     width: 80vw;
     height: 250px;
   }
+  .info_link{
+    font-size: 20px !important;
+  }
+  .button_display{
+    width: 1.6rem !important;
+  }
+  .title_mobile{
+  font-size: 1.2rem;
+  }
+  .title_info{
+    font-size: 1.0rem;
+  }
+  .info_mobile{
+    font-size: 0.9rem;
+  }
+  .autores_mobile{
+    font-size: 0.95rem;
+  }
 }
+
+@media screen and (max-width: 1100px) {
+  .grid-stack {
+   display: none;
+  }
+  .info_link{
+    font-size: 30px;
+  }
+  .findspot_mobile{
+    display: block;
+  }
+}
+
 
 
 .flip-card {
@@ -325,6 +400,15 @@ margin: 0.5em 0 0.2em 0 !important;
     align-items: center;
     gap: 0.3rem;
   }
+
+  .diameter_container,
+  .collection_container,
+  .section_id_container
+  {
+    border-top: 1.3px solid black;
+    border-left: none;
+  }
+  
 
   .weigdia_container,
   .dico_container,

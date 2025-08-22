@@ -862,17 +862,29 @@ cargarTodoYCrearMapa : async function(resultado) {
 		return findspots_tree
 
 	},
-	generate_Tree : async function(tree,node,node_parent,padding){
-
+	generate_Tree : async function(tree,node,node_parent,padding,font_Size){
+		
 	
 		const info_node = common.create_dom_element({
 					element_type	: "div",
 					class_name		: "container_prueba",
-					text_content	: node.info_nodo.name,
 					parent			: node_parent
 		})
-		
-		info_node.style.paddingLeft = `${padding}em`
+
+		const link_node = common.create_dom_element({
+					element_type: "a",
+					class_name: "info_link",
+					text_content: node.info_nodo.name,
+					href: `/web_numisdata/findspot/${node.info_nodo.section_id}`,
+					parent: info_node
+		});
+
+		const font_size = 1.5;   // Tamaño en rem
+
+		info_node.style.paddingLeft = `${padding}em`;
+		link_node.style.fontSize = `${font_size}rem`;
+		link_node.style.textTransform = "uppercase";
+		link_node.style.fontWeight = "bold";
 
 		if(node.info_nodo.coins != null){
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
@@ -892,7 +904,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 				if (tree[index].info_nodo.parent == '["'+node.info_nodo.section_id+'"]') {
 					
 					tree[index].padre = "'"+node.info_nodo.section_id+"'"
-					await this.generate_Tree(tree,tree[index],info_node,1.5)
+					await this.generate_Tree(tree,tree[index],info_node,1.5,1.3)
 				}
 				
 			}

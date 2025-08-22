@@ -786,11 +786,12 @@ var hoards =  {
 					parent: info_node
 		});
 
+		const font_size = 1.5;   // Tamaño en rem
+		const padding = 0.5; 
 		info_node.style.paddingLeft = `${padding}em`;
 		link_node.style.fontSize = `${font_size}rem`;
 		link_node.style.textTransform = "uppercase";
 		link_node.style.fontWeight = "bold";
-		link_node.style.color = `${Shades[level]}`;
 
 
 		if(node.info_nodo.coins != null){

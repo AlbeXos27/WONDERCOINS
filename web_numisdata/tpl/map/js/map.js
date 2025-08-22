@@ -16,9 +16,11 @@ var map = {
 		form_container			: null,
 		rows_container			: null,
 		map_container			: null,
+		map_container_numismatic_group : null,
 		export_data_container	: null,
 
 		map_factory_instance : null,
+		map_factory_instance_numismatic_group : null,
 
 		// master_map_global_data. All records from table 'map_global'
 		master_map_global_data : null,
@@ -58,6 +60,7 @@ var map = {
 			self.map_container			= options.map_container
 			self.rows_container			= options.rows_container
 			self.export_data_container	= options.export_data_container
+			self.map_container_numismatic_group	= options.map_container_numismatic_group
 
 		// export_data_buttons added once
 			const export_data_buttons = page.render_export_data_buttons()
@@ -178,7 +181,6 @@ cargarTodoYCrearMapa : async function(resultado) {
 			result: resultado,
 			map_node : this
 		});
-
 	} catch (error) {
 		console.error("Error cargando datos:", error);
 	}
@@ -331,6 +333,47 @@ cargarTodoYCrearMapa : async function(resultado) {
 				}
 			})
 
+		// hoard
+			self.form.item_factory({
+				id				: "hoard",
+				name			: "hoard",
+				label			: tstring.hoard || "hoard",
+				q_column		: "name",
+				value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
+				sql_filter		: ` name LIKE '%%' AND name !='' `	, // FILTRO PARA HALLAZGOS ESTA BUGGED NO SE PORQUE?
+				q_selected_eq	: "LIKE",
+				parent			: form_row,
+				callback		: function(form_item) {
+					self.form.activate_autocomplete({
+						form_item	: form_item,
+						table		: 'hoards'
+					})
+				}
+			})
+
+		// catalog
+			self.form.item_factory({
+				id			: "catalog",
+				name		: "catalog",
+				label		: "Grupo Numismatico",
+				q_column		: "term",
+				value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
+				sql_filter		: ` term LIKE '%%' AND term !='' `	, 
+				q_selected_eq	: "LIKE",		
+				parent		: form_row,
+				callback	: function(form_item) {
+					self.form.activate_autocomplete({
+						form_item	: form_item,
+						table		: 'catalog',
+						id			: false
+					})
+				}
+			})
+			
+
+			this.observeAllContainers(form_row,self,1)
+
+
 
 		// submit button
 			const submit_group = common.create_dom_element({
@@ -367,8 +410,101 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 
 		return self.form.node
+
 	},//end render_form
 
+
+
+
+
+
+
+	// Función que conecta el observer al último container_values
+	observeAllContainers: function (form_row, self, id) {
+    let observers = [];
+
+    const connectToContainer = (container) => {
+        const obs = new MutationObserver(async (mutationsList) => {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    if (container.children.length > 0) {
+                        const lastValueLabel = container.lastElementChild.querySelector('.value_label').textContent;
+						
+						await data_manager.request({
+							body : {
+								dedalo_get	: 'records',
+								table		: "catalog",
+								ar_fields	: ["*"],
+								sql_filter	: `term LIKE "%${lastValueLabel}%"`,
+								limit		: 0
+							}
+							
+							}).then((api_response) => { 
+
+								if(api_response.result[0].children != null){
+
+									self.form.item_factory({
+										id: "catalog" + id,
+										name: "catalog" + id,
+										label: lastValueLabel,
+										q_column: "term",
+										value_wrapper: ['["', '"]'],
+										sql_filter: ` term LIKE '%%' AND term !='' `,
+										q_selected_eq: "LIKE",
+										parent: form_row,
+										callback: function(form_item) {
+											self.form.activate_autocomplete({
+												form_item: form_item,
+												table: 'catalog',
+												id	: true,
+												label : lastValueLabel
+											});
+										}
+									});
+
+								id++;
+								}
+
+							})
+
+                    } else {
+                        let next = container.parentNode.nextElementSibling;
+                        while (next) {
+                            let toRemove = next;
+                            next = next.nextElementSibling;
+                            toRemove.remove();
+                            id--;
+                        }
+
+                    }
+                }
+            }
+        });
+
+        obs.observe(container, { childList: true });
+        observers.push(obs);
+    };
+
+    const parentObserver = new MutationObserver(() => {
+        const containers = form_row.querySelectorAll('.container_values');
+        observers.forEach(o => o.disconnect()); // limpia anteriores
+        observers = [];
+
+        containers.forEach(container => {
+            if (container.previousElementSibling.id && container.previousElementSibling.id.includes("catalog")) {
+                connectToContainer(container);
+            }
+        });
+    });
+
+    parentObserver.observe(form_row, { childList: true });
+
+    form_row.querySelectorAll('.container_values').forEach(container => {
+        if (container.previousElementSibling.id && container.previousElementSibling.id.includes("catalog")) {
+            connectToContainer(container);
+        }
+    });
+},
 
 
 	/**
@@ -408,7 +544,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 				//console.log(self.form.form_items) // -----IMPORTANTE-----
 				// parse_sql_filter
 				const group			= []
-				const parsed_filter	= self.form.parse_sql_filter(filter, group)
+				const parsed_filter	= self.form.parse_sql_filter(filter, group,false)
 				const sql_filter	= parsed_filter
 					? '(' + parsed_filter + ')'
 					: null
@@ -431,6 +567,9 @@ cargarTodoYCrearMapa : async function(resultado) {
 				let q = null
 				let q_selected = null
 				let label = "name"
+				let tam_form_items = Object.keys(self.form.form_items)
+  						.filter(k => k.startsWith("catalog") && self.form.form_items[k].q_selected.length > 0 || self.form.form_items.mint.q !== "");
+
 			if(self.form.form_items.mint.q !== "" || self.form.form_items.mint.q_selected.length > 0){
 
 				table = "mints"
@@ -449,22 +588,29 @@ cargarTodoYCrearMapa : async function(resultado) {
 				
 				}else{
 
-					if(self.form.form_items.collection.q !== "" || self.form.form_items.collection.q_selected.length > 0){
+					if(self.form.form_items.hoard.q !== "" || self.form.form_items.hoard.q_selected.length > 0){
 
-						table = "coins"
-						q = self.form.form_items.collection.q
-						q_selected = self.form.form_items.collection.q_selected
-						label = "collection"
+						table = "hoards"
+						q = self.form.form_items.hoard.q
+						q_selected = self.form.form_items.hoard.q_selected
+
+					}else{
+
+						table = "catalog"
+						q = tam_form_items.length > 1 ? self.form.form_items[tam_form_items[tam_form_items.length-1]].q :  self.form.form_items[tam_form_items[tam_form_items.length-1]].q
+						q_selected = tam_form_items.length > 1 ?  self.form.form_items[tam_form_items[tam_form_items.length-1]].q_selected :  self.form.form_items[tam_form_items[tam_form_items.length-1]].q_selected
+						label = "parents_text"
 					}
 
 				}
 
 			}
 
+			
 
 			let sql_filter_final = ` ${label} LIKE '%${q !== '' ? q : q_selected}%' AND ${label} !=''`
 
-			console.log("El sql filter es " + sql_filter_final + " " + table)
+			
 
 			// HACER LLAMADA A API CON DATA_MANAGER.REQUEST CON EL CAMPO MINT DE LA TABLA COINS -> NOMBRE DE LA CECA PARA RECOGER MONEDA
 
@@ -474,9 +620,9 @@ cargarTodoYCrearMapa : async function(resultado) {
 					dedalo_get		: 'records',
 					table			: table,
 					ar_fields		: ar_fields,
-					sql_filter		: sql_filter_final,
+					sql_filter		: table != "catalog" ? sql_filter_final : sql_filter_final + "AND ref_mint_related != '' " ,
 					limit			: 0,
-					count			: false,
+					count			: true,
 					offset			: 0,
 					order			: 'section_id ASC',
 					// group		: "type_data",
@@ -484,21 +630,104 @@ cargarTodoYCrearMapa : async function(resultado) {
 				}
 			})
 			.then(async function(api_response){
-				
+
 				const location = {
-					lon: null,
-					lat: null
-				};
+						lon: null,
+						lat: null
+					};
 
 				if (api_response.result) {
-					
-					self.map_container.classList.remove("loading")
-					const datos_location= JSON.parse(api_response.result[0].map)
-					location.lat = datos_location.lat;
-					location.lon = datos_location.lon;
-					self.map_factory_instance.move_map_to_point(location)
-					self.render_rows(api_response.result[0])
 
+					if(table == "catalog"){
+						let filtro = ""
+						
+						for (let index = 0; index < api_response.total; index++) {
+
+							filtro += index == 0 ? `section_id = ${JSON.parse(api_response.result[index].ref_mint_related_data)[0]}` : ` OR section_id = ${JSON.parse(api_response.result[index].ref_mint_related_data)[0]}`;
+						}
+						
+						let resultado1 = {
+
+							hallazgos: {
+								datos: []
+							},
+							cecas: {
+								datos: []
+							},
+							complejos: {
+								datos: []
+							}
+
+						};
+
+						
+
+						resultado1.cecas.datos = await self.cargarCecasFiltradas(filtro);
+
+						let data_ceca_lat = 0
+						let data_ceca_lon = 0
+
+
+
+						for (let index = 0; index < resultado1.cecas.datos.length; index++) {
+							
+							const data_ceca = JSON.parse(resultado1.cecas.datos[index].map);
+							
+							data_ceca_lat  += data_ceca.lat;
+							data_ceca_lon  += data_ceca.lon;
+
+						}
+
+						data_ceca_lat = data_ceca_lat/resultado1.cecas.datos.length;
+						data_ceca_lon = data_ceca_lon/resultado1.cecas.datos.length;
+						
+						if (document.getElementById("map_container_numismatic_group").hasChildNodes()) {
+							document.getElementById("map_container_numismatic_group").innerHTML = "";
+						}
+
+						// Destruir instancia previa si existe
+						if (self.map_factory_instance_numismatic_group) {
+							self.map_factory_instance_numismatic_group.map.remove();
+						}
+
+						self.map_factory_instance_numismatic_group = new map_factory();
+						self.map_factory_instance_numismatic_group.init({
+							map_container: self.map_container_numismatic_group,
+							map_position: [data_ceca_lat, data_ceca_lon],
+							source_maps: page.maps_config.source_maps,
+							result: resultado1,
+							map_node : self
+						});
+
+						self.map_container_numismatic_group.style.display = "block";
+			
+						const title_numismatic_group = document.getElementById("title_numismatic_group");
+
+						if(title_numismatic_group.style.display == "none"){
+
+							title_numismatic_group.style.display = "block"
+							const separador = common.create_dom_element({
+								element_type	: "div",
+								class_name		: "golden-separator",
+								parent			: title_numismatic_group
+							})
+
+							separador.style.marginBottom = "20px"
+						}
+						
+						self.map_container_numismatic_group.classList.remove("loading")
+
+					}else{
+
+						const datos_location = JSON.parse(api_response.result[0].map)
+						location.lat = datos_location.lat;
+						location.lon = datos_location.lon;
+						self.map_factory_instance.move_map_to_point(location)
+
+					}
+
+					self.map_container.classList.remove("loading")
+					
 				}
 				
 				resolve(true)
@@ -527,6 +756,33 @@ cargarTodoYCrearMapa : async function(resultado) {
 			console.error("Error cargando datos:", error);
 		}
 	},
+
+	cargarCecasFiltradas : async function(sql_filter) {
+		try {
+
+			const cecas_filtradas = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'mints',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			
+			});
+
+			return cecas_filtradas.result;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+
+	},
+
 	cargarMonedasHallazgos : async function(ceca) {
 		try {
 			const monedas = await data_manager.request({
@@ -535,6 +791,27 @@ cargarTodoYCrearMapa : async function(resultado) {
 					table: 'coins',
 					ar_fields: ["*"],
 					sql_filter: `findspot LIKE '%${ceca}%'`,
+					limit: 15,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return monedas;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
+	cargarMonedasComplejos : async function(complejo) {
+		try {
+			const monedas = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'coins',
+					ar_fields: ["*"],
+					sql_filter: `hoard LIKE '%${complejo}%'`,
 					limit: 15,
 					count: true,
 					offset: 0,
@@ -722,14 +999,24 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 	},
 
-	render_rows : async function(row){
+	render_rows : async function(row,coins){
 
 		if(row.table === "mints"){
-			const coins = await this.cargarMonedasCecas(row.name)
-			await this.render_rows_cecas(row,coins.result)
+
+			await this.render_rows_cecas(row,coins)
+
 		}else{
-			await this.render_rows_hallazgo(row)
+			if(row.table === "findspots"){
+
+				await this.render_rows_hallazgo(row,coins)
+
+			}else{
+
+				await this.render_rows_complejos(row,coins)
+
+			}
 		}
+
 
 
 	},
@@ -786,10 +1073,11 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 		}
 
+
 		const road = common.create_dom_element({
 			element_type	: "div",
 			class_name		: "line-tittle mid",
-			text_content	: text_road != "" ? text_road : row.name,
+			text_content	: text_road != "" ? text_road.replace(/,/g, " - ") : row.name,
 			parent			: fragment
 
 		})
@@ -975,7 +1263,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 			})
 			let value = coins[index].type_data ? coins[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
 			let coin_type = value;
-			console.log ("Tipo Moneda: "+coin_type)
+
 			const type_link = common.create_dom_element({
 				element_type	: "a",
 				class_name		: "type_link",
@@ -1019,7 +1307,205 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 		self.rows_container.appendChild(fragment)
 
-	}
+	},
+		render_rows_complejos : async function(row,coins) {
+
+		const self = this
+		const fragment = new DocumentFragment()
+		let text_content = null
+		let separador = null
+
+		text_content = "Complejo : " + row.name
+		separador = "-"
+		
+
+		const container_titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_title",
+			parent			: fragment
+		})
+
+		const titulo = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle green-color",
+			text_content	: text_content,
+			parent			: container_titulo
+		})
+
+		const imagen = common.create_dom_element({
+			element_type	: "img",
+			class_name		: "imagen",
+			src				: "tpl/assets/images/arrow-right.svg",
+			parent			: container_titulo
+		})
+
+		const separator = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "golden-separator",
+			parent			: fragment
+		})
+		
+		const road = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "line-tittle mid",
+			text_content	:  row.place.replace(/,/g, " - "),
+			parent			: fragment
+		})
+
+		const container_text_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_text_rows",
+			parent			: fragment
+		})
+
+		const title_text_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "title_text_rows",
+			text_content	: "Monedas("+coins.length+")",
+			parent			: container_text_rows
+		})
+
+
+		const imagen_flecha_monedas = common.create_dom_element({
+			element_type	: "img",
+			class_name		: "imagen_text_rows",
+			src				: "tpl/assets/images/arrow-right.svg",
+			parent			: container_text_rows
+		})
+
+		const container_rows = common.create_dom_element({
+			element_type	: "div",
+			class_name		: "container_rows",
+			parent			: fragment
+		})
+
+		for (let index = 0; index < coins.length; index++) {
+			
+			const info_coin = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "info_coin",
+				parent			: container_rows
+			})
+
+			const container_images = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_images",
+				parent			: info_coin
+			})
+			const parsedCoinData = coins[index];
+			const image_obverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_observe",
+				src				: image_obverse,
+				parent			: container_images
+			})
+			const image_reverse = "https://wondercoins.uca.es" + (parsedCoinData.image_obverse != null ? parsedCoinData.image_obverse : "/dedalo/media/image/1.5MB/20000/rsc29_rsc170_20917.jpg")
+			common.create_dom_element({
+				element_type	: "img",
+				class_name		: "img_reserve",
+				src				: image_reverse,
+				parent			: container_images
+			})
+			const container_data = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_data",
+				parent			: info_coin
+			})
+			
+			let weight_text = null
+			if(coins[index].weight != null){
+				weight_text = "Peso: " + coins[index].weight +"g"
+			}else{
+				weight_text= "Peso: N/A"
+			}
+
+			const weight = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "weight",
+				text_content	: weight_text,
+				parent			: container_data
+			})
+			const diameter = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "diameter",
+				text_content	: "Módulo: "+ coins[index].diameter +"mm" ,
+				parent			: container_data
+			})
+
+			const catalogue_type = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "catalogue_type",
+				text_content	: "Colección: "+ coins[index].collection ,
+				parent			: container_data
+			})
+
+			let findspot_text = coins[index].findspot.split(" | ")[0]
+			const findspot = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "findspot",
+				text_content	:  "Hallazgo: "+ findspot_text,
+				parent			: info_coin
+			})
+
+			const tipo = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "type",
+				text_content	:  "Tipo: "+ coins[index].type_full_value,
+				parent			: info_coin
+			})
+
+			const container_links = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "container_links",
+				parent			: info_coin
+			})
+			let value = coins[index].type_data ? coins[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
+			let coin_type = value;
+			const type_link = common.create_dom_element({
+				element_type	: "a",
+				class_name		: "type_link",
+				href			: "/web_numisdata/type/"+ coin_type,
+				text_content	: "TIPO",
+				parent			: container_links
+			})
+			
+		}
+
+
+		road.style.display = "none"
+		container_rows.style.display = "none"
+		let container_rows_state = false
+		imagen.addEventListener("mousedown", function(){
+
+			if(self.button_state){
+				imagen.style.transform  = "rotate(0deg) translateY(0.75vh)";
+				road.style.display = "none"
+				
+			}else{
+				imagen.style.transform  = "rotate(90deg) translateX(0.75vh)";
+				road.style.display = "block"
+			}
+			self.button_state = !self.button_state
+		})
+
+		imagen_flecha_monedas.addEventListener("mousedown", function(){
+
+			if(container_rows_state){
+				imagen_flecha_monedas.style.transform  = "rotate(0deg) translateY(0.60vh)";
+				container_rows.style.display = "none"
+				
+			}else{
+				imagen_flecha_monedas.style.transform  = "rotate(90deg) translateX(0.60vh)";
+				container_rows.style.display = "grid"
+			}
+			container_rows_state = !container_rows_state
+		})
+
+
+		self.rows_container.appendChild(fragment)
+
+	},
 
 
 	

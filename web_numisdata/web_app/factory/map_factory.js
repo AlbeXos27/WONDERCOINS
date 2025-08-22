@@ -36,7 +36,7 @@ function map_factory() {
 		}
 
 		// Crear el mapa con Leaflet centrado en Cádiz
-		self.map = L.map(containerElement).setView(self.map_position, 8);
+		self.map = L.map(containerElement, { preferCanvas: true }).setView(self.map_position, 8);
 		self.add_layer_control(self.map,self.source_maps)
 		// (Opcional) Añadir capa base (por ejemplo OpenStreetMap)
 		if(!self.findspot){
@@ -48,11 +48,12 @@ function map_factory() {
 		}else{
 			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(self.map);
 		}
-
 		
 		self.add_markers(self.map,self.result,self.map_node)
 
-		
+		setTimeout(() => {
+		self.map.invalidateSize();
+		}, 200);
 
 		return self.map;
 
@@ -98,25 +99,25 @@ function map_factory() {
 					iconAnchor: [16, 32], 
 					popupAnchor: [0, -32] 
 					});
+			
+			const iconoComplejo = L.icon({
+					iconUrl: 'tpl/assets/images/map/orange.png',
+					iconSize: [32, 32], 
+					iconAnchor: [16, 32], 
+					popupAnchor: [0, -32] 
+					});
 
-
-			function miFuncionPersonalizada(tipo) {
-				console.log("Se hizo clic en:", tipo);
-				// Aquí puedes hacer cualquier otra lógica
-				}
-
-				
 				for (let index = 0; index < data.hallazgos.datos.length; index++) {
-					let data_ceca = null
+					let data_hallazgo = null
 					try {
-						 data_ceca = JSON.parse(data.hallazgos.datos[index].map)
+						 data_hallazgo = JSON.parse(data.hallazgos.datos[index].map)
 					} catch (error) {
-						data_ceca  = data.hallazgos.datos[index].map
+						data_hallazgo  = data.hallazgos.datos[index].map
 					}
 					
 
-					if(data_ceca != null){
-					const markerHallazgo = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoHallazgo })
+					if(data_hallazgo != null){
+					const markerHallazgo = L.marker([data_hallazgo.lat, data_hallazgo.lon], { icon: iconoHallazgo })
 					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
 					.on("click", async function () {
 						const monedas = await map_node.cargarMonedasHallazgos(data.hallazgos.datos[index].name)
@@ -132,7 +133,7 @@ function map_factory() {
 					}
 
 				}
-				
+				console.log(data)
 			 	 for (let index = 0; index < data.cecas.datos.length; index++) {
 
 					const data_ceca = JSON.parse(data.cecas.datos[index].map);
@@ -153,9 +154,38 @@ function map_factory() {
 
 					}
 
-				}  
+				}
+				if(data.complejos.datos != null){
+				for (let index = 0; index < data.complejos.datos.length; index++) {
 
+					let data_complejos = null
+					try {
+						 data_complejos = JSON.parse(data.complejos.datos[index].map)
+					} catch (error) {
+						data_complejos  = data.complejos.datos[index].map
+					}
+					
 
+					if(data_complejos != null){
+						
+					const markerComplejo = L.marker([data_complejos.lat, data_complejos.lon], { icon: iconoComplejo })
+					.bindPopup(`<b>Complejo</b><br>${data.complejos.datos[index].name}`)
+					.on("click", async function () {
+						const monedas = await map_node.cargarMonedasComplejos(data.complejos.datos[index].name)
+						while (map_node.rows_container.hasChildNodes()) {
+							map_node.rows_container.removeChild(self.rows_container.lastChild);
+						}
+						map_node.render_rows(data.complejos.datos[index],monedas.result)
+						this.openPopup();  // Abrir popup también
+					});
+					
+					markersCluster.addLayer(markerComplejo); 
+
+					}
+
+				}
+
+			}
 
 
 			
@@ -165,6 +195,8 @@ function map_factory() {
 		};
 
 		this.create_legend = function(map){
+
+			const DEV_MODE = true;
 
 			L.control.Legend({
 			position: "bottomleft",
@@ -190,7 +222,78 @@ function map_factory() {
 			]
 			}).addTo(map);
 
-		};
+			// Grupo para guardar lo dibujado
+			const drawnItems = new L.FeatureGroup();
+			map.addLayer(drawnItems);
+
+			// Cargar rutas existentes y aplicar color desde propiedades
+			fetch("./web_app/factory/rutas.geojson")
+				.then(res => res.json())
+				.then(data => {
+				L.geoJSON(data, {
+					style: function(feature) {
+					return { color: feature.properties.color || "blue", weight: 6, dashArray: "5,5" };
+					}
+				}).eachLayer(layer => drawnItems.addLayer(layer));
+				})
+				.catch(err => console.log("No hay rutas guardadas aún."));
+
+			// Control de dibujo: todas las polilíneas verdes y grosor 6
+			if(DEV_MODE){
+
+				const drawControl = new L.Control.Draw({
+					draw: {
+						polyline: {
+						shapeOptions: { color: "green", weight: 6 }, // color y grosor
+						repeatMode: false // dibuja una ruta a la vez
+						},
+						polygon: false,
+						rectangle: false,
+						circle: false,
+						marker: false
+					},
+					edit: { featureGroup: drawnItems }
+					});
+					map.addControl(drawControl);
+
+					map.on(L.Draw.Event.CREATED, function(e) {
+					const layer = e.layer;
+					// Guardar color en propiedades para luego exportar
+					layer.feature = layer.feature || { type: "Feature", properties: {} };
+					layer.feature.properties.color = "green";
+					drawnItems.addLayer(layer);
+					});
+
+					// Botón “Guardar” dentro del mapa
+					const GuardarControl = L.Control.extend({
+					options: { position: 'topleft' },
+					onAdd: function(map) {
+						const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+						container.style.backgroundColor = 'white';
+						container.style.padding = '5px';
+						container.style.cursor = 'pointer';
+						container.innerHTML = '💾 Guardar';
+						container.onclick = function() {
+						// Tomamos todas las capas y creamos un solo FeatureCollection
+						const geojsonData = drawnItems.toGeoJSON();
+						fetch('./web_app/factory/guardarRutas.php', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify(geojsonData) // un solo FeatureCollection
+						}).then(() => alert('Rutas guardadas correctamente'));
+						};
+						return container;
+					}
+					});
+					map.addControl(new GuardarControl());
+
+			}
+			
+
+		}
+
+
+
 
 
 		this.move_map_to_point = function(location){

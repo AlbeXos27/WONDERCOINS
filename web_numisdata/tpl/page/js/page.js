@@ -26,8 +26,7 @@ var page = {
 			source_maps : [
 				{
 					name	: "DARE",
-					// url	: '//pelagios.org/tilesets/imperium/{z}/{x}/{y}.png',
-					url		: '//dh.gu.se/tiles/imperium/{z}/{x}/{y}.png',
+					url		: 'https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png',
 					options	: {
 						maxZoom: 11
 					},

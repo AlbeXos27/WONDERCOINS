@@ -39,17 +39,21 @@ function map_factory() {
 		self.map = L.map(containerElement, { preferCanvas: true }).setView(self.map_position, 8);
 		self.add_layer_control(self.map,self.source_maps)
 		// (Opcional) Añadir capa base (por ejemplo OpenStreetMap)
+	
+
 		if(!self.findspot){
 		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			attribution: "© OpenStreetMap contributors"
 		}).addTo(self.map);
-		self.create_legend(self.map)
+			
 		
 		}else{
 			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(self.map);
 		}
+				
+			const clusters = self.add_markers(self.map,self.result,self.map_node)
+			self.create_legend(self.map,clusters)
 		
-		self.add_markers(self.map,self.result,self.map_node)
 
 		setTimeout(() => {
 		self.map.invalidateSize();
@@ -75,126 +79,135 @@ function map_factory() {
 
 		this.add_markers = function(map,data,map_node){
 
-				const markersCluster = L.markerClusterGroup({
-				maxClusterRadius: 80,
+			// Clústeres separados por tipo
+			const clusterHallazgos = L.markerClusterGroup({
 				iconCreateFunction: function (cluster) {
 					return L.divIcon({
 					html: `<div class="custom-cluster">${cluster.getChildCount()}</div>`,
-					className: '', 
+					className: "marker-cluster", 
+					iconSize: [40, 40]
+					});
+				}
+				});
+			const clusterCecas = L.markerClusterGroup({
+				iconCreateFunction: function (cluster) {
+					return L.divIcon({
+					html: `<div class="custom-cluster">${cluster.getChildCount()}</div>`,
+					className: "marker-cluster", 
+					iconSize: [40, 40]
+					});
+				}
+				});
+			const clusterComplejos = L.markerClusterGroup({
+				iconCreateFunction: function (cluster) {
+					return L.divIcon({
+					html: `<div class="custom-cluster">${cluster.getChildCount()}</div>`,
+					className: "marker-cluster", 
 					iconSize: [40, 40]
 					});
 				}
 				});
 
+			// --- Iconos ---
 			const iconoCeca = L.icon({
-					iconUrl: 'tpl/assets/images/map/IMG_8276.png',
-					iconSize: [32, 32], 
-					iconAnchor: [16, 32], 
-					popupAnchor: [0, -32] 
-					});
+				iconUrl: 'tpl/assets/images/map/IMG_8276.png',
+				iconSize: [32, 32], 
+				iconAnchor: [16, 32], 
+				popupAnchor: [0, -32] 
+			});
 
 			const iconoHallazgo = L.icon({
-					iconUrl: 'tpl/assets/images/map/IMG_5962.png',
-					iconSize: [32, 32], 
-					iconAnchor: [16, 32], 
-					popupAnchor: [0, -32] 
-					});
-			
+				iconUrl: 'tpl/assets/images/map/IMG_5962.png',
+				iconSize: [32, 32], 
+				iconAnchor: [16, 32], 
+				popupAnchor: [0, -32] 
+			});
+
 			const iconoComplejo = L.icon({
-					iconUrl: 'tpl/assets/images/map/orange.png',
-					iconSize: [32, 32], 
-					iconAnchor: [16, 32], 
-					popupAnchor: [0, -32] 
-					});
+				iconUrl: 'tpl/assets/images/map/orange.png',
+				iconSize: [32, 32], 
+				iconAnchor: [16, 32], 
+				popupAnchor: [0, -32] 
+			});
 
-				for (let index = 0; index < data.hallazgos.datos.length; index++) {
-					let data_hallazgo = null
-					try {
-						 data_hallazgo = JSON.parse(data.hallazgos.datos[index].map)
-					} catch (error) {
-						data_hallazgo  = data.hallazgos.datos[index].map
-					}
-					
+			// --- Hallazgos ---
+			for (let index = 0; index < data.hallazgos.datos.length; index++) {
+				let data_hallazgo = null;
+				try {
+					data_hallazgo = JSON.parse(data.hallazgos.datos[index].map);
+				} catch (error) {
+					data_hallazgo = data.hallazgos.datos[index].map;
+				}
 
-					if(data_hallazgo != null){
+				if (data_hallazgo != null) {
 					const markerHallazgo = L.marker([data_hallazgo.lat, data_hallazgo.lon], { icon: iconoHallazgo })
-					.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
-					.on("click", async function () {
-						const monedas = await map_node.cargarMonedasHallazgos(data.hallazgos.datos[index].name)
-						while (map_node.rows_container.hasChildNodes()) {
-							map_node.rows_container.removeChild(self.rows_container.lastChild);
-						}
-						map_node.render_rows(data.hallazgos.datos[index],monedas.result)
-						this.openPopup();  // Abrir popup también
-					});
-					
-					markersCluster.addLayer(markerHallazgo); 
-
-					}
-
+						.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)
+						.on("click", async function () {
+							const monedas = await map_node.cargarMonedasHallazgos(data.hallazgos.datos[index].name);
+							while (map_node.rows_container.hasChildNodes()) {
+								map_node.rows_container.removeChild(map_node.rows_container.lastChild);
+							}
+							map_node.render_rows(data.hallazgos.datos[index], monedas.result);
+							this.openPopup();
+						});
+					clusterHallazgos.addLayer(markerHallazgo);
 				}
-				console.log(data)
-			 	 for (let index = 0; index < data.cecas.datos.length; index++) {
-
-					const data_ceca = JSON.parse(data.cecas.datos[index].map);
-					
-					if(data_ceca != null && data_ceca.lat !==undefined && data_ceca.lon !==undefined  ){
-					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
-					.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)
-					.on("click", async function () {
-						const monedas = await map_node.cargarMonedasCecas(data.cecas.datos[index].name)
-						while (map_node.rows_container.hasChildNodes()) {
-							map_node.rows_container.removeChild(self.rows_container.lastChild);
-						}
-						map_node.render_rows(data.cecas.datos[index],monedas.result)
-						this.openPopup();  // Abrir popup también
-					});
-					
-					markersCluster.addLayer(markerCeca); 
-
-					}
-
-				}
-				if(data.complejos.datos != null){
-				for (let index = 0; index < data.complejos.datos.length; index++) {
-
-					let data_complejos = null
-					try {
-						 data_complejos = JSON.parse(data.complejos.datos[index].map)
-					} catch (error) {
-						data_complejos  = data.complejos.datos[index].map
-					}
-					
-
-					if(data_complejos != null){
-						
-					const markerComplejo = L.marker([data_complejos.lat, data_complejos.lon], { icon: iconoComplejo })
-					.bindPopup(`<b>Complejo</b><br>${data.complejos.datos[index].name}`)
-					.on("click", async function () {
-						const monedas = await map_node.cargarMonedasComplejos(data.complejos.datos[index].name)
-						while (map_node.rows_container.hasChildNodes()) {
-							map_node.rows_container.removeChild(self.rows_container.lastChild);
-						}
-						map_node.render_rows(data.complejos.datos[index],monedas.result)
-						this.openPopup();  // Abrir popup también
-					});
-					
-					markersCluster.addLayer(markerComplejo); 
-
-					}
-
-				}
-
 			}
 
+			// --- Cecas ---
+			for (let index = 0; index < data.cecas.datos.length; index++) {
+				const data_ceca = JSON.parse(data.cecas.datos[index].map);
+				if (data_ceca != null && data_ceca.lat !== undefined && data_ceca.lon !== undefined) {
+					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
+						.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)
+						.on("click", async function () {
+							const monedas = await map_node.cargarMonedasCecas(data.cecas.datos[index].name);
+							while (map_node.rows_container.hasChildNodes()) {
+								map_node.rows_container.removeChild(map_node.rows_container.lastChild);
+							}
+							map_node.render_rows(data.cecas.datos[index], monedas.result);
+							this.openPopup();
+						});
+					clusterCecas.addLayer(markerCeca);
+				}
+			}
 
-			
+			// --- Complejos ---
+			if (data.complejos.datos != null) {
+				for (let index = 0; index < data.complejos.datos.length; index++) {
+					let data_complejos = null;
+					try {
+						data_complejos = JSON.parse(data.complejos.datos[index].map);
+					} catch (error) {
+						data_complejos = data.complejos.datos[index].map;
+					}
 
-			map.addLayer(markersCluster);
-		
+					if (data_complejos != null) {
+						const markerComplejo = L.marker([data_complejos.lat, data_complejos.lon], { icon: iconoComplejo })
+							.bindPopup(`<b>Complejo</b><br>${data.complejos.datos[index].name}`)
+							.on("click", async function () {
+								const monedas = await map_node.cargarMonedasComplejos(data.complejos.datos[index].name);
+								while (map_node.rows_container.hasChildNodes()) {
+									map_node.rows_container.removeChild(map_node.rows_container.lastChild);
+								}
+								map_node.render_rows(data.complejos.datos[index], monedas.result);
+								this.openPopup();
+							});
+						clusterComplejos.addLayer(markerComplejo);
+					}
+				}
+			}
+
+			// --- Añadir clusters al mapa ---
+			map.addLayer(clusterHallazgos);
+			map.addLayer(clusterCecas);
+			map.addLayer(clusterComplejos);
+
+			const clusters = {clusterHallazgos ,clusterCecas ,clusterComplejos};
+			return clusters;
 		};
 
-		this.create_legend = function(map){
+		this.create_legend = function(map,clusters){
 
 			const DEV_MODE = true;
 
@@ -207,17 +220,20 @@ function map_factory() {
 				{
 				label: "Ceca",
 				type: "image",
-				url: 'tpl/assets/images/map/IMG_8276.png'
+				url: 'tpl/assets/images/map/IMG_8276.png',
+				layers: clusters.clusterCecas
 				},
 				{
 				label: "Hallazgo",
 				type: "image",
-				url: 'tpl/assets/images/map/IMG_5962.png'
+				url: 'tpl/assets/images/map/IMG_5962.png',
+				layers: clusters.clusterHallazgos
 				},
 				{
 				label: "Complejo",
 				type: "image",
-				url: 'tpl/assets/images/map/orange.png'
+				url: 'tpl/assets/images/map/orange.png',
+				layers: clusters.clusterComplejos
 				}
 			]
 			}).addTo(map);

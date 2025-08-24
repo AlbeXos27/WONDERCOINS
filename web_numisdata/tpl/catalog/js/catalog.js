@@ -1557,7 +1557,11 @@ var catalog = {
 					// }
 
 			// parsed_filters
-				const sql_filter = self.form.parse_sql_filter(filter)
+				const parsed_filter    = self.form.parse_sql_filter(filter, group,true)
+
+                const sql_filter    = parsed_filter
+                    ? '(' + parsed_filter + ')'
+                    : null
 				// const sql_filter = filter
 				// console.log("Final sql_filter:", sql_filter);
 

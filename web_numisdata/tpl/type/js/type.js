@@ -80,7 +80,6 @@ var type =  {
 									result				: row,
 									export_data_parser	: page.export_parse_type_data
 								})
-
 							// render row nodes
 							self.list_row_builder(row)
 							.then(function(row_wrapper){
@@ -127,7 +126,6 @@ var type =  {
 			// 		if (button) button.click()
 			// 	}
 			// }
-
 
 		return true
 	},//end set_up
@@ -240,7 +238,6 @@ var type =  {
 					const item = row.ref_coins_findspots_data[i]
 					self.parse_publication(item.bibliography_data)
 				}
-
 			// parse type hoards.bibliography_data
 				const hoards_length = row.ref_coins_hoard_data.length
 				for (let i = 0; i < hoards_length; i++) {
@@ -250,7 +247,6 @@ var type =  {
 
 			// parse parse_ordered_coins creating _coins_group
 				self.parse_ordered_coins(row)
-
 
 			// render row
 				type_row_fields_min.type_row_fields.caller = self

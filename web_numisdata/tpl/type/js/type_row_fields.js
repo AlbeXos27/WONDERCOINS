@@ -1368,6 +1368,7 @@ export const type_row_fields = {
 
 				const coins			= el.coins;
 				const coins_length	= coins.length
+
 				for (let j = 0; j < coins_length; j++) {
 					const coin_section_id	= coins[j]
 

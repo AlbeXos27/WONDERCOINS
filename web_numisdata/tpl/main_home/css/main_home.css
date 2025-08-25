@@ -45,7 +45,7 @@ body, html {
   width: 100%;
   position: relative;
 
-  background-image: url("./moneda_fondo.png");
+  background-image: url("/web_numisdata/tpl/assets/images/moneda_fondo.png");
   background-repeat: no-repeat;       /* No repetir la imagen */
   background-position: calc(100% - 4vw) center;
   background-size: 100% 110%;      /* Que se ajuste sin deformarse */

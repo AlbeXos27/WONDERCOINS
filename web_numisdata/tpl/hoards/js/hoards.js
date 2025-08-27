@@ -101,14 +101,44 @@ var hoards =  {
 				name 		: "global_search",
 				label		: tstring.global_search || "global_search",
 				q_column 	: "name",
-				eq 			: "MATCH",
-				eq_in 		: "",
-				eq_out 		: "",
+				eq 			: "LIKE",
+				eq_in 		: "%",
+				eq_out 		: "%",
 				// q_table 	: "mints",
 				class_name	: 'global_search',
 				parent		: form_row,
 				callback	: function(form_item) {
+
 					const node_input = form_item.node_input
+					let autocomplete_initialized = false
+
+					node_input.addEventListener("input", function() {
+					const value = node_input.value.trim()
+
+					if (value.length >= 3) {
+						if (!autocomplete_initialized) {
+							// activar autocomplete solo cuando hay 3+ letras
+							self.form.activate_autocomplete({
+								form_item	: form_item,
+								table		: 'findspots',
+								parent_in	: true,
+								global_search : true
+							})
+							autocomplete_initialized = true
+						}
+						// refrescar resultados
+						node_input.dispatchEvent(new Event("keyup"))
+					} else {
+						// menos de 3 letras → eliminar autocomplete
+						if (autocomplete_initialized) {
+							// destruir completamente el widget
+							$(node_input).autocomplete("destroy")
+							autocomplete_initialized = false
+						}
+					}
+				})
+
+
 
 					const button_info = common.create_dom_element({
 						element_type	: "div",
@@ -135,6 +165,10 @@ var hoards =  {
 							operators_info = null
 						}
 					})
+
+
+
+
 				}
 			}) 
 
@@ -154,7 +188,8 @@ var hoards =  {
 						: 'hoards'
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: table
+						table		: table,
+						parent_in	: true 
 					})
 				}
 			})
@@ -339,7 +374,7 @@ var hoards =  {
 					resolve_portals_custom : resolve_portals_custom,
 				}
 			})
-			.then( async function(api_response){
+			.then(async function(api_response){
 				console.log("--------------- api_response:",api_response);
 	
 
@@ -396,8 +431,6 @@ var hoards =  {
 					resultado.hallazgos.datos.push(api_response.result[hallazgo_resultado])
 
 					const map_fact = new map_factory() // creates / get existing instance of map
-
-					console.log("Posicion del mapa: ",api_response.result[hallazgo_resultado].map);
 
 					const map = map_fact.init({
 						map_container : mapa_movil,
@@ -475,7 +508,7 @@ var hoards =  {
 
 					for (let index = 0; index < total_autores; index++) {
 
-						nombres_array.push(api_response.result[hallazgo_resultado].authorship_names.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
+						nombres_array.push(rawAutores.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
 				
 					}
 
@@ -491,21 +524,31 @@ var hoards =  {
 					})
 
 					if(window.innerWidth > 768){
-								const estructura = common.create_dom_element({
+						const estructura = common.create_dom_element({
 						element_type	: "div",
 						class_name		: "grid-stack",
 						parent			: rows_container
 					})
 
+					let camino_hallazgo = " "
+
+
+					const camino_hallazgo_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
+					if(camino_hallazgo_json){
+
+						for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
+							
+							camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
+							
+						}
+
+					}
 					const grid = GridStack.init(estructura);
-					const titulo = grid.addWidget({w:4,h:2,content: `${api_response.result[hallazgo_resultado].name}`})
+					const titulo = grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].name} |${camino_hallazgo}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
-					const imagen_ident = grid.addWidget({w:4,h:2,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
-					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
-					img_ident.id = "img_ident"
-
+					
 
 					const map_fact = new map_factory() // creates / get existing instance of map
 								
@@ -540,7 +583,9 @@ var hoards =  {
 						content: content
 					});
 
-					grid.addWidget({w:4,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
+					const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
+					img_ident.id = "img_ident"
 					const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
 
 					 let resultado = {
@@ -566,12 +611,10 @@ var hoards =  {
 									findspot			: true
 								})
 	
-					grid.addWidget({w:2,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
-					grid.addWidget({w:2,h:1,content: `${api_response.result[hallazgo_resultado].date_in} / ${api_response.result[hallazgo_resultado].date_out}`})
-					grid.addWidget({w:2,h:1,content: ``})
-					grid.addWidget({w:2,h:1,content: ``})
+					grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
+					grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
 					grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
-					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].abstract}`})
+					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
 
 					let bibliografia_array = []
 
@@ -606,26 +649,87 @@ var hoards =  {
 					}
 			
 
+
+					const container_titulo = common.create_dom_element({
+						element_type	: "div",
+						class_name		: "container_title",
+						parent			: rows_container
+					})
+
 					const titulo_arbol = common.create_dom_element({
 						element_type	: "h1",
 						class_name 		: "title",
 						text_content	: "Hallazgo Jerarquizado",
-						parent 			: rows_container
+						parent 			: container_titulo
 					})
-					
-					common.create_dom_element({
+
+
+					const imagen = common.create_dom_element({
+						element_type	: "img",
+						class_name		: "imagen",
+						src				: "tpl/assets/images/arrow-right.svg",
+						parent			: container_titulo
+					})
+
+					const separator = common.create_dom_element({
 						element_type	: "div",
-						class_name 		: "golden-separator",
-						parent 			: titulo_arbol
+						class_name		: "golden-separator",
+						parent			: rows_container
 					})
+
+
+					let road_arbol = ""
+					const road_arbol_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
+
+					if(road_arbol_json){
+
+						for (let index = 0; index < road_arbol_json.length-1; index++) {
+												
+							road_arbol += road_arbol_json[index]  + (index == road_arbol_json.length-2 ? "" : " - ");
+												
+						}
+
+					}
+
+					const road = common.create_dom_element({
+						element_type	: "div",
+						class_name		: "line-tittle_mid",
+						text_content	:  road_arbol,
+						parent			: rows_container
+					})
+
+
+
+
+					road.style.display = "none"
+					let container_rows_state = false
+					imagen.addEventListener("mousedown", function(){
+
+						if(container_rows_state){
+							imagen.style.transform  = "rotate(0deg) translateY(0.75vh)";
+							road.style.display = "none"
+							
+						}else{
+							imagen.style.transform  = "rotate(90deg) translateX(0.75vh)";
+							road.style.display = "block"
+						}
+						container_rows_state = !container_rows_state
+					})
+
+
+
+
+
+
+
+
 
 					const arbol_completo = common.create_dom_element({
 						element_type : "div",
 						class_name	 : "arbol_moneda",
 						parent		 : rows_container
 					})
-					
-					console.log (api_response.result[hallazgo_resultado]);
+
 					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[hallazgo_resultado]))
 
 
@@ -792,7 +896,6 @@ var hoards =  {
 		link_node.style.fontSize = `${font_size}rem`;
 		link_node.style.textTransform = "uppercase";
 		link_node.style.fontWeight = "bold";
-		link_node.style.color = `${Shades[level]}`;
 
 
 		if(node.info_nodo.coins != null){
@@ -907,7 +1010,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Lugar de Hallazgo:",
+								text_content: "Excavación:",
 								parent: findspot_container
 							});
 

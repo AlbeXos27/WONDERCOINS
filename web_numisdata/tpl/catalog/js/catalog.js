@@ -335,30 +335,11 @@ var catalog = {
 				name 		: "number",
 				q_column 	: "term",
 				q_table 	: "types",
-				label		: tstring.number_key || "Number & Key",
+				label		: "Grupo Numismático",
 				is_term 	: false,
 				parent		: form_row,
 				group_op 	: '$or',
 				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
-
-		// culture
-			self.form.item_factory({
-				id				: "culture",
-				name			: "culture",
-				label			: tstring.culture || "culture",
-				q_column		: "p_culture",
-				value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
-				eq_in			: "%",
-				eq_out			: "%",
-				is_term			: true,
-				parent			: form_row,
-				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'catalog'
@@ -446,85 +427,6 @@ var catalog = {
 				}
 			})
 
-		// symbol_obverse
-			self.form.item_factory({
-				id			: "symbol_obverse",
-				name		: "symbol_obverse",
-				label		: tstring.symbol_obverse || "symbol obverse",
-				q_column	: "ref_type_symbol_obverse",
-				eq_in		: "%",
-				// q_table	: "ts_period",
-				is_term		: false,
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
-
-		// symbol_reverse
-			self.form.item_factory({
-				id			: "symbol_reverse",
-				name		: "symbol_reverse",
-				label		: tstring.symbol_reverse || "symbol reverse",
-				q_column	: "ref_type_symbol_reverse",
-				eq_in		: "%",
-				// q_table	: "ts_period",
-				is_term		: false,
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
-
-		// iconography_obverse
-			self.form.item_factory({
-				id				: "iconography_obverse",
-				name			: "iconography_obverse",
-				label			: tstring.iconography_obverse || "iconography obverse",
-				q_column		: "ref_type_design_obverse_iconography",
-				value_split		: ' | ',
-				q_splittable	: true,
-				q_selected_eq	: 'LIKE',
-				eq_in			: "%",
-				eq_out			: "%",
-				// q_table		: "ts_period",
-				is_term			: false,
-				parent			: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
-
-		// iconography_reverse
-			self.form.item_factory({
-				id				: "iconography_reverse",
-				name			: "iconography_reverse",
-				label			: tstring.iconography_reverse || "iconography reverse",
-				q_column		: "ref_type_design_reverse_iconography",
-				value_split		: ' | ',
-				q_splittable	: true,
-				q_selected_eq	: 'LIKE',
-				eq_in			: "%",
-				eq_out			: "%",
-				// q_table		: "ts_period",
-				is_term			: false,
-				parent			: form_row,
-				callback		: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
 
 		// legend_obverse
 			self.form.item_factory({
@@ -587,7 +489,7 @@ var catalog = {
 			self.form.item_factory({
 				id 			: "group",
 				name 		: "group",
-				label		: tstring.group || "group",
+				label		: "Catálogo" || "group",
 				q_column 	: "p_group",
 				eq_in 		: "%",
 				// q_table 	: "ts_period",
@@ -677,25 +579,6 @@ var catalog = {
 				q_table 	: "types",
 				label		: tstring.technique || "technique",
 				is_term 	: false,
-				parent		: form_row,
-				callback	: function(form_item) {
-					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: 'catalog'
-					})
-				}
-			})
-
-		// equivalents
-			self.form.item_factory({
-				id			: "equivalents",
-				name		: "equivalents",
-				q_column	: "ref_type_equivalents",
-				q_table		: "types",
-				eq_in		: "%",
-				eq_out		: "%",
-				label		: tstring.equivalents || "equivalents",
-				is_term		: false,
 				parent		: form_row,
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({

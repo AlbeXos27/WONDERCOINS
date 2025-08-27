@@ -124,7 +124,7 @@ var mints =  {
 			self.form.item_factory({
 				id			: "place",
 				name		: "place",
-				label		: tstring.place || "Place",
+				label		: "Toponimia Histórica" || "Place",
 				q_column	: "place",
 				eq			: "LIKE",
 				eq_in		: "%",
@@ -252,14 +252,21 @@ var mints =  {
 			const count		= true
 			const order		= "name"
 
-			// sql_filter
 				const filter = self.form.build_filter()
 				// parse_sql_filter
 				const group			= []
-				const parsed_filter	= self.form.parse_sql_filter(filter, group)
+				const parsed_filter	= self.form.parse_sql_filter(filter, group,true)
+				const base_filter = "(name != '' AND map != '')"
+				let final_filter = base_filter
 				const sql_filter	= parsed_filter
 					? '(' + parsed_filter + ')'
 					: null
+				if(SHOW_DEBUG===true) {
+					console.log("-> coins form_submit sql_filter:",sql_filter);
+				}
+				if (sql_filter) {
+					final_filter = base_filter + ' AND ' + sql_filter
+				}
 				if(SHOW_DEBUG===true) {
 					// console.log("-> coins form_submit sql_filter:",sql_filter);
 				}
@@ -276,7 +283,7 @@ var mints =  {
 				dedalo_get		: 'records',
 				table			: table,
 				ar_fields		: ar_fields,
-				sql_filter		: sql_filter,
+				sql_filter		: final_filter,
 				limit			: limit,
 				count			: count,
 				offset			: offset,

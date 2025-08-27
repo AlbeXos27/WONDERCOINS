@@ -328,7 +328,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'findspots'
+						table		: 'findspots',
+						parent_in : true
 					})
 				}
 			})
@@ -610,7 +611,6 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 			let sql_filter_final = ` ${label} LIKE '%${q !== '' ? q : q_selected}%' AND ${label} !=''`
 
-			
 
 			// HACER LLAMADA A API CON DATA_MANAGER.REQUEST CON EL CAMPO MINT DE LA TABLA COINS -> NOMBRE DE LA CECA PARA RECOGER MONEDA
 

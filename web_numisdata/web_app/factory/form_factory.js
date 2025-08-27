@@ -664,7 +664,7 @@ function form_factory() {
 	* @param object filter
 	* @return string
 	*/
-	this.parse_sql_filter = function(filter, group, recursive){
+	this.parse_sql_filter = function(filter, group, recursive, global_search){
 
 		const self = this
 
@@ -716,8 +716,11 @@ function form_factory() {
 					if(item_field == "term"){
 							filter_line += ` AND term_section_label LIKE '%Grupo numismático%' AND parent LIKE  '["21057"]'`;
 					}
+					if(global_search){
+						filter_line += ` OR parents_text LIKE ${item.value}`
+					}
 
-					
+
 					ar_filter.push(filter_line)
 
 					// group
@@ -861,6 +864,8 @@ function form_factory() {
 			const table			= options.table || form_item.table;
 			const cross_filter	= options.cross_filter || true; // look the other form values to generate the sql filter (default true)
 			const order			= options.order || 'name ASC'; // 'name' is the generic column alias
+			const parent_in = options.parent_in || false;
+			const global_search = options.global_search || false;
 			const parse_result	= options.parse_result || function(ar_result, term) {
 				return ar_result.map(function(item){
 					item.label	= item.label.replace(/<br>/g," ")
@@ -1037,8 +1042,8 @@ function form_factory() {
 						}
 
 					// sql_filter
-						const sql_filter = self.parse_sql_filter(filter,undefined) // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
 
+						const sql_filter = self.parse_sql_filter(filter,undefined,false,global_search) // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
 					// table resolved
 						const table_resolved = typeof table==="function" ? table() : table;
 
@@ -1071,7 +1076,7 @@ function form_factory() {
 							body : {
 								dedalo_get	: 'records',
 								table		: table_resolved,
-								ar_fields	: [plain_field + " AS name"],
+								ar_fields	: [plain_field + " AS name",(table_resolved == "findspots" || table_resolved == "catalog") ? "parents_text" : "indexation"],
 								sql_filter	: !id  ? sql_filter : `parent LIKE  '["${section_id}"]'` ,
 								group		: plain_field, // q_column,
 								limit		: limit,
@@ -1079,7 +1084,7 @@ function form_factory() {
 							}
 						})
 						.then((api_response) => { // return results in standard format (label, value)
-							 //console.log("-->autocomplete api_response:", api_response);
+							 console.log("-->autocomplete api_response:", api_response);
 
 							const ar_result	= []
 
@@ -1152,9 +1157,24 @@ function form_factory() {
 									}else{
 
 										const found = ar_result.find(el => el.value===item_name)
+										let camino_hallazgo = " | "
+										if(table_resolved === "findspots"){
+					
+											const camino_hallazgo_json = JSON.parse(item.parents_text)
+											if(camino_hallazgo_json){
+
+												for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
+													
+													camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
+													
+												}
+
+											}
+										}
+
 										if (!found && item_value.trim().length > 0) {
 											ar_result.push({
-												label : item_name, // item_name,
+												label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
 												value : item_value // item.name
 											})
 										}

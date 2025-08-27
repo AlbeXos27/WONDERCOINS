@@ -1076,7 +1076,7 @@ function form_factory() {
 							body : {
 								dedalo_get	: 'records',
 								table		: table_resolved,
-								ar_fields	: [plain_field + " AS name",(table_resolved == "findspots" || table_resolved == "catalog") ? "parents_text" : "indexation"],
+								ar_fields	: [plain_field + " AS name",(table_resolved == "findspots" || table_resolved == "catalog") ? "parents_text" : "section_id"],
 								sql_filter	: !id  ? sql_filter : `parent LIKE  '["${section_id}"]'` ,
 								group		: plain_field, // q_column,
 								limit		: limit,

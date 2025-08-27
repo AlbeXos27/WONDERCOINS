@@ -14,6 +14,7 @@ function map_factory() {
 	this.map_node = null
 	this.result = null
 	this.findspot = false
+	this.unique = false
 
 	this.init = function(options) {
 
@@ -25,6 +26,9 @@ function map_factory() {
 		self.source_maps    = options.source_maps    || [];
 		self.result = options.result || null;
 		self.findspot = options.findspot || false;
+		self.unique = options.unique || false;
+
+		console.log ("Unique en map_factory: ",options);
 		// Asegurarte de obtener el elemento DOM
 		const containerElement = typeof self.map_container === "string"
 			? document.getElementById(self.map_container)
@@ -109,22 +113,23 @@ function map_factory() {
 				});
 
 			// --- Iconos ---
+			console.log ("Unique: ",this.unique);
 			const iconoCeca = L.icon({
-				iconUrl: 'tpl/assets/images/map/IMG_8276.png',
+				iconUrl: this.unique ? '../tpl/assets/images/map/IMG_8276.png': './tpl/assets/images/map/IMG_8276.png',
 				iconSize: [32, 32], 
 				iconAnchor: [16, 32], 
 				popupAnchor: [0, -32] 
 			});
 
 			const iconoHallazgo = L.icon({
-				iconUrl: 'tpl/assets/images/map/IMG_5962.png',
+				iconUrl: this.unique ? '../tpl/assets/images/map/IMG_5962.png': './tpl/assets/images/map/IMG_5962.png',
 				iconSize: [32, 32], 
 				iconAnchor: [16, 32], 
 				popupAnchor: [0, -32] 
 			});
 
 			const iconoComplejo = L.icon({
-				iconUrl: 'tpl/assets/images/map/orange.png',
+				iconUrl: this.unique ? '../tpl/assets/images/map/orange.png' : './tpl/assets/images/map/orange.png',
 				iconSize: [32, 32], 
 				iconAnchor: [16, 32], 
 				popupAnchor: [0, -32] 
@@ -157,6 +162,7 @@ function map_factory() {
 			// --- Cecas ---
 			for (let index = 0; index < data.cecas.datos.length; index++) {
 				const data_ceca = JSON.parse(data.cecas.datos[index].map);
+				console.log("Data ceca:", data_ceca);
 				if (data_ceca != null && data_ceca.lat !== undefined && data_ceca.lon !== undefined) {
 					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
 						.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)
@@ -220,19 +226,19 @@ function map_factory() {
 				{
 				label: "Ceca",
 				type: "image",
-				url: 'tpl/assets/images/map/IMG_8276.png',
+				url: this.unique ? '../tpl/assets/images/map/IMG_8276.png' : './tpl/assets/images/map/IMG_8276.png',
 				layers: clusters.clusterCecas
 				},
 				{
 				label: "Hallazgo",
 				type: "image",
-				url: 'tpl/assets/images/map/IMG_5962.png',
+				url: this.unique ? '../tpl/assets/images/map/IMG_5962.png' : './tpl/assets/images/map/IMG_5962.png',
 				layers: clusters.clusterHallazgos
 				},
 				{
 				label: "Complejo",
 				type: "image",
-				url: 'tpl/assets/images/map/orange.png',
+				url: this.unique ? '../tpl/assets/images/map/orange.png' : './tpl/assets/images/map/orange.png',
 				layers: clusters.clusterComplejos
 				}
 			]

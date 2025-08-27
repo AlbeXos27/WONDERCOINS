@@ -54,6 +54,7 @@ var type =  {
 					.then(function(response){
 
 						// container. clean container div
+						console.log("[set_up->get_row_data] response:",response);
 							const container	= document.getElementById('row_detail')
 							while (container.hasChildNodes()) {
 								container.removeChild(container.lastChild);
@@ -74,12 +75,86 @@ var type =  {
 							// parse data
 								page.parse_type_data(row)
 
+								console.log("Lista rows ",row);
+
 							// send event data_request_done (used by buttons download)
 								event_manager.publish('data_request_done', {
 									request_body		: null,
 									result				: row,
 									export_data_parser	: page.export_parse_type_data
 								})
+
+								const ar_fields	= ['*']
+								const count		= true
+								const order		= "name"
+								const resolve_portals_custom = {
+									"bibliography_data" : "bibliographic_references"
+								}
+								const section_id_row = row.mint_data[0].section_id
+								
+
+								data_manager.request({
+									body : {
+										dedalo_get		: 'records',
+										table			: 'mints',
+										ar_fields		: [
+											'section_id',
+											'lang',
+											'name',
+											'place_data',
+											'place',
+											'public_info',
+											'bibliography_data',
+											'map',
+											'uri',
+											'indexation',
+											'indexation_data',
+											'georef_geojson',
+											'relations_types',
+											'authorship_data',
+											'authorship_names',
+											'authorship_surnames',
+											'authorship_roles'
+										],
+										sql_filter				: "section_id = " + parseInt(section_id_row),
+										db_name					: page_globals.WEB_DB,
+										lang					: page_globals.WEB_CURRENT_LANG_CODE,
+										limit			: 0,
+										count			: count,
+										offset			: 0,
+										order			: order,
+										process_result	: null,
+										resolve_portals_custom : resolve_portals_custom,
+									}
+								})
+								.then( async function(api_response){
+									
+
+								const map_fact = new map_factory() // creates / get existing instance of map
+
+								let resultado = {
+								hallazgos: {
+									datos: []
+								},
+								cecas: {
+									datos: []
+								},
+								complejos: {
+									datos: []
+								}
+								};
+								const map_pars = api_response.result[0].map ? JSON.parse(api_response.result[0].map) : null
+								console.log("Map pars:", map_pars);
+								resultado.cecas.datos.push(row.mint_data[0]);
+								
+									const map = map_fact.init({
+										map_container : map_container,
+										map_position  : map_pars,
+										source_maps   : page.maps_config.source_maps,
+										result        : resultado,
+										unique    	  : true
+										});
+							});
 							// render row nodes
 							self.list_row_builder(row)
 							.then(function(row_wrapper){
@@ -318,119 +393,17 @@ var type =  {
 	/**
 	* DRAW_MAP
 	*/
-	draw_map : function(options) {
-
-		const self = this
-
-		// options
-			const map_data		= options.map_data
-			const container		= options.container
-			const map_position	= options.map_position
-			const popup_data	= options.popup_data
-
-		// const map_position	= map_data
-
-		self.map = self.map || new map_factory() // creates / get existing instance of map
-		self.map.init({
-			map_container	: container,
-			map_position	: map_position,
-			popup_builder	: self.map_popup_builder,
-			popup_options	: page.maps_config.popup_options,
-			source_maps		: page.maps_config.source_maps,
-			legend			: page.render_map_legend
-		})
-		// draw points
-		const map_data_clean = self.map_data(map_data, popup_data) // prepares data to used in map
-		self.map.parse_data_to_map(map_data_clean, null)
-		.then(function(){
-			container.classList.remove("hide_opacity")
-		})
-
-
-		return true
-	},//end draw_map
-
-
+	
 
 	/**
 	* MAP_DATA
 	* @return array data
 	*/
-	map_data : function(data) {
-
-		const data_clean = []
-		for (let i = 0; i < data.length; i++) {
-
-			const item = {
-				lat			: parseFloat(data[i].data.lat),
-				lon			: parseFloat(data[i].data.lon),
-				marker_icon	: data[i].marker_icon || null,
-				data		: {
-					section_id	: data[i].section_id,
-					name		: data[i].name,
-					place		: data[i].place,
-					type 		: data[i].type,
-					items 		: data[i].items,
-					total_items	: data[i].total_items
-				}
-			}
-			data_clean.push(item)
-		}
-
-		return data_clean
-	},//end map_data
-
+	
 
 
 	/**
 	* MAP_POPUP_BUILDER
 	*/
-	map_popup_builder : function(data) {
-		// console.log("-- map_popup_builder data:",data);
-
-		const data_group = data.group[0]
-
-		const title			= data_group.name
-		const total_items	= data_group.total_items
-		const items			= data_group.items
-		const section_id	= data_group.section_id
-
-		const popup_wrapper = common.create_dom_element({
-			element_type	: "div",
-			class_name		: "popup_wrapper"
-		})
-
-		// popup_item
-			const popup_item = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "popup_item",
-				title			: section_id,
-				parent			: popup_wrapper
-			})
-
-		// text_title
-			const text_title = common.create_dom_element({
-				element_type	: "div",
-				class_name		: "text_title",
-				inner_html		: title,
-				parent			: popup_item
-			})
-
-		// descriptions
-			if (total_items && total_items>0) {
-				const description = tstring.items + ": " + items + " " + (tstring.of || "of") +" "+ total_items
-				const text_description = common.create_dom_element({
-					element_type	: "div",
-					class_name		: "text_description",
-					inner_html		: description,
-					parent			: popup_item
-				})
-			}
-
-
-		return popup_wrapper
-	}//end map_popup_builder
-
-
 
 }//end type

@@ -59,41 +59,30 @@ var mint = {
 						ar_rows	: [mint_data]
 					})
 
-				// map draw
-					if (typeof mint.result[0]!=="undefined") {
-						if (mint_data.georef_geojson) {
-							self.draw_map({
-								mint_map_data	: mint_data.georef_geojson,
-								mint_popup_data	: {
-									section_id	: mint_data.section_id,
-									title		: mint_data.name,
-									description	: mint_data.public_info.trim()
-								},
-								types			: mint_data.relations_types
-							})
+				const map_fact = new map_factory() // creates / get existing instance of map
 
-							window.addEventListener('beforeprint', async function(e) {
-
-								self.map_container.style.width = '210mm'
-								self.map_container.style.height = '120mm'
-
-								await self.map.map.invalidateSize()
-								await self.map.map.fitBounds(self.map.feature_group.getBounds())
-
-							})
-
-							window.addEventListener('afterprint', async function(e) {
-
-								self.map_container.style.width	= null
-								self.map_container.style.height	= null
-
-								await self.map.map.invalidateSize()
-								await self.map.map.fitBounds(self.map.feature_group.getBounds())
-
-							})
+						let resultado = {
+						hallazgos: {
+							datos: []
+						},
+						cecas: {
+							datos: []
+						},
+						complejos: {
+							datos: []
 						}
-					}
-
+						};
+				
+					resultado.hallazgos.datos.push(mint_data)
+					console.log("Lista rows ",mint_data);
+						const map = map_fact.init({
+							map_container : map_container,
+							map_position  : mint_data.map,
+							source_maps   : page.maps_config.source_maps,
+							result        : resultado,
+							findspot	  : true,
+							unique    	  : true
+							});
 				// types draw
 					const mint_catalog = response.result.find( el => el.id==='mint_catalog')
 					if (mint_catalog.result) {
@@ -1363,101 +1352,7 @@ var mint = {
 	/**
 	* DRAW_MAP
 	*/
-	draw_map : function(options) {
-
-		const self = this
-
-		// options
-			const mint_map_data		= options.mint_map_data
-			const mint_popup_data	= options.mint_popup_data
-			const types				= options.types
-
-		self.get_findspot_hoards({
-			types : types
-		})
-		.then(function(response){
-			// console.log("draw_map get_place_data: ",response);
-
-			const container	= self.map_container // document.getElementById("map_container")
-
-			if (response && response.result) {
-				container.classList.remove('hide')
-			}
-
-			self.map = self.map || new map_factory() // creates / get existing instance of map
-			self.map.init({
-				map_container	: container,
-				map_position	: null,
-				popup_builder	: page.map_popup_builder,
-				popup_options	: page.maps_config.popup_options,
-				source_maps		: page.maps_config.source_maps,
-				legend			: page.render_map_legend
-			})
-
-			const map_data_points = self.map_data(mint_map_data, mint_popup_data) // prepares data to used in map
-
-			// findspots to map
-				const findspots_map_data = response.result[0].result;
-				if (findspots_map_data && findspots_map_data.length>0){
-
-					for (let i=0;i<findspots_map_data.length;i++){
-
-						if (!findspots_map_data[i].georef_geojson) continue
-
-						const findspot_map_data		= JSON.parse(findspots_map_data[i].georef_geojson)
-						const findspot_popup_data	= parse_popup_data(findspots_map_data[i])
-
-						findspot_popup_data.type = {}
-						findspot_popup_data.type = "findspot"
-
-						const findspot_map_data_points = self.map_data(findspot_map_data,findspot_popup_data)
-
-						map_data_points.push(findspot_map_data_points[0])
-					}
-				}
-
-			// hoards to map
-				const hoards_map_data = response.result[1].result;
-
-				if (hoards_map_data && hoards_map_data.length>0){
-					for (let i=0;i<hoards_map_data.length;i++){
-
-						if (!hoards_map_data[i].georef_geojson) continue
-
-						const hoard_map_data	= JSON.parse(hoards_map_data[i].georef_geojson)
-						const hoard_popup_data	= parse_popup_data(hoards_map_data[i])
-
-						hoard_popup_data.type = {}
-						hoard_popup_data.type = "hoard"
-
-						const hoard_map_data_points = self.map_data(hoard_map_data,hoard_popup_data)
-
-						map_data_points.push(hoard_map_data_points[0])
-					}
-				}
-
-			// draw points
-				self.map.parse_data_to_map(map_data_points, null)
-				.then(function(){
-					container.classList.remove("hide_opacity")
-					return true
-				})
-
-		})
-
-		function parse_popup_data(data){
-			const popup_data = {
-				section_id	: data.section_id,
-				title		: data.name,
-				description	: ""
-			}
-			return popup_data;
-		}
-
-
-	},//end draw_map
-
-
+	
 
 	/**
 	* GET_PLACE_DATA
@@ -1533,7 +1428,7 @@ var mint = {
 					return page.maps_config.markers.mint
 			}
 		})()
-
+		console.log("Obejto popup_data: ",popup_data);
 		const ar_data = Array.isArray(data)
 			? data
 			: [data]

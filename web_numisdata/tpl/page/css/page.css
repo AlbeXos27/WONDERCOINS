@@ -1013,7 +1013,7 @@ nav ul {
   background: white;
   background-image: url('../../assets/images/overlay_white.png');
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows:  1fr;
   min-height: 100vh;
 
 }

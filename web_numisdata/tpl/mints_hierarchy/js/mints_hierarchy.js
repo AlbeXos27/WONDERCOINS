@@ -143,7 +143,7 @@ var mints_hierarchy =  {
 						limit: 0,
 						count: true,
 						offset: 0,
-						order: 'section_id',
+						order: 'norder',
 						process_result: null
 					}
 				});

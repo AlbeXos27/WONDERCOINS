@@ -397,6 +397,8 @@ var hoards =  {
 
 					const map_fact = new map_factory() // creates / get existing instance of map
 
+					console.log("Posicion del mapa: ",api_response.result[hallazgo_resultado].map);
+
 					const map = map_fact.init({
 						map_container : mapa_movil,
 						map_position  : api_response.result[hallazgo_resultado].map,
@@ -786,12 +788,11 @@ var hoards =  {
 					parent: info_node
 		});
 
-		const font_size = 1.5;   // Tamaño en rem
-		const padding = 0.5; 
 		info_node.style.paddingLeft = `${padding}em`;
 		link_node.style.fontSize = `${font_size}rem`;
 		link_node.style.textTransform = "uppercase";
 		link_node.style.fontWeight = "bold";
+		link_node.style.color = `${Shades[level]}`;
 
 
 		if(node.info_nodo.coins != null){
@@ -906,7 +907,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Excavación:",
+								text_content: "Lugar de Hallazgo:",
 								parent: findspot_container
 							});
 

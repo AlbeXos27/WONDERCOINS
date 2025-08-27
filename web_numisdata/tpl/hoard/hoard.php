@@ -8,8 +8,10 @@
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/markercluster/MarkerCluster.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/fullscreen/leaflet.fullscreen.css',
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.css',
 			__WEB_TEMPLATE_WEB__ . '/catalog/css/catalog.css',
 			__WEB_TEMPLATE_WEB__ . '/map/css/map.css',
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leafletdraw/leaflet.draw.css'
 		);
 
 
@@ -24,6 +26,9 @@
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/type/js/type_row_fields'.JS_SUFFIX.'.js';
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/hoards/js/hoards'.JS_SUFFIX.'.js';
 		page::$js_ar_url[] = __WEB_TEMPLATE_WEB__ . '/' . $cwd . '/js/render_hoard'.JS_SUFFIX.'.js';
+
+		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.js';
+		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leafletdraw/leaflet.draw.js';
 
 
 	// page basic vars

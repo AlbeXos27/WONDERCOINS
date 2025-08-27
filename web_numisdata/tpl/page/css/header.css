@@ -11,12 +11,18 @@ header{
 
 @media (aspect-ratio <= 4/3) {
   .container_header {
-    background-image: none;
+    background-image: none !important;
+    display: flex !important;              
+    justify-content: center;    
+    align-items: center;
+    margin: 0;
   }
   header{
     height: 8.5vh;
   }
-
+  .lista_enlaces{
+    padding: 0 !important;
+  }
   .lista_enlaces li a{
     display: none;
   }
@@ -28,6 +34,24 @@ header{
   }
   .huevo_web{
      display: none !important;
+  }
+
+  .titulo_web{
+    display: block !important;
+    width: 100%;
+    height: 100%;    
+    align-items: center;
+    justify-content: center;
+  }
+  .titulo_web p{
+    width: 90%;
+    height: 90%;
+    line-height: 8.0vh;
+    color: #efb810;
+    font-size: 4em;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
   }
 }
 
@@ -43,6 +67,11 @@ header{
     grid-template-columns: 1.25fr 0.75fr 1.25fr;
     z-index: 3;
   }
+
+
+.titulo_web{
+  display: none;
+}
 
 .lista_enlaces{
   width: 100%;

@@ -380,8 +380,362 @@ var hoards =  {
 
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
-					const total	= api_response.total
+					const total	= api_response.total;
 					const hallazgo_resultado = final_filter == base_filter ? Math.floor(Math.random() * (total)) : 0;
+					let camino_hallazgo = " "
+					if(self.form.form_items.global_search.q !== "" || self.form.form_items.global_search.q_selected.length > 0){
+
+						if (!data) {
+							rows_container.classList.remove("loading")
+							resolve(null)
+						}
+
+						let caminos_hallazgo = []
+
+						for (let j = 0; j < total; j++) {
+							const camino_hallazgo_json = JSON.parse(api_response.result[j].parents_text)
+
+							if(camino_hallazgo_json){
+
+								for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
+									
+									camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
+
+
+								}
+								caminos_hallazgo.push(camino_hallazgo)
+
+							}
+							
+						}
+						console.log(caminos_hallazgo)
+
+					// loading end
+						(function(){
+							while (rows_container.hasChildNodes()) {
+								rows_container.removeChild(rows_container.lastChild);
+							}
+							rows_container.classList.remove("loading")
+						})()
+
+						const movil = common.create_dom_element({
+							element_type	: "div",
+							class_name 		: "findspot_mobile",
+							parent 			: rows_container
+						})
+
+						const titulo_movil = common.create_dom_element({
+							element_type	: "a",
+							class_name 		: "title_mobile",
+							text_content	: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`,
+							href			: `/web_numisdata/findspot/${api_response.result[hallazgo_resultado].section_id}`,
+							parent 			: movil
+						})
+
+						const mapa_movil = common.create_dom_element({
+							element_type	: "div",
+							class_name 		: "mapa_mobile",
+							parent 			: movil
+						})
+
+						let resultado = {
+							hallazgos: {
+								datos: []
+							},
+							cecas: {
+								datos: []
+							},
+							complejos: {
+								datos: []
+							}
+							};
+					
+						resultado.hallazgos.datos.push(api_response.result[hallazgo_resultado])
+
+						const map_fact = new map_factory() // creates / get existing instance of map
+
+						const map = map_fact.init({
+							map_container : mapa_movil,
+							map_position  : api_response.result[hallazgo_resultado].map,
+							source_maps   : page.maps_config.source_maps,
+							result        : resultado,
+							findspot      : true
+							});
+
+
+						const title_info = common.create_dom_element({
+							element_type	: "h2",
+							class_name 		: "title_info",
+							text_content	: "Información Pública",
+							parent 			: movil
+						})
+
+						common.create_dom_element({
+							element_type	: "div",
+							class_name 		: "golden-separator",
+							parent 			: title_info
+						})
+
+						const info_mobile = common.create_dom_element({
+							element_type	: "p",
+							class_name 		: "info_mobile",
+							parent 			: movil
+						})
+						info_mobile.innerHTML = api_response.result[hallazgo_resultado].public_info;
+						const title_bibliografia = common.create_dom_element({
+							element_type	: "h2",
+							class_name 		: "title_info",
+							text_content	: "Bibliografía",
+							parent 			: movil
+						})
+
+						common.create_dom_element({
+							element_type	: "div",
+							class_name 		: "golden-separator",
+							parent 			: title_bibliografia
+						})
+
+						let bibliografia_array = []
+
+						for (let index = 0; index < api_response.result[hallazgo_resultado].bibliography_data.length; index++) {
+							
+							bibliografia_array.push(api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_title +" / "+api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_authors + " / (" + api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_date + ")")
+						}
+
+						let bibliografia = ""
+						bibliografia = bibliografia_array.join("\n")
+
+						const bibliografia_mobile = common.create_dom_element({
+							element_type	: "p",
+							class_name 		: "bilbiografia_mobile",
+							parent 			: movil,
+							text_content	: bibliografia
+						})
+
+						const title_autores = common.create_dom_element({
+							element_type	: "h2",
+							class_name 		: "title_info",
+							text_content	: "Autores",
+							parent 			: movil
+						})
+						common.create_dom_element({
+							element_type	: "div",
+							class_name 		: "golden-separator",
+							parent 			: title_autores
+						})
+
+						let nombres_array = []
+						const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
+						let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+
+						for (let index = 0; index < total_autores; index++) {
+
+							nombres_array.push(rawAutores.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
+					
+						}
+
+						let nombres_autores = ""
+
+						nombres_autores = nombres_array.join("\n");
+
+						const autores_mobile = common.create_dom_element({
+							element_type	: "p",
+							class_name 		: "autores_mobile",
+							parent 			: movil,
+							text_content	: nombres_autores
+						})
+
+						if(window.innerWidth > 768){
+							const estructura = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "grid-stack",
+							parent			: rows_container
+						})
+
+						const grid = GridStack.init(estructura);
+						const titulo = grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].name} |${camino_hallazgo}`})
+						const contentDiv = titulo.querySelector('.grid-stack-item-content');
+						contentDiv.id = "titulo-ficha";
+
+						
+
+						const map_fact = new map_factory() // creates / get existing instance of map
+									
+
+						//console.log ("Nombre de la Ceca 2: "+api_response.result[hallazgo_resultado].name);
+						const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].name);
+						console.log ("Largo: "+coin.result.length);
+
+						let content = `<div class="ceca-widget">`;
+
+						coin.result.forEach(coin => {
+							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
+							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
+							const name = coin.type_full_value || "Moneda sin nombre";
+
+							content += `
+								<div class="coin-card">
+									<div class = "coin-imagenes">
+									<img src="${image_obverse}" alt="anverso" class="coin-img">
+									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
+									<p class="coin-name">${name}</p>
+								</div>
+							`;
+						});
+
+						content += `</div>`;
+
+						// 4. Finalmente añadimos el widget al grid
+						grid.addWidget({
+							w: 4,
+							h: 12,
+							content: content
+						});
+
+						const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+						const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
+						img_ident.id = "img_ident"
+						const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
+
+						let resultado = {
+							hallazgos: {
+								datos: []
+							},
+							cecas: {
+								datos: []
+							},
+							complejos: {
+								datos: []
+							}
+							};
+					
+							resultado.hallazgos.datos.push(api_response.result[hallazgo_resultado])
+
+
+						map_fact.init({
+										map_container		: ubicacion,
+										map_position		: api_response.result[hallazgo_resultado].map,
+										source_maps			: page.maps_config.source_maps,
+										result				: resultado,
+										findspot			: true
+									})
+		
+						grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
+						grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
+						grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
+						grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
+
+						let bibliografia_array = []
+
+						for (let index = 0; index < api_response.result[hallazgo_resultado].bibliography_data.length; index++) {
+							
+							bibliografia_array.push(api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_title +" / "+api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_authors + " / (" + api_response.result[hallazgo_resultado].bibliography_data[index].ref_publications_date + ")")
+						}
+
+						let bibliografia = ""
+						bibliografia = bibliografia_array.join("\n")
+
+						grid.addWidget({
+							w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.5rem;">${bibliografia}</div>`
+						});
+
+						let nombres_array = []
+						const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
+						let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+
+						for (let index = 0; index < total_autores; index++) {
+
+							nombres_array.push(api_response.result[hallazgo_resultado].authorship_names.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
+					
+						}
+
+						let nombres_autores = ""
+
+						nombres_autores = nombres_array.join("\n");
+
+
+						grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.5rem;">${nombres_autores}</div>`})
+						}
+				
+
+
+						const container_titulo = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "container_title",
+							parent			: rows_container
+						})
+
+						const titulo_arbol = common.create_dom_element({
+							element_type	: "h1",
+							class_name 		: "title",
+							text_content	: "Hallazgo Jerarquizado",
+							parent 			: container_titulo
+						})
+
+
+						const imagen = common.create_dom_element({
+							element_type	: "img",
+							class_name		: "imagen",
+							src				: "tpl/assets/images/arrow-right.svg",
+							parent			: container_titulo
+						})
+
+						const separator = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "golden-separator",
+							parent			: rows_container
+						})
+
+
+						let road_arbol = ""
+						const road_arbol_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
+
+						if(road_arbol_json){
+
+							for (let index = 0; index < road_arbol_json.length-1; index++) {
+													
+								road_arbol += road_arbol_json[index]  + (index == road_arbol_json.length-2 ? "" : " - ");
+													
+							}
+
+						}
+
+						const road = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "line-tittle_mid",
+							text_content	:  road_arbol,
+							parent			: rows_container
+						})
+
+
+
+
+						road.style.display = "none"
+						let container_rows_state = false
+						imagen.addEventListener("mousedown", function(){
+
+							if(container_rows_state){
+								imagen.style.transform  = "rotate(0deg) translateY(0.75vh)";
+								road.style.display = "none"
+								
+							}else{
+								imagen.style.transform  = "rotate(90deg) translateX(0.75vh)";
+								road.style.display = "block"
+							}
+							container_rows_state = !container_rows_state
+						})
+
+
+						const arbol_completo = common.create_dom_element({
+							element_type : "div",
+							class_name	 : "arbol_moneda",
+							parent		 : rows_container
+						})
+
+						arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[hallazgo_resultado]))
+
+
+					}else{
 
 					if (!data) {
 						rows_container.classList.remove("loading")
@@ -402,10 +756,26 @@ var hoards =  {
 						parent 			: rows_container
 					})
 
+
+
+					const camino_hallazgo_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
+					if(camino_hallazgo_json){
+
+						for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
+							
+							camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
+							
+						}
+
+					}
+
+
+
+
 					const titulo_movil = common.create_dom_element({
 						element_type	: "a",
 						class_name 		: "title_mobile",
-						text_content	: `${api_response.result[hallazgo_resultado].name}`,
+						text_content	: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`,
 						href			: `/web_numisdata/findspot/${api_response.result[hallazgo_resultado].section_id}`,
 						parent 			: movil
 					})
@@ -533,16 +903,7 @@ var hoards =  {
 					let camino_hallazgo = " "
 
 
-					const camino_hallazgo_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
-					if(camino_hallazgo_json){
 
-						for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
-							
-							camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
-							
-						}
-
-					}
 					const grid = GridStack.init(estructura);
 					const titulo = grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].name} |${camino_hallazgo}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
@@ -719,7 +1080,7 @@ var hoards =  {
 
 
 
-
+					
 
 
 
@@ -732,8 +1093,8 @@ var hoards =  {
 
 					arbol_completo.appendChild(await self.render_rows_hallazgo_completo(api_response.result[hallazgo_resultado]))
 
-
-
+				}
+				
 
 			})
 

@@ -47,7 +47,7 @@ var hoard =  {
 				self.get_row_data({
 					section_id : options.section_id
 				})
-				.then(function(ar_rows){
+				.then(async function(ar_rows){
 					console.log("[set_up->get_row_data] ar_rows:",ar_rows);
 
 					if (ar_rows && ar_rows.length>0) {
@@ -56,7 +56,7 @@ var hoard =  {
 							self.row = ar_rows[0]
 
 						// row render
-							const hoard_node = render_hoard.draw_hoard({
+							const hoard_node =await render_hoard.draw_hoard({
 								row : self.row
 							})
 							const container = self.row_detail_container
@@ -66,34 +66,7 @@ var hoard =  {
 								}
 							container.appendChild(hoard_node)
 
-						// map draw. Init default map
-
-						const map_fact = new map_factory() // creates / get existing instance of map
-
-						let resultado = {
-						hallazgos: {
-							datos: []
-						},
-						cecas: {
-							datos: []
-						},
-						complejos: {
-							datos: []
-						}
-						};
-				
-					resultado.hallazgos.datos.push(ar_rows[0])
-					console.log("source_maps: ",ar_rows[0]);
-					const  unico = true; // para que cargue los iconos desde tpl/ y no desde web_app/
-					
-						const map = map_fact.init({
-							map_container : map_container,
-							map_position  : ar_rows[0].map,
-							source_maps   : page.maps_config.source_maps,
-							result        : resultado,
-							findspot	  : true,
-							unique    	  : true
-							});
+		
 						// types
 							const rows_container = document.getElementById('rows_container')
 							self.get_types_data(self.row, rows_container)

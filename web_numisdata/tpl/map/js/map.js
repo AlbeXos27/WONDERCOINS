@@ -1,4 +1,4 @@
-/*global tstring, page_globals, SHOW_DEBUG, common, page, $, type_row_fields_min, map_factory, Promise, data_manager, event_manager, form_factory, catalog_row_fields */
+ /*global tstring, page_globals, SHOW_DEBUG, common, page, $, type_row_fields_min, map_factory, Promise, data_manager, event_manager, form_factory, catalog_row_fields */
 /*eslint no-undef: "error"*/
 
 "use strict";
@@ -329,7 +329,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'findspots',
-						parent_in : true
+						parent_in   : true
 					})
 				}
 			})
@@ -611,6 +611,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 
 			let sql_filter_final = ` ${label} LIKE '%${q !== '' ? q : q_selected}%' AND ${label} !=''`
 
+			
 
 			// HACER LLAMADA A API CON DATA_MANAGER.REQUEST CON EL CAMPO MINT DE LA TABLA COINS -> NOMBRE DE LA CECA PARA RECOGER MONEDA
 
@@ -1128,7 +1129,7 @@ cargarTodoYCrearMapa : async function(resultado) {
 		let text_content = null
 		let separador = null
 
-		text_content = "Ceca : " + row.name
+		text_content = "Ceca : "
 		separador = ","
 
 
@@ -1142,6 +1143,14 @@ cargarTodoYCrearMapa : async function(resultado) {
 			element_type	: "div",
 			class_name		: "line-tittle green-color",
 			text_content	: text_content,
+			parent			: container_titulo
+		})
+
+		const link = common.create_dom_element({
+			element_type	: "a",
+			class_name		: "link_ceca",
+			href			: "/web_numisdata/mint/"+ row.section_id,
+			text_content	: row.name,
 			parent			: container_titulo
 		})
 

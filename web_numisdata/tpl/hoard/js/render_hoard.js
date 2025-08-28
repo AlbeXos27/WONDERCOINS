@@ -14,17 +14,20 @@ var render_hoard = {
 	* DRAW_HOARD
 	* Render main row data (tile, body, bibliography, et.)
 	*/
-	draw_hoard : function(options) {
+	draw_hoard : async function(options) {
 
 		// options
 			const row = options.row
-
+			console.log("draw_hoard options:", row);
 		// check row
 			if (!row) {
 				console.warn("Warning! draw_row row no found in options");
 				return fragment;
 			}
 
+			const coins =  await this.cargarMonedasHallazgos(row.name);
+
+				console.log("MONEDAS ",coins);
 		const fragment = new DocumentFragment();
 
 		// line
@@ -149,61 +152,330 @@ var render_hoard = {
 				})
 			}
 
+		// map
+			const map_container = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "map_container",
+				parent			: fragment
+			})
 
+			const map_fact = new map_factory() // creates / get existing instance of map
+
+						let resultado = {
+						hallazgos: {
+							datos: []
+						},
+						cecas: {
+							datos: []
+						},
+						complejos: {
+							datos: []
+						}
+						};
+				
+					resultado.hallazgos.datos.push(row)
+					
+						const map = map_fact.init({
+							map_container : map_container,
+							map_position  : row.map,
+							source_maps   : page.maps_config.source_maps,
+							result        : resultado,
+							findspot	  : true,
+							unique    	  : true
+							});
+
+				const title_coin = common.create_dom_element({
+						element_type	: "h2",
+						class_name 		: "title_info",
+						text_content	: "Monedas Hallazgos",
+						parent 			: fragment
+					})
+
+					common.create_dom_element({
+						element_type	: "div",
+						class_name 		: "golden-separator",
+						parent 			: title_coin
+					})
+
+
+					for (let index = 0; index < coins.result.length; index++) {
+							
+							
+						// Card Container
+						const coinsContainer = common.create_dom_element({
+							element_type: "div",
+							class_name: "coins-container",
+							parent: fragment
+						});
+
+						// Coin Title
+							const title_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "title-container",
+								parent: coinsContainer
+							});
+
+							const parts = coins.result[index].type_full_value.split("|");
+							const lastPart = parts[parts.length - 1].trim();
+
+							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination + " | " + lastPart.replace(coins.result[index].denomination, "").trim(): coins.result[index].type_full_value;
+							const type_none = type_full_val ? type_full_val : "Tipo";
+
+							let value = coins.result[index].type_data ? coins.result[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
+							let coin_type = value
+							
+							common.create_dom_element({
+								element_type: "a",
+								class_name: "type_link",
+								href: `/web_numisdata/type/${coin_type}`,
+								text_content: type_none, 
+								parent: title_container
+							});
+
+						// Contenedor global datos 
+
+						const data_container = common.create_dom_element({
+							element_type: "div",
+							class_name: "data-container",
+							parent: coinsContainer
+						});
+
+						const imgContainer = common.create_dom_element({
+							element_type: "div",
+							class_name: "img-container",
+							parent: data_container
+						});
+
+							const image_obverse = "https://wondercoins.uca.es" + coins.result[index].image_obverse;
+							const image_reverse = "https://wondercoins.uca.es" + coins.result[index].image_reverse;
+
+							common.create_dom_element({
+								element_type: "img",
+								class_name: "img_obverse",
+								parent: imgContainer,
+								src: image_obverse
+							});
+
+							common.create_dom_element({
+								element_type: "img",
+								class_name: "img_obverse",
+								parent: imgContainer,
+								src: image_reverse
+							});
+
+							//informacion
+							const info_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "info-container",
+								parent: data_container
+							});
+
+							//Date 
+
+							const dateInRaw = coins.result[index].date_in;
+								const dateOutRaw = coins.result[index].date_out;
+
+								const hasDateIn = !!dateInRaw;
+								const hasDateOut = !!dateOutRaw;
+
+								const dateIn = hasDateIn ? (dateInRaw.includes('-') ? Math.abs(parseInt(dateInRaw)) + " A.C." : dateInRaw + " D.C.") : "N/A";
+								const dateOut = hasDateOut ? (dateOutRaw.includes('-') ? Math.abs(parseInt(dateOutRaw)) + " A.C." : dateOutRaw + " D.C.") : "N/A";
+
+								const dateText = !hasDateIn && !hasDateOut
+								? "N/A - N/A"
+								: dateIn + " - " + dateOut;
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "date_text",
+								text_content: dateText,
+								parent: info_container
+							});
+
+							const weightText = coins.result[index].weight ? coins.result[index].weight + " gramos" : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "weight_text",
+								text_content: weightText,
+								parent: info_container
+							});
+
+							const diameterText = coins.result[index].diameter ? coins.result[index].diameter + " mm" : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "diameter_text",
+								text_content: diameterText,
+								parent: info_container
+							});
+
+							const collectionText = coins.result[index].collection ? coins.result[index].collection : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "collection_text",
+								text_content: collectionText,
+								parent: info_container
+							});
+
+							//Findspot
+
+							const findspot_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "findspot_container",
+								parent: coinsContainer
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "findspot_text",
+								text_content: coins.result[index].findspot.split(" | ")[0],
+								parent: findspot_container
+							});
+
+
+
+/*
+							
+							
+
+						
+							// Findspot
+							const findspot_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "findspot_container",
+								parent: flipBack1
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Lugar de Hallazgo:",
+								parent: findspot_container
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "findspot_text",
+								text_content: coins.result[index].findspot.split(" | ")[0],
+								parent: findspot_container
+							});
+
+					
+
+							//Dies + Collection
+
+							const dico_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "dico_container",
+								parent: flipBack1
+							});
+
+							// Dies
+							const dies_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "dies_container",
+								parent: dico_container
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Posición de cuños: ",
+								parent: dies_container
+							});
+
+							const diesText = coins.result[index].dies ? coins.result[index].dies : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "dies_text",
+								text_content: diesText,
+								parent: dies_container
+							});
+
+							// Collection
+							const collection_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "collection_container",
+								parent: dico_container
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Colección: ",
+								parent: collection_container
+							});
+
+							const collectionText = coins.result[index].collection ? coins.result[index].collection : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "collection_text",
+								text_content: collectionText,
+								parent: collection_container
+							});
+
+							// Findspot type + section_id
+							const finsec_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "finsec_container",
+								parent: flipBack1
+							});
+
+							// Findspot type
+							const find_type_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "fin_type_container",
+								parent: finsec_container
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Tipo de deposito: ",
+								parent: find_type_container
+							});
+
+							const findspotTypeText = coins.result[index].find_type ? coins.result[index].find_type : "N/A";
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "fin_type_text",
+								text_content: findspotTypeText,
+								parent: find_type_container
+							});
+
+							// Section ID
+							const section_id_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "section_id_container",
+								parent: finsec_container
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "descriptive_title",
+								text_content: "Nº de inventario: ",
+								parent: section_id_container
+							});
+
+							const sectionIdText = coins.result[index].section_id ? coins.result[index].section_id : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "section_id_text",
+								text_content: sectionIdText,
+								parent: section_id_container
+							});
+
+							*/
+							
+						}
+						
 		return fragment
 	},//end draw_hoard
-
-
-
-	/**
-	* DRAW_MAP
-	*/
-	draw_map : function(options) {
-
-		// options
-			const map_data	= options.map_data
-			const container	= options.container
-			const self		= options.self // caller
-
-		// short vars
-			const map_position	= map_data
-			const row			= self.row
-
-		self.map = self.map || new map_factory() // creates / get existing instance of map
-		self.map.init({
-			map_container	: container,
-			map_position	: map_position,
-			popup_builder	: page.map_popup_builder,
-			popup_options	: page.maps_config.popup_options,
-			source_maps		: page.maps_config.source_maps,
-			legend			: page.render_map_legend
-		})
-		// draw points
-		// const map_data_clean = self.map_data(map_data) // prepares data to used in map
-		let map_data_clean
-		if (row.georef_geojson) {
-			// from geojson
-			const popup_data = {
-				section_id	: row.section_id,
-				title		: row.name,
-				description	: row.public_info.trim(),
-				type		: row.table==='findspots'
-					? 'findspot'
-					: 'hoard'
-			}
-			map_data_clean = hoards.map_data_geojson(row.georef_geojson, popup_data)
-		}else{
-			// from single map point
-			map_data_clean = hoards.map_data_point(row.map, row.name)
-		}
-		self.map.parse_data_to_map(map_data_clean, null)
-		.then(function(){
-			container.classList.remove("hide_opacity")
-		})
-
-
-		return true
-	},//end draw_map
 
 
 
@@ -228,7 +500,27 @@ var render_hoard = {
 	},//end draw_types_list_node
 
 
+	cargarMonedasHallazgos : async function(ceca) {
+		try {
+			const monedas = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'coins',
+					ar_fields: ["*"],
+					sql_filter: `findspot LIKE '%${ceca}%'`,
+					limit: 15,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return monedas;
 
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
 	/**
 	* DRAW_HOARD_OLD
 	*/

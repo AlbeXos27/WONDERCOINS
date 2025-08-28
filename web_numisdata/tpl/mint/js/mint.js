@@ -73,14 +73,13 @@ var mint = {
 						}
 						};
 				
-					resultado.hallazgos.datos.push(mint_data)
+					resultado.cecas.datos.push(mint_data)
 					console.log("Lista rows ",mint_data);
 						const map = map_fact.init({
 							map_container : map_container,
 							map_position  : mint_data.map,
 							source_maps   : page.maps_config.source_maps,
 							result        : resultado,
-							findspot	  : true,
 							unique    	  : true
 							});
 				// types draw

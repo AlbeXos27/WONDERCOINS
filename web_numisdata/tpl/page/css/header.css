@@ -9,6 +9,14 @@ header{
       z-index: 3;
 }
 
+@media (max-width: 500px) {
+  .titulo_web{
+    
+    font-size: 10px !important;
+  }
+}
+
+
 @media (aspect-ratio <= 4/3) {
   .container_header {
     background-image: none !important;
@@ -42,12 +50,14 @@ header{
     height: 100%;    
     align-items: center;
     justify-content: center;
+    text-transform: uppercase;
+    font-size: 15px;
   }
   .titulo_web p{
     width: 90%;
     height: 90%;
     line-height: 8.0vh;
-    color: #efb810;
+    color: #e8c65f;
     font-size: 4em;
     font-weight: bold;
     text-align: center;

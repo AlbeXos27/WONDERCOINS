@@ -161,8 +161,21 @@ function map_factory() {
 
 			// --- Cecas ---
 			for (let index = 0; index < data.cecas.datos.length; index++) {
-				const data_ceca = JSON.parse(data.cecas.datos[index].map);
-				console.log("Data ceca:", data_ceca);
+
+				let rawMap = data.cecas.datos[index].map;
+				let data_ceca;
+
+					// Comprobamos si map es string o ya es objeto
+					if (typeof rawMap === "string") {
+						try {
+							data_ceca = JSON.parse(rawMap);
+						} catch (e) {
+							console.error("El valor no es un JSON válido:", rawMap, e);
+							continue; // saltamos este índice si falla
+						}
+					} else {
+						data_ceca = rawMap;
+					}
 				if (data_ceca != null && data_ceca.lat !== undefined && data_ceca.lon !== undefined) {
 					const markerCeca = L.marker([data_ceca.lat, data_ceca.lon], { icon: iconoCeca })
 						.bindPopup(`<b>Ceca</b><br>${data.cecas.datos[index].name}`)

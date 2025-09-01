@@ -241,6 +241,20 @@ margin: 0.5em 0 0.2em 0 !important;
   .container_title_mobile{
     display: block;
   }
+  .title{
+    font-size: 1.6rem !important;
+    font-weight: bold;
+    margin: 1.5rem 0 0.2rem 0 !important;
+  }
+  .imagen {
+    height: 1.6em !important;        /* Escala la imagen al tamaño del texto */
+  }
+  .line-tittle_mid {
+    font-size: 1.4rem;
+  }
+  .container_prueba{
+    margin-top: 1em;
+  }
 }
 
 

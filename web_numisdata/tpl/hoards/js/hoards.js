@@ -327,14 +327,47 @@ var hoards =  {
 		refs.typology.querySelector('.grid-stack-item-content').innerHTML = hallazgo.typology;
 		refs.date.querySelector('.grid-stack-item-content').innerHTML = `<span style="font-size:2.5rem">${hallazgo.date_in} / ${hallazgo.date_out}</span>`;
 		refs.indexation.querySelector('.grid-stack-item-content').innerHTML = hallazgo.indexation;
-		refs.public_info.querySelector('.grid-stack-item-content').innerHTML = hallazgo.public_info;
+		refs.public_info.querySelector('.grid-stack-item-content').innerHTML = `
+				<div style="font-size: 1.3rem; text-align:center; position:absolute; top:0; width:100%;">
+					<h2 style="
+					margin: 5px 0 10px; 
+					font-size: 1.3rem; 
+					font-weight: bold; 
+					border-bottom: 3px solid transparent;
+					border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+					display: inline-block;
+					margin-top: 50px !important; 
+					">
+					Información pública
+					</h2>
+					<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
+					${hallazgo.public_info}
+					</div>
+				</div>
+				`;
 
 		// 📚 Bibliografía
 		const bibliografia_array = hallazgo.bibliography_data.map(b => 
 			`${b.ref_publications_title} / ${b.ref_publications_authors} / (${b.ref_publications_date})`
-		);
-		refs.bibliography.querySelector('.grid-stack-item-content').innerHTML = 
-			`<div style="white-space: pre-line; font-size: 1.5rem;">${bibliografia_array.join("\n")}</div>`;
+			);
+
+			refs.bibliography.querySelector('.grid-stack-item-content').innerHTML = `
+			<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+				<h2 style="
+				margin: 0 0 10px; 
+				font-size: 1.3rem; 
+				font-weight: bold; 
+				border-bottom: 3px solid transparent;
+				border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+				display: inline-block;
+				">
+				Bibliografía
+				</h2>
+				<div style="text-align: left;">
+				${bibliografia_array.join("<br>")}
+				</div>
+			</div>
+			`;
 
 		// ✍️ Autores
 		const nombres_array = [];
@@ -347,8 +380,22 @@ var hoards =  {
 				: "No Definido";
 			nombres_array.push(`${nombres} ${apellidos} / ${rol}`);
 		}
-		refs.authors.querySelector('.grid-stack-item-content').innerHTML = 
-			`<div style="white-space: pre-line; font-size: 1.5rem;">${nombres_array.join("\n")}</div>`;
+		refs.authors.querySelector('.grid-stack-item-content').innerHTML = `
+			<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;padding-right:10px;">
+				<h2 style="
+				margin: 0 0 10px; 
+				font-size: 1.3rem; 
+				font-weight: bold; 
+				border-bottom: 3px solid transparent;
+				border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+				display: inline-block;
+				">
+				Autores
+				</h2>
+				<div style="text-align: left; margin-top: 6px;">
+				${nombres_array.join("<br>")}
+				</div>
+			</div>`;
 
 		// 🪙 Monedas
 		const coin = await self.cargarMonedasHallazgos(hallazgo.name);
@@ -930,7 +977,28 @@ var hoards =  {
 						const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
 						const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
 						const indexation = grid.addWidget({w:8,h:1,content: `${api_response.result[id_hallazgo].indexation}`})
-						const public_info = grid.addWidget({w:8,h:4,content: `${api_response.result[id_hallazgo].public_info}`})
+						const public_info = grid.addWidget({
+							w: 8,
+							h: 4,
+							content: `
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+								<h2 style="
+									margin: 5px 0 10px; 
+									font-size: 1.3rem;
+									margin-top: 50px !important; 
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+								">
+									Información pública
+								</h2>
+								<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
+									${api_response.result[hallazgo_resultado].public_info}
+								</div>
+								</div>
+							`
+							});
 
 						let bibliografia_array = []
 
@@ -946,8 +1014,24 @@ var hoards =  {
 						
 
 						const bibliography = grid.addWidget({
-							w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.5rem;">${bibliografia}</div>`
-						});
+								w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+									<h2 style="
+									margin: 0 0 10px; 
+									font-size: 1.3rem; 
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+									text-align: center;
+									">
+									Bibliografía
+									</h2>
+									<div style="text-align: left;">
+									${bibliografia_array.join("<br>")}
+									</div>
+								</div>
+								`
+							});
 						
 
 						let nombres_array = []
@@ -978,7 +1062,25 @@ var hoards =  {
 
 						
 
-						const authors = grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.5rem;">${nombres_autores}</div>`})
+						const authors = grid.addWidget({w:4,h:4,content: 
+							
+							`<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;">
+
+								<h2 style="
+								margin: 0 0 10px; 
+								font-size: 1.3rem; 
+								font-weight: bold; 
+								border-bottom: 3px solid transparent;
+								border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+								display: inline-block;
+								">
+								Autores
+								</h2>
+								<div style="text-align: left; margin-top: 6px;">
+								${nombres_array.join("<br>")}
+								</div>
+							</div>`})
+					
 						
 					
 						
@@ -1338,7 +1440,28 @@ var hoards =  {
 					grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
 					grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
 					grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
-					grid.addWidget({w:8,h:4,content: `${api_response.result[hallazgo_resultado].public_info}`})
+					grid.addWidget({
+							w: 8,
+							h: 4,
+							content: `
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+								<h2 style="
+									margin: 5px 0 10px; 
+									font-size: 1.3rem;
+									margin-top: 50px !important; 
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+								">
+									Información pública
+								</h2>
+								<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
+									${api_response.result[hallazgo_resultado].public_info}
+								</div>
+								</div>
+							`
+							});
 
 					let bibliografia_array = []
 
@@ -1351,7 +1474,23 @@ var hoards =  {
 					bibliografia = bibliografia_array.join("\n")
 
 					grid.addWidget({
-						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.5rem;">${bibliografia}</div>`
+						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+							<h2 style="
+							margin: 0 0 10px; 
+							font-size: 1.3rem; 
+							font-weight: bold; 
+							border-bottom: 3px solid transparent;
+							border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+							display: inline-block;
+							text-align: center;
+							">
+							Bibliografía
+							</h2>
+							<div style="text-align: left;">
+							${bibliografia_array.join("<br>")}
+							</div>
+						</div>
+						`
 					});
 
 					let nombres_array = []
@@ -1369,7 +1508,21 @@ var hoards =  {
 					nombres_autores = nombres_array.join("\n");
 
 
-					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.5rem;">${nombres_autores}</div>`})
+					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;">
+							<h2 style="
+							margin: 0 0 10px; 
+							font-size: 1.3rem; 
+							font-weight: bold; 
+							border-bottom: 3px solid transparent;
+							border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+							display: inline-block;
+							">
+							Autores
+							</h2>
+							<div style="text-align: left; margin-top: 6px;">
+							${nombres_array.join("<br>")}
+							</div>
+						</div>`})
 					}
 			
 

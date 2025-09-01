@@ -347,7 +347,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'hoards'
+						table		: 'hoards',
+						parent_in		: true
 					})
 				}
 			})
@@ -691,31 +692,19 @@ cargarTodoYCrearMapa : async function(resultado) {
 							self.map_factory_instance_numismatic_group.map.remove();
 						}
 
+
 						self.map_factory_instance_numismatic_group = new map_factory();
 						self.map_factory_instance_numismatic_group.init({
 							map_container: self.map_container_numismatic_group,
 							map_position: [data_ceca_lat, data_ceca_lon],
 							source_maps: page.maps_config.source_maps,
 							result: resultado1,
-							map_node : self
+							map_node : self,
+							zoom	 : 6
 						});
 
 						self.map_container_numismatic_group.style.display = "block";
-			
-						const title_numismatic_group = document.getElementById("title_numismatic_group");
-
-						if(title_numismatic_group.style.display == "none"){
-
-							title_numismatic_group.style.display = "block"
-							const separador = common.create_dom_element({
-								element_type	: "div",
-								class_name		: "golden-separator",
-								parent			: title_numismatic_group
-							})
-
-							separador.style.marginBottom = "20px"
-						}
-						
+						self.map_container.style.display = "none";	
 						self.map_container_numismatic_group.classList.remove("loading")
 
 					}else{
@@ -724,6 +713,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 						location.lat = datos_location.lat;
 						location.lon = datos_location.lon;
 						self.map_factory_instance.move_map_to_point(location)
+						self.map_container.style.display = "block";
+						self.map_container_numismatic_group.style.display = "none";
 
 					}
 

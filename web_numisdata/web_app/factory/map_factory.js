@@ -15,7 +15,7 @@ function map_factory() {
 	this.result = null
 	this.findspot = false
 	this.unique = false
-
+	this.zoom = 8
 	this.init = function(options) {
 
 		const self = this;
@@ -27,6 +27,7 @@ function map_factory() {
 		self.result = options.result || null;
 		self.findspot = options.findspot || false;
 		self.unique = options.unique || false;
+		self.zoom = options.zoom || 8;
 
 		console.log ("Unique en map_factory: ",options);
 		// Asegurarte de obtener el elemento DOM
@@ -40,7 +41,7 @@ function map_factory() {
 		}
 
 		// Crear el mapa con Leaflet centrado en Cádiz
-		self.map = L.map(containerElement, { preferCanvas: true }).setView(self.map_position, 8);
+		self.map = L.map(containerElement, { preferCanvas: true }).setView(self.map_position, self.zoom);
 		self.add_layer_control(self.map,self.source_maps)
 		// (Opcional) Añadir capa base (por ejemplo OpenStreetMap)
 	
@@ -113,7 +114,7 @@ function map_factory() {
 				});
 
 			// --- Iconos ---
-			console.log ("Unique: ",this.unique);
+
 			const iconoCeca = L.icon({
 				iconUrl: this.unique ? '../tpl/assets/images/map/IMG_8276.png': './tpl/assets/images/map/IMG_8276.png',
 				iconSize: [32, 32], 
@@ -121,14 +122,14 @@ function map_factory() {
 				popupAnchor: [0, -32] 
 			});
 
-			const iconoHallazgo = L.icon({
+			const iconoComplejo = L.icon({
 				iconUrl: this.unique ? '../tpl/assets/images/map/IMG_5962.png': './tpl/assets/images/map/IMG_5962.png',
 				iconSize: [32, 32], 
 				iconAnchor: [16, 32], 
 				popupAnchor: [0, -32] 
 			});
 
-			const iconoComplejo = L.icon({
+			const iconoHallazgo = L.icon({
 				iconUrl: this.unique ? '../tpl/assets/images/map/orange.png' : './tpl/assets/images/map/orange.png',
 				iconSize: [32, 32], 
 				iconAnchor: [16, 32], 
@@ -245,87 +246,92 @@ function map_factory() {
 				{
 				label: "Hallazgo",
 				type: "image",
-				url: this.unique ? '../tpl/assets/images/map/IMG_5962.png' : './tpl/assets/images/map/IMG_5962.png',
+				url: this.unique ? '../tpl/assets/images/map/orange.png' : './tpl/assets/images/map/orange.png',
 				layers: clusters.clusterHallazgos
 				},
 				{
 				label: "Complejo",
 				type: "image",
-				url: this.unique ? '../tpl/assets/images/map/orange.png' : './tpl/assets/images/map/orange.png',
+				url: this.unique ? '../tpl/assets/images/map/IMG_5962.png' : './tpl/assets/images/map/IMG_5962.png',
 				layers: clusters.clusterComplejos
 				}
 			]
 			}).addTo(map);
 
-			// Grupo para guardar lo dibujado
-			const drawnItems = new L.FeatureGroup();
-			map.addLayer(drawnItems);
+// Grupo para guardar lo dibujado
+const drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
 
-			// Cargar rutas existentes y aplicar color desde propiedades
-			fetch("./web_app/factory/rutas.geojson")
-				.then(res => res.json())
-				.then(data => {
-				L.geoJSON(data, {
-					style: function(feature) {
-					return { color: feature.properties.color || "blue", weight: 6, dashArray: "5,5" };
-					}
-				}).eachLayer(layer => drawnItems.addLayer(layer));
-				})
-				.catch(err => console.log("No hay rutas guardadas aún."));
+// Función para cargar rutas desde cache
+function cargarRutasCache() {
+    const rutasCache = localStorage.getItem("rutas");
+    if (rutasCache) {
+		console.log("RUTAS CACHE", rutasCache)
+        const data = JSON.parse(rutasCache);
+        L.geoJSON(data, {
+            style: function(feature) {
+                return { color: feature.properties.color || "blue", weight: 6, dashArray: "5,5" };
+            }
+        }).eachLayer(layer => drawnItems.addLayer(layer));
+    } else {
+        console.log("No hay rutas en cache aún.");
+    }
+}
 
-			// Control de dibujo: todas las polilíneas verdes y grosor 6
-			if(DEV_MODE){
+	// Llamar a la función al inicio
+	cargarRutasCache();
 
-				const drawControl = new L.Control.Draw({
-					draw: {
-						polyline: {
-						shapeOptions: { color: "green", weight: 6 }, // color y grosor
-						repeatMode: false // dibuja una ruta a la vez
-						},
-						polygon: false,
-						rectangle: false,
-						circle: false,
-						marker: false
-					},
-					edit: { featureGroup: drawnItems }
-					});
-					map.addControl(drawControl);
 
-					map.on(L.Draw.Event.CREATED, function(e) {
-					const layer = e.layer;
-					// Guardar color en propiedades para luego exportar
-					layer.feature = layer.feature || { type: "Feature", properties: {} };
-					layer.feature.properties.color = "green";
-					drawnItems.addLayer(layer);
-					});
+	// Control de dibujo: todas las polilíneas verdes y grosor 6
+	if (DEV_MODE) {
 
-					// Botón “Guardar” dentro del mapa
-					const GuardarControl = L.Control.extend({
-					options: { position: 'topleft' },
-					onAdd: function(map) {
-						const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-						container.style.backgroundColor = 'white';
-						container.style.padding = '5px';
-						container.style.cursor = 'pointer';
-						container.innerHTML = '💾 Guardar';
-						container.onclick = function() {
-						// Tomamos todas las capas y creamos un solo FeatureCollection
-						const geojsonData = drawnItems.toGeoJSON();
-						fetch('./web_app/factory/guardarRutas.php', {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify(geojsonData) // un solo FeatureCollection
-						}).then(() => alert('Rutas guardadas correctamente'));
-						};
-						return container;
-					}
-					});
-					map.addControl(new GuardarControl());
+    const drawControl = new L.Control.Draw({
+        draw: {
+            polyline: {
+                shapeOptions: { color: "green", weight: 2 }, // color y grosor
+                repeatMode: false // dibuja una ruta a la vez
+            },
+            polygon: false,
+            rectangle: false,
+            circle: false,
+            marker: false
+        },
+			edit: { featureGroup: drawnItems }
+	});
 
-			}
+		map.addControl(drawControl);
+
+		map.on(L.Draw.Event.CREATED, function(e) {
+			const layer = e.layer;
+			// Guardar color en propiedades para luego exportar
+			layer.feature = layer.feature || { type: "Feature", properties: {} };
+			layer.feature.properties.color = "green";
+			drawnItems.addLayer(layer);
+		});
+
+		// Botón “Guardar” dentro del mapa (ahora guarda en cache)
+		const GuardarControl = L.Control.extend({
+			options: { position: 'topleft' },
+			onAdd: function(map) {
+				const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+				container.style.backgroundColor = 'white';
+				container.style.padding = '5px';
+				container.style.cursor = 'pointer';
+				container.innerHTML = '💾 Guardar';
+				container.onclick = function() {
+					// Tomamos todas las capas y creamos un solo FeatureCollection
+					const geojsonData = drawnItems.toGeoJSON();
+					localStorage.setItem("rutas", JSON.stringify(geojsonData));
+					alert('Rutas guardadas en cache correctamente');
+					};
+				return container;
+				}
+			});
+		map.addControl(new GuardarControl());
+		}
 			
 
-		}
+	}
 
 
 

@@ -175,7 +175,7 @@ var hoards =  {
 			self.form.item_factory({
 				id			: "name",
 				name		: "name",
-				label		: tstring.name || "Name",
+				label		: "Toponimia actual" || "Name",
 				q_column	: "name",
 				eq			: "LIKE",
 				eq_in		: "%",
@@ -197,7 +197,7 @@ var hoards =  {
 			self.form.item_factory({
 				id			: "place",
 				name		: "place",
-				label		: tstring.place || "Place",
+				label		: "Toponomia histórica" || "Place",
 				q_column	: "place",
 				eq			: "LIKE",
 				eq_in		: "%",
@@ -403,7 +403,7 @@ var hoards =  {
 		coin.result.forEach(coin => {
 			const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
 			const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
-			const name = coin.type_full_value || "Moneda sin nombre";
+			const name = coin.type_full_value || "";
 			contentceca += `
 				<div class="coin-card">
 					<div class="coin-imagenes">
@@ -754,19 +754,23 @@ var hoards =  {
 							parent 			: title_autores
 						})
 
-						let nombres_array = []
-						const rawAutores = api_response.result[id_hallazgo].authorship_names;
-						let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+						let nombres_array = [];
+
+						const rawAutores = api_response.result[id_hallazgo].authorship_names || "";
+						const rawRoles   = api_response.result[id_hallazgo].authorship_roles || "";
+
+						const autores = rawAutores.split("|");
+						const roles   = rawRoles.split("|");
+
+						const total_autores = Math.max(autores.length, roles.length);
 
 						for (let index = 0; index < total_autores; index++) {
-
-							nombres_array.push(rawAutores.split("|")[index] + " " + api_response.result[id_hallazgo].authorship_surnames.split("|")[index] + "/" + api_response.result[id_hallazgo].authorship_roles.split("|")[index])
-					
+						nombres_array.push(
+							(autores[index] || "") + "/" + (roles[index] || "")
+						);
 						}
 
-						let nombres_autores = ""
-
-						nombres_autores = nombres_array.join("\n");
+						let nombres_autores = nombres_array.join("\n");
 
 						const autores_mobile = common.create_dom_element({
 							element_type	: "p",
@@ -904,43 +908,12 @@ var hoards =  {
 					
 
 						const grid = GridStack.init(estructura);
-						const titulo = grid.addWidget({w:8,h:2,content: `${api_response.result[id_hallazgo].name} | ${caminos_hallazgo[id_hallazgo]}`})
+						const titulo = grid.addWidget({w:12,h:2,content: `${api_response.result[id_hallazgo].name} | ${caminos_hallazgo[id_hallazgo]}`})
 						const contentDiv = titulo.querySelector('.grid-stack-item-content');
 						contentDiv.id = "titulo-ficha";
 
 						const map_fact = new map_factory() // creates / get existing instance of map
 				
-						//console.log ("Nombre de la Ceca 2: "+api_response.result[hallazgo_resultado].name);
-						const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
-
-						let contentceca = `<div class="ceca-widget">`;
-
-						coin.result.forEach(coin => {
-							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
-							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
-							const name = coin.type_full_value || "Moneda sin nombre";
-
-							contentceca += `
-								<div class="coin-card">
-									<div class = "coin-imagenes">
-									<img src="${image_obverse}" alt="anverso" class="coin-img">
-									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
-									<p class="coin-name">${name}</p>
-								</div>
-							`;
-						});
-
-						contentceca += `</div>`;
-
-						// 4. Finalmente añadimos el widget al grid
-						const coins = grid.addWidget({
-							w: 4,
-							h: 12,
-							content: contentceca
-						});
-
-
-						
 
 						const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[id_hallazgo].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 						const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
@@ -973,6 +946,35 @@ var hoards =  {
 		
 
 									
+						const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
+
+						let contentceca = `<div class="ceca-widget">`;
+
+						coin.result.forEach(coin => {
+							console.log("MONEDASSSSSS",coin);
+							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
+							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
+							const name = coin.type_full_value || "";
+
+							contentceca += `
+								<div class="coin-card">
+									<div class = "coin-imagenes">
+									<img src="${image_obverse}" alt="anverso" class="coin-img">
+									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
+									<p class="coin-name">${name}</p>
+								</div>
+							`;
+						});
+
+						contentceca += `</div>`;
+
+						// 4. Finalmente añadimos el widget al grid
+						const coins = grid.addWidget({
+							w: 4,
+							h: 10,
+							content: contentceca
+						});
+
 
 						const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
 						const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
@@ -981,7 +983,7 @@ var hoards =  {
 							w: 8,
 							h: 4,
 							content: `
-								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
 								<h2 style="
 									margin: 5px 0 10px; 
 									font-size: 1.3rem;
@@ -1000,6 +1002,7 @@ var hoards =  {
 							`
 							});
 
+
 						let bibliografia_array = []
 
 						for (let index = 0; index < api_response.result[id_hallazgo].bibliography_data.length; index++) {
@@ -1014,7 +1017,7 @@ var hoards =  {
 						
 
 						const bibliography = grid.addWidget({
-								w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+								w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
 									<h2 style="
 									margin: 0 0 10px; 
 									font-size: 1.3rem; 
@@ -1064,7 +1067,7 @@ var hoards =  {
 
 						const authors = grid.addWidget({w:4,h:4,content: 
 							
-							`<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;">
+							`<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;">
 
 								<h2 style="
 								margin: 0 0 10px; 
@@ -1337,19 +1340,23 @@ var hoards =  {
 						parent 			: title_autores
 					})
 
-					let nombres_array = []
-					const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
-					let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+					let nombres_array = [];
 
-					for (let index = 0; index < total_autores; index++) {
+						const rawAutores = api_response.result[id_hallazgo].authorship_names || "";
+						const rawRoles   = api_response.result[id_hallazgo].authorship_roles || "";
 
-						nombres_array.push(rawAutores.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
-				
-					}
+						const autores = rawAutores.split("|");
+						const roles   = rawRoles.split("|");
 
-					let nombres_autores = ""
+						const total_autores = Math.max(autores.length, roles.length);
 
-					nombres_autores = nombres_array.join("\n");
+						for (let index = 0; index < total_autores; index++) {
+						nombres_array.push(
+							(autores[index] || "") + "/" + (roles[index] || "")
+						);
+						}
+
+						let nombres_autores = nombres_array.join("\n");
 
 					const autores_mobile = common.create_dom_element({
 						element_type	: "p",
@@ -1370,7 +1377,7 @@ var hoards =  {
 
 
 					const grid = GridStack.init(estructura);
-					const titulo = grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`})
+					const titulo = grid.addWidget({w:12,h:2,content: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
@@ -1379,35 +1386,6 @@ var hoards =  {
 					const map_fact = new map_factory() // creates / get existing instance of map
 								
 
-					//console.log ("Nombre de la Ceca 2: "+api_response.result[hallazgo_resultado].name);
-					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].name);
-					console.log ("Largo: "+coin.result.length);
-
-					 let content = `<div class="ceca-widget">`;
-
-					coin.result.forEach(coin => {
-						const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
-						const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
-						const name = coin.type_full_value || "Moneda sin nombre";
-
-						content += `
-							<div class="coin-card">
-								<div class = "coin-imagenes">
-								<img src="${image_obverse}" alt="anverso" class="coin-img">
-								<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
-								<p class="coin-name">${name}</p>
-							</div>
-						`;
-					});
-
-					content += `</div>`;
-
-					// 4. Finalmente añadimos el widget al grid
-					grid.addWidget({
-						w: 4,
-						h: 12,
-						content: content
-					});
 
 					const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
@@ -1436,7 +1414,36 @@ var hoards =  {
 									result				: resultado,
 									findspot			: true
 								})
-	
+
+								
+					const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
+
+						let contentceca = `<div class="ceca-widget">`;
+
+						coin.result.forEach(coin => {
+							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
+							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
+							const name = coin.type_full_value || "";
+
+							contentceca += `
+								<div class="coin-card">
+									<div class = "coin-imagenes">
+									<img src="${image_obverse}" alt="anverso" class="coin-img">
+									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
+									<p class="coin-name">${name}</p>
+								</div>
+							`;
+						});
+
+						contentceca += `</div>`;
+
+						// 4. Finalmente añadimos el widget al grid
+						const coins = grid.addWidget({
+							w: 4,
+							h: 10,
+							content: contentceca
+						});
+					
 					grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
 					grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
 					grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
@@ -1444,7 +1451,7 @@ var hoards =  {
 							w: 8,
 							h: 4,
 							content: `
-								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
 								<h2 style="
 									margin: 5px 0 10px; 
 									font-size: 1.3rem;
@@ -1463,6 +1470,8 @@ var hoards =  {
 							`
 							});
 
+					
+
 					let bibliografia_array = []
 
 					for (let index = 0; index < api_response.result[hallazgo_resultado].bibliography_data.length; index++) {
@@ -1474,7 +1483,7 @@ var hoards =  {
 					bibliografia = bibliografia_array.join("\n")
 
 					grid.addWidget({
-						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
+						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
 							<h2 style="
 							margin: 0 0 10px; 
 							font-size: 1.3rem; 
@@ -1508,7 +1517,7 @@ var hoards =  {
 					nombres_autores = nombres_array.join("\n");
 
 
-					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;">
+					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;">
 							<h2 style="
 							margin: 0 0 10px; 
 							font-size: 1.3rem; 
@@ -1774,15 +1783,16 @@ var hoards =  {
 						console.log ("Nombre de ceca: "+node.info_nodo.name);
 
 						const button_display = common.create_dom_element({
-							element_type	: "img",
+							element_type	: "button",
 							class_name		: "button_display",
-							src				: "tpl/assets/images/arrow-right.svg",
 							parent			: info_node
 						})
 
+						// Agregar texto al botón
+						button_display.textContent = "Ver monedas";
 
 						button_display.classList.add(`button_display_${node.info_nodo.section_id}`)
-						button_display.style.transform = ` translateX(30%) translateY(18%)`
+						//button_display.style.transform = ` translateX(30%) translateY(18%)`
 						const container_swiper = common.create_dom_element({
 							element_type	: "div",
 							class_name		: `swiper swiper_${node.info_nodo.section_id}`,
@@ -1881,7 +1891,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Excavación:",
+								text_content: "Lugar de Hallazgo:",
 								parent: findspot_container
 							});
 
@@ -1902,7 +1912,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Datación: ",
+								text_content: "Datación de la moneda: ",
 								parent: date_container
 							});
 
@@ -2052,7 +2062,7 @@ var hoards =  {
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "descriptive_title",
-								text_content: "Tipo de deposito: ",
+								text_content: "Tipo de hallazgo: ",
 								parent: find_type_container
 							});
 
@@ -2145,10 +2155,12 @@ var hoards =  {
 							if (!button || !container_swiper) return;
 
 							if (estado_mostrar_monedas) {
-								button.style.transform = "rotate(0deg) translateY(20%) translateX(30%)";
+								//button.style.transform = "rotate(0deg) translateY(20%) translateX(30%)";
+								button_display.textContent = "Ver monedas"; // texto cuando está oculto
 								container_swiper.style.display = "none";
 							} else {
-								button.style.transform = "rotate(90deg) translateX(30%) translateY(-20%)";
+								//button.style.transform = "rotate(90deg) translateX(30%) translateY(-20%)";
+								button_display.textContent = "Ocultar monedas"; // texto cuando está visible
 								container_swiper.style.display = "block";
 							}
 

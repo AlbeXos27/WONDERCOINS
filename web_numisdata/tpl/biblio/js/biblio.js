@@ -67,7 +67,7 @@ var biblio =  {
 				})
 		}
 
-		self.createExpandableBlock()
+		//self.createExpandableBlock()
 
 		return true
 	},//end set_up
@@ -185,6 +185,7 @@ var biblio =  {
 								const term_name = terms[k].trim()
 								const found = result_final.find(el => el.value===term_name)
 								if (!found && term_name.length > 0) {
+									console.log("PUSH", term_name);
 									result_final.push({
 										label : term_name,
 										value : term_name
@@ -314,7 +315,7 @@ var biblio =  {
 							// 	current_value = current_value.replace(regex, '');
 							// }
 						}
-
+						console.log("current_column", current_column);
 					const current_obj = {
 						name 		: current_column, // input.dataset.q_name, // input.name,
 						value 		: current_value,  // input.value

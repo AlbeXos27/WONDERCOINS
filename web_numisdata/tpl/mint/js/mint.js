@@ -679,7 +679,7 @@ var mint = {
 
 		// Cite of record
 			const golden_separator = document.querySelector('.golden-separator')
-			const cite = common.create_dom_element({
+			/* const cite = common.create_dom_element({
 				element_type	: "span",
 				class_name		: "cite_this_record",
 				text_content	: tstring.cite_this_record || 'cite this record',
@@ -758,7 +758,7 @@ var mint = {
 					parent 			: popUpContainer
 				})
 				
-			})
+			}) */
 
 		// name & place
 			if (row_object.name && row_object.name.length>0) {

@@ -37,7 +37,7 @@ var coin_row = {
 			}
 
 		// Cite of record
-			const golden_separator = document.querySelector('.golden-separator')
+			/* const golden_separator = document.querySelector('.golden-separator')
 			const cite = common.create_dom_element({
 				element_type	: "span",
 				class_name		: "cite_this_record",
@@ -115,7 +115,7 @@ var coin_row = {
 					text_content	: tstring.click_to_copy || 'Click to copy',
 					parent 			: popUpContainer
 				})
-			})
+			}) */
 
 		// identify_images
 			const identify_images = common.create_dom_element({
@@ -123,9 +123,11 @@ var coin_row = {
 				class_name		: "identify_images_wrapper gallery coins-sides-wrapper",
 				parent 			: fragment
 			})
+
+
 			// image_obverse
 				let coin_number = tstring.number || "Number"
-				coin_number += " "+row.number
+				coin_number += " "+row.section_id;
 
 				if (row.image_obverse && row.image_obverse.length>0) {
 					const image_link = common.create_dom_element({
@@ -156,7 +158,7 @@ var coin_row = {
 						//put gallery attributes to img
 						image_obverse.setAttribute("data-caption",collection_label)
 					}
-
+					console.log(row)
 					if (row.ref_auction_group){
 
 						for (let i = 0; i < row.ref_auction_group.length; i++) {
@@ -239,6 +241,24 @@ var coin_row = {
 					})
 				}
 
+				if(row.denomination){
+					
+
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: "DENOMINACIÓN",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.denomination,
+						parent			: info_container
+					})
+
+				}
+
 		// collection - former - number
 			const label_collection = []
 			const value_collection = []
@@ -271,21 +291,24 @@ var coin_row = {
 				inner_html		: value_collection.join(' '),
 				parent			: info_container
 			})
+			const num_link = row.findspot_data != null ? JSON.parse(row.findspot_data)[0] : null
+			if(num_link){
 			const findspot_node = common.create_dom_element({
 				element_type	: "label",
 				class_name		: "left-labels",
 				text_content	: "Hallazgo",
 				parent			: info_container
 			})
-			const num_link = row.findspot_data ? JSON.parse(row.findspot_data)[0] : ""
 			const value_findspot_node = common.create_dom_element({
-				element_type	: "a",
-				class_name		: "rigth-values type_label",
-				inner_html		: row.findspot + " " + "<a class=\"icon_link\"></a> ",
-				href 			: page_globals.__WEB_ROOT_WEB__ + "/findspot/"+ num_link  ,
-				target 			: "_blank",
-				parent			: info_container
-			})
+					element_type	: "a",
+					class_name		: "rigth-values type_label",
+					inner_html		: row.findspot + " " + "<a class=\"icon_link\"></a> ",
+					href 			: page_globals.__WEB_ROOT_WEB__ + "/findspot/"+ num_link  ,
+					target 			: "_blank",
+					parent			: info_container
+				})
+
+			}
 
 		
 		// auctions
@@ -494,10 +517,11 @@ var coin_row = {
 			for (let i = 0; i < row.catalogue_type_mint.length; i++) {
 				const catalogue = row.catalogue_type_mint[i]
 				if(catalogue === page_globals.OWN_CATALOG_ACRONYM ) continue;
+
 				const value_type_node = common.create_dom_element({
 					element_type	: "span",
 					class_name		: "rigth-values equivalents",
-					inner_html		: catalogue+' '+ row.type_data[0].section_id,
+					inner_html		: catalogue + " " + row.type[i],
 					parent			: info_container
 				})
 			}
@@ -849,7 +873,7 @@ var coin_row = {
 
 		// uri
 			const uri = row.coin_uri
-			const uri_text	= '<a class="icon_link info_value" target="_blank" href="' +uri+ '"> '+ page_globals.OWN_CATALOG_ACRONYM +' </a> '
+			const uri_text	= '<a class="icon_link info_value" target="_blank" href="' +uri+ '"> '+ uri +' </a> '
 			if (row.coin_uri && row.coin_uri.length>0) {
 				common.create_dom_element({
 					element_type	: "label",

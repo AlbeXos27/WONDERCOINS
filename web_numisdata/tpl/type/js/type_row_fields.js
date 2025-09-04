@@ -1041,8 +1041,8 @@ export const type_row_fields = {
 				const mint_number = (item.mint_number)
 					? item.mint_number+'/'
 					: ''
-
-				const item_text = item[name] + " " +  mint_number + item["number"]
+				
+				const item_text = item[name] + " " +  mint_number + item["number"] ? item["number"] : ""
 
 				self.type = item_text
 				const node = common.create_dom_element({

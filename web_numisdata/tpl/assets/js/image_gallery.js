@@ -20,6 +20,7 @@ var image_gallery = {
         galleryNode : null,
         containerId : null               //if null put gallery in body
     },
+    result : null,
 
     set_up : function(options) {
         const self = this
@@ -44,8 +45,8 @@ var image_gallery = {
         self.setup = {...self.setup, ...options}
         let galleryNode = self.setup.galleryNode
         this.currentIndex = 0
-
-
+        self.result = options.result
+        const coins = self.result.result[0].result[0].coin_references[0];
         const parsedGallery = self.ParseGallery(galleryNode)
 
         this.popup = document.createRange().createContextualFragment('<div id="'+self.setup.galleryPrimId+'"><div id="gallery-wrapper"><div class="nav-button" id="pre-button"></div><div id="images-wrapper"><img id="img1" src=""><img id="img2" src=""></div><div class="nav-button" id="next-button"></div></div></div>')
@@ -53,10 +54,11 @@ var image_gallery = {
         this.img1 = this.popup.getElementById('img1')
         this.img2 = this.popup.getElementById('img2')
 
-        //put first open images
-        this.img1.src = parsedGallery[0][0].attributes.href.value
-        this.img2.src = parsedGallery[0][1].attributes.href.value
-
+        const image_obverse = coins && coins.image_obverse ? coins.image_obverse : "/web_numisdata/tpl/assets/images/default.jpg";       
+        const image_reverse = coins && coins.image_reverse ? coins.image_reverse : "/web_numisdata/tpl/assets/images/default.jpg"
+        this.img1.src = parsedGallery.length > 0 ? parsedGallery[0][0].attributes.href.value : image_obverse;
+        this.img2.src = parsedGallery.length > 0 ? parsedGallery[0][1].attributes.href.value : image_reverse;
+        
         this.caption = ""
         this.preButton = this.popup.getElementById("pre-button")
         this.nextButton = this.popup.getElementById("next-button")

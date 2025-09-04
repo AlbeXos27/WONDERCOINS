@@ -200,11 +200,9 @@ var catalog = {
 
 				// if psqo is received, recreate the original search into the current form and submit
 				const decoded_psqo = psqo_factory.decode_psqo(psqo)
-				
 				if (decoded_psqo) {
 
 					self.form.parse_psqo_to_form(decoded_psqo)
-
 					self.form_submit(form_node, {
 						scroll_result : true
 					})
@@ -354,8 +352,8 @@ var catalog = {
 				label			: tstring.role || "Role",
 				q_column		: "ref_type_creators_roles", //"p_creator",
 				// value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
-				value_split 	: '|',
 				// q_splittable 	: true,
+				value_split : "|",
 				q_selected_eq 	: 'LIKE',
 				eq_in			: "%",
 				eq_out			: "%",
@@ -374,7 +372,7 @@ var catalog = {
 				id				: "creator",
 				name			: "creator",
 				label			: tstring.creator || "creator",
-				q_column		: "ref_type_creators_full_name", //"p_creator",
+				q_column		: "ref_type_creators_data", //"p_creator",
 				// value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
 				value_split 	: ' | ',
 				// q_splittable 	: true,
@@ -572,7 +570,7 @@ var catalog = {
 			// })
 
 		// technique
-			self.form.item_factory({
+/* 			self.form.item_factory({
 				id 			: "technique",
 				name 		: "technique",
 				q_column 	: "ref_type_technique",
@@ -586,7 +584,7 @@ var catalog = {
 						table		: 'catalog'
 					})
 				}
-			})
+			}) */
 
 		// period
 			// self.form.item_factory({
@@ -1087,7 +1085,7 @@ var catalog = {
 		// search rows exec against API
 			const js_promise = self.search_rows({
 				filter			: filter,
-				limit			: 0,
+				limit			: 100,
 				process_result	: {
 					fn		: 'process_result::add_parents_and_children_recursive',
 					columns	: [{name : "parents"}]
@@ -1438,15 +1436,28 @@ var catalog = {
 
 					// 	return null
 					// }
-
-			// parsed_filters
 				const parsed_filter    = self.form.parse_sql_filter(filter, group,true)
+				let parsed_filter_final = parsed_filter;
+
+				if(/\bBronce\b/i.test(parsed_filter) && !/\bEmplomado\b/i.test(parsed_filter)){
+
+					parsed_filter_final += ' OR `ref_type_material` LIKE "%AE%"' 
+
+				}
 
                 const sql_filter    = parsed_filter
-                    ? '(' + parsed_filter + ')'
-                    : null
-				// const sql_filter = filter
-				// console.log("Final sql_filter:", sql_filter);
+                    ? '(' + parsed_filter_final + ')'
+                    : null;
+					let sql_filter_final = sql_filter;
+
+				if(sql_filter.includes("`p_group`")){
+
+					sql_filter_final = "`p_group` LIKE '%"+ filter.$and[0].$or[0].$and[0].q+"%' and p_group != '' "
+					
+				}
+
+
+				console.log("Final sql_filter:", sql_filter_final)
 
 			// debug
 				if(SHOW_DEBUG===true) {
@@ -1460,7 +1471,7 @@ var catalog = {
 					table			: 'catalog',
 					ar_fields		: ar_fields,
 					lang			: lang,
-					sql_filter		: sql_filter,
+					sql_filter		: sql_filter_final,
 					limit			: limit,
 					group			: (group.length>0) ? group.join(",") : null,
 					count			: false,
@@ -1472,7 +1483,7 @@ var catalog = {
 				})
 				.then((response)=>{
 					// console.log("++++++++++++ request_body:",request_body);
-					// console.log("--- search_rows API response:",response);
+					console.log("--- search_rows API response:",response);
 
 					// data parsed
 					const data = page.parse_catalog_data(response.result)

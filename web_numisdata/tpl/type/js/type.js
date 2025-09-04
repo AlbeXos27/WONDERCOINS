@@ -63,12 +63,11 @@ var type =  {
 						// combi request split results
 							const type		= response.result.find(item => item.id==='type')
 							const catalog	= response.result.find(item => item.id==='catalog')
-
+							console.log(type)
 						if (typeof type.result[0]!=="undefined") {
 
 							const row			= type.result[0]
 							const catalog_rows	= page.parse_catalog_data(catalog.result)[0] || null
-							console.log()
 							// app property catalog with all catalog rows result
 								row.catalog = catalog_rows
 
@@ -97,28 +96,8 @@ var type =  {
 									body : {
 										dedalo_get		: 'records',
 										table			: 'mints',
-										ar_fields		: [
-											'section_id',
-											'lang',
-											'name',
-											'place_data',
-											'place',
-											'public_info',
-											'bibliography_data',
-											'map',
-											'uri',
-											'indexation',
-											'indexation_data',
-											'georef_geojson',
-											'relations_types',
-											'authorship_data',
-											'authorship_names',
-											'authorship_surnames',
-											'authorship_roles'
-										],
-										sql_filter				: "section_id = " + parseInt(section_id_row),
-										db_name					: page_globals.WEB_DB,
-										lang					: page_globals.WEB_CURRENT_LANG_CODE,
+										ar_fields		: ["*"],
+										sql_filter		: "section_id = " + parseInt(section_id_row),
 										limit			: 0,
 										count			: count,
 										offset			: 0,
@@ -129,7 +108,7 @@ var type =  {
 								})
 								.then( async function(api_response){
 									
-
+								const datos_ceca = api_response.result[0];
 								const map_fact = new map_factory() // creates / get existing instance of map
 
 								let resultado = {
@@ -143,17 +122,46 @@ var type =  {
 									datos: []
 								}
 								};
-								const map_pars = api_response.result[0].map ? JSON.parse(api_response.result[0].map) : null
-								console.log("Map pars:", map_pars);
+
+								const map_pars = datos_ceca.map ? JSON.parse(datos_ceca.map) : null
 								resultado.cecas.datos.push(row.mint_data[0]);
-								
+
+									data_manager.request({
+									body : {
+										dedalo_get		: 'records',
+										table			: 'findspots',
+										ar_fields		: ["*"],
+										sql_filter		: `types LIKE "%${self.section_id}%"` ,
+										limit			: 0,
+										count			: count,
+										offset			: 0,
+										order			: order,
+										process_result	: null
+									}
+								})
+								.then( async function(api_response){
+
+									let hallazgos = new Array();
+									for (let index = 0; index < api_response.result.length; index++) {
+									
+										const typesArray = JSON.parse(api_response.result[index].types);
+										const result = typesArray.filter(num => num === `${self.section_id}`);
+										result.length > 0 ? hallazgos.push(api_response.result[index]) : "";
+										
+									}
+
+									resultado.hallazgos.datos = hallazgos;
+
 									const map = map_fact.init({
 										map_container : map_container,
 										map_position  : map_pars,
 										source_maps   : page.maps_config.source_maps,
 										result        : resultado,
-										unique    	  : true
+										unique    	  : true,
+										zoom		  : 5
 										});
+									})
+
 							});
 							// render row nodes
 							self.list_row_builder(row)
@@ -171,7 +179,8 @@ var type =  {
 										newGallery.set_up_embedded ({
 											galleryNode		: embeddedGallery,
 											galleryPrimId	: 'embedded-gallery-id',
-											containerId		: 'embedded-gallery'
+											containerId		: 'embedded-gallery',
+											result			: response
 										})
 									}
 

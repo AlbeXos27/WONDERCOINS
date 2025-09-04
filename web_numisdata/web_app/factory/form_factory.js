@@ -425,13 +425,12 @@ function form_factory() {
 		// console.log("set_form_item psqo_item:",psqo_item);
 
 		const self = this
-
-		const q_column = psqo_item.field
+		const q_column = psqo_item[0].$and[0].field
 
 		// find form_items match q_column
 			const form_item = (()=>{
 
-				return self.form_items[psqo_item.id]
+				return self.form_items[q_column]
 
 				// for(const key in self.form_items) {
 
@@ -448,16 +447,15 @@ function form_factory() {
 				console.error("Error on get form item", psqo_item, self.form_items);
 				return false
 			}
+			
 
 		// set properties
 			form_item.op		= psqo_item.op || form_item.op
 			form_item.eq_in		= psqo_item.eq_in || form_item.eq_in
 			form_item.eq_out	= psqo_item.eq_out || form_item.eq_out
-
 		// const clean_value = psqo_item.value.replace(^'\[")|(^'\%?)|(\%?'$)|("\]'$)
 		// const clean_value = decodeURIComponent(psqo_item.q)
-		const clean_value = psqo_item.q
-
+		const clean_value = psqo_item[0].$and[0].value
 
 		// add value
 			if (psqo_item.q_type==='q_selected') {
@@ -667,7 +665,6 @@ function form_factory() {
 	this.parse_sql_filter = function(filter, group, recursive, global_search){
 
 		const self = this
-
 		const sql_filter = (filter)
 			? (function() {
 
@@ -1072,6 +1069,44 @@ function form_factory() {
 
 
 						}
+
+						const people_creators = {};
+
+							if(table_resolved === "catalog"){
+								
+								if(q_column == "ref_type_creators_data"){
+												
+									await data_manager.request({
+
+												body : {
+													dedalo_get	: 'records',
+													table		: "people",
+													ar_fields	: ["*"],
+													sql_filter	: `name IS NOT NULL` ,
+													limit		: 0,
+													order		: order
+												}
+										})
+										.then((api_response) => {
+
+											for (let index = 0; index < api_response.result.length; index++) {
+														
+												people_creators[api_response.result[index].section_id] = api_response.result[index].name + (api_response.result[index].surname != null ? api_response.result[index].surname : "");
+														
+											}
+
+										})
+
+								}
+
+
+
+
+
+							}
+
+				
+
 						await data_manager.request({
 							body : {
 								dedalo_get	: 'records',
@@ -1083,14 +1118,14 @@ function form_factory() {
 								order		: order
 							}
 						})
-						.then((api_response) => { // return results in standard format (label, value)
+						.then(async (api_response) => { // return results in standard format (label, value)
 							 console.log("-->autocomplete api_response:", api_response);
 
 							const ar_result	= []
-
+							let set_creators = new Set();
+							const set_material = new Set(); 
 							const result	= api_response.result
 							const len		= api_response.result.length
-
 							for (let i = 0; i < len; i++) {
 
 								const item = api_response.result[i]
@@ -1121,6 +1156,8 @@ function form_factory() {
 								const current_ar_value = (base_value.indexOf("[\"")===0)
 									? JSON.parse(base_value)
 									: (Array.isArray(base_value) ? base_value : [base_value])
+								
+							
 
 								for (let j = 0; j < current_ar_value.length; j++) {
 
@@ -1131,8 +1168,8 @@ function form_factory() {
 									if (!item_name || item_name==='[]') continue;
 
 									if (form_item.value_split) {
-
 										const terms = item_name.split(form_item.value_split)
+
 										for (let k = 0; k < terms.length; k++) {
 
 											// split sub_filter when the item has other terms in the same row
@@ -1145,13 +1182,36 @@ function form_factory() {
 												continue
 											}
 
+											
+
 											const found = ar_result.find(el => el.value===term_name)
-											if (!found && term_name.length > 0) {
-												ar_result.push({
-													label : term_name,
-													value : term_name
-												})
+											
+											if(Object.keys(people_creators).length > 0){
+
+												if (!found && term_name.length > 0 && people_creators[term_name]) {
+													ar_result.push({
+														label : people_creators[term_name] ? people_creators[term_name] : term_name,
+														value : term_name
+													})
+												}
+
+											}else{
+
+										
+
+												if (!found && term_name.length > 0 && !set_creators.has(term_name.split(",")[0].trim())) {
+													set_creators.add(term_name.split(",")[0].trim())
+													ar_result.push({
+														label : term_name.split(",")[0].trim(),
+														value : term_name.split(",")[0].trim()
+													})
+													
+												}
+												
 											}
+
+																
+											
 										}
 
 									}else{
@@ -1171,18 +1231,49 @@ function form_factory() {
 
 											}
 										}
+							
 
-										if (!found && item_value.trim().length > 0) {
-											ar_result.push({
-												label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
-												value : item_value // item.name
-											})
+										if(table_resolved === "catalog"){
+
+											if(q_column === "ref_type_material"){
+												let name = item_name.toLowerCase();
+												(!name.includes("ae")) ? set_material.add(item_name) : "" ; 
+
+											}
+
 										}
+
+
+									
+										if(q_column === "ref_type_material"){
+
+											if (!found && item_value.trim().length > 0 && set_material.has(item_name)) {
+										
+												ar_result.push({
+													label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
+													value : item_value // item.name
+												})
+											}
+
+										}else{
+
+											if (!found && item_value.trim().length > 0) {
+										
+												ar_result.push({
+													label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
+													value : item_value // item.name
+												})
+											}
+
+
+										}
+
+									
 
 									}//end if (form_item.value_split)
 								}
 							}
-
+							console.log("set_material ", set_material);
 							// parse result
 								const ar_result_final = parse_result(ar_result, term)
 
@@ -1190,6 +1281,7 @@ function form_factory() {
 								if (filter[op].length===1 && typeof table!=="function") {
 									cache[ term ] = ar_result_final
 								}
+
 
 							// debug
 								if(SHOW_DEBUG===true) {

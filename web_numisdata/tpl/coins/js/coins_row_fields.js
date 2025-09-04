@@ -46,9 +46,9 @@ var coins_row_fields = {
 						parent			: type_wrapper
 					})
 
-
+					
 					const current_type_data 	= row.type_data[i]
-					const current_type_number 	= row.type[i]
+					const current_type_number = (row.type && row.type[i] != null) ? row.type[i] : 0;
 					const current_catalogue		= row.catalogue_type_mint[i]
 
 

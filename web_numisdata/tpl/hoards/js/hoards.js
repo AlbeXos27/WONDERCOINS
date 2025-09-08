@@ -324,8 +324,8 @@ var hoards =  {
 
 		// 📑 Info principal
 		const hallazgo = api_response.result[id_hallazgo];
-		refs.typology.querySelector('.grid-stack-item-content').innerHTML = hallazgo.typology;
-		refs.date.querySelector('.grid-stack-item-content').innerHTML = `<span style="font-size:2.5rem">${hallazgo.date_in} / ${hallazgo.date_out}</span>`;
+		//refs.typology.querySelector('.grid-stack-item-content').innerHTML = hallazgo.typology;
+		//refs.date.querySelector('.grid-stack-item-content').innerHTML = `<span style="font-size:2.5rem">${hallazgo.date_in} / ${hallazgo.date_out}</span>`;
 		refs.indexation.querySelector('.grid-stack-item-content').innerHTML = hallazgo.indexation;
 		refs.public_info.querySelector('.grid-stack-item-content').innerHTML = `
 				<div style="font-size: 1.3rem; text-align:center; position:absolute; top:0; width:100%;">
@@ -976,9 +976,9 @@ var hoards =  {
 						});
 
 
-						const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
-						const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
-						const indexation = grid.addWidget({w:8,h:1,content: `${api_response.result[id_hallazgo].indexation}`})
+						//const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
+						//const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
+						const indexation = grid.addWidget({w:8,h:2,content: `${api_response.result[id_hallazgo].indexation}`})
 						const public_info = grid.addWidget({
 							w: 8,
 							h: 4,
@@ -1169,8 +1169,8 @@ var hoards =  {
 						const refs = {
 							contentDiv,
 							img_ident,
-							typology,
-							date,
+							//typology,
+							//date,
 							indexation,
 							public_info,
 							bibliography,
@@ -1444,9 +1444,9 @@ var hoards =  {
 							content: contentceca
 						});
 					
-					grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
-					grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
-					grid.addWidget({w:8,h:1,content: `${api_response.result[hallazgo_resultado].indexation}`})
+					//grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
+					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
+					grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].indexation}`})
 					grid.addWidget({
 							w: 8,
 							h: 4,

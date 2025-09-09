@@ -29,7 +29,6 @@ function map_factory() {
 		self.unique = options.unique || false;
 		self.zoom = options.zoom || 8;
 
-		console.log ("Unique en map_factory: ",options);
 		// Asegurarte de obtener el elemento DOM
 		const containerElement = typeof self.map_container === "string"
 			? document.getElementById(self.map_container)
@@ -43,19 +42,17 @@ function map_factory() {
 		// Crear el mapa con Leaflet centrado en Cádiz
 		self.map = L.map(containerElement, { preferCanvas: true }).setView(self.map_position, self.zoom);
 		self.add_layer_control(self.map,self.source_maps)
-		// (Opcional) Añadir capa base (por ejemplo OpenStreetMap)
-	
 
 		if(!self.findspot){
-		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-			attribution: "© OpenStreetMap contributors"
-		}).addTo(self.map);
-			
-		
+
+			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(self.map);
+			L.tileLayer("https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png", {}).addTo(self.map);		
 		}else{
+
 			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(self.map);
+			L.tileLayer("https://dh.gu.se/tiles/imperium/{z}/{x}/{y}.png").addTo(self.map);		
 		}
-				
+		
 			const clusters = self.add_markers(self.map,self.result,self.map_node)
 			self.create_legend(self.map,clusters)
 		
@@ -69,7 +66,8 @@ function map_factory() {
 	},
 
 	this.add_layer_control = function(map, source_maps) {
-		// Ejemplo de cómo crear control de capas (si tienes varias capas en source_maps)
+
+
 		if (source_maps.length > 0) {
 			const baseLayers = {};
 			source_maps.forEach(layer => {

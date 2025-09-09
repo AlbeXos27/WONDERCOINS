@@ -253,7 +253,7 @@ var coin_row = {
 					common.create_dom_element({
 						element_type	: "span",
 						class_name		: "rigth-values",
-						inner_html		: row.denomination,
+						inner_html		: row.denomination.split("|")[0],
 						parent			: info_container
 					})
 
@@ -533,10 +533,24 @@ var coin_row = {
 				parent			: info_container
 			})
 
+
+
 			// design_obverse
 				const design_obverse = typeof type_section!=="undefined"
 					? type_section.design_obverse
 					: null
+
+				const psqo_obverse = {
+					"$and":[{
+						id	: "design_obverse",
+						q	: design_obverse,
+						op	: '='
+					}]
+				}
+
+				const safe_psqo_observe		= psqo_factory.build_safe_psqo(psqo_obverse)
+				const parse_psqo_observe	= psqo_factory.encode_psqo(safe_psqo_observe)
+
 				if (design_obverse && design_obverse.length>0) {
 					common.create_dom_element({
 						element_type	: "label",
@@ -544,7 +558,7 @@ var coin_row = {
 						text_content	: tstring.design || "design",
 						parent			: info_container
 					})
-					const catalog_url	= page_globals.__WEB_ROOT_WEB__+"/catalog/?item_type=design_obverse"+"&label="+design_obverse+"&value="+design_obverse;
+					const catalog_url	= page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+parse_psqo_observe;
 					const prompt_label	= common.create_dom_element({
 						element_type	: "a",
 						class_name		: "rigth-values",
@@ -565,6 +579,8 @@ var coin_row = {
 						text_content	: tstring.symbol || "symbol",
 						parent			: info_container
 					})
+
+
 					const catalog_url = page_globals.__WEB_ROOT_WEB__+"/catalog/?item_type=symbol_obverse"+"&label="+symbol_obverse+"&value="+symbol_obverse;
 					const prompt_label = common.create_dom_element({
 						element_type	: "a",
@@ -640,6 +656,19 @@ var coin_row = {
 				const design_reverse = typeof type_section!=="undefined"
 					? type_section.design_reverse
 					: null
+
+
+				const psqo_reverse = {
+					"$and":[{
+						id	: "design_reverse",
+						q	: design_reverse,
+						op	: '='
+					}]
+				}
+
+				const safe_psqo_reverse		= psqo_factory.build_safe_psqo(psqo_reverse)
+				const parse_psqo_reverse	= psqo_factory.encode_psqo(safe_psqo_reverse)
+
 				if (design_reverse && design_reverse.length>0) {
 					common.create_dom_element({
 						element_type	: "label",
@@ -647,7 +676,7 @@ var coin_row = {
 						text_content	: tstring.design || "design",
 						parent			: info_container
 					})
-					const catalog_url = page_globals.__WEB_ROOT_WEB__+"/catalog/?item_type=design_reverse"+"&label="+design_reverse+"&value="+design_reverse;
+					const catalog_url = page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+parse_psqo_reverse;
 					const prompt_label = common.create_dom_element({
 						element_type	: "a",
 						class_name		: "rigth-values",

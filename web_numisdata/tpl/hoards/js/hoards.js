@@ -951,7 +951,6 @@ var hoards =  {
 						let contentceca = `<div class="ceca-widget">`;
 
 						coin.result.forEach(coin => {
-							console.log("MONEDASSSSSS",coin);
 							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
 							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
 							const name = coin.type_full_value || "";
@@ -977,8 +976,37 @@ var hoards =  {
 
 
 						//const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
-						//const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
+						//const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})				
 						const indexation = grid.addWidget({w:8,h:2,content: `${api_response.result[id_hallazgo].indexation}`})
+
+						const indexation_ids = JSON.parse(api_response.result[id_hallazgo].indexation_data)
+						let sql_filter_indexation = "";
+
+						for (let index = 0; index < indexation_ids.length; index++) {
+							
+							sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+							
+						}
+
+						const categorizacionhallazgo = await self.cargarCategorizacionHallazgo(sql_filter_indexation);
+
+						const idsABorrar = [];
+						
+						for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+							idsABorrar.push(categorizacionhallazgo.result[index].section_id)
+						}
+
+						const funcionalidadhallazgo = await self.cargarFuncionalidadHallazgo(sql_filter_indexation);
+						funcionalidadhallazgo.result = funcionalidadhallazgo.result.filter(item => !idsABorrar.includes(item.section_id));
+
+						console.log("categorizacion",categorizacionhallazgo.result)
+						console.log("funcionalidad",funcionalidadhallazgo.result)
+						
+						const periodohallazgo = api_response.result[id_hallazgo].period;
+						console.log("periodo",periodohallazgo);
+
+						//-----------------------------------------------------------------------------------------
+
 						const public_info = grid.addWidget({
 							w: 8,
 							h: 4,
@@ -1445,8 +1473,39 @@ var hoards =  {
 						});
 					
 					//grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
-					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
+					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})		
+					const indexation_ids = JSON.parse(api_response.result[hallazgo_resultado].indexation_data)
+					let sql_filter_indexation = "";
+
+					for (let index = 0; index < indexation_ids.length; index++) {
+						
+						sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+						
+					}
+
+					const categorizacionhallazgo = await self.cargarCategorizacionHallazgo(sql_filter_indexation);
+
+					const idsABorrar = [];
+					
+					for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+						idsABorrar.push(categorizacionhallazgo.result[index].section_id)
+					}
+
+					const funcionalidadhallazgo = await self.cargarFuncionalidadHallazgo(sql_filter_indexation);
+					funcionalidadhallazgo.result = funcionalidadhallazgo.result.filter(item => !idsABorrar.includes(item.section_id));
+
+
+					console.log("categorizacion",categorizacionhallazgo.result)
+					console.log("funcionalidad",funcionalidadhallazgo.result)
+
+					const periodohallazgo = api_response.result[hallazgo_resultado].period;
+					console.log("periodo",periodohallazgo);
+
+					//-----------------------------------------------------------------------------------------------------
+
+
 					grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].indexation}`})
+
 					grid.addWidget({
 							w: 8,
 							h: 4,
@@ -1662,6 +1721,49 @@ var hoards =  {
 
 		return findspots_tree
 
+	},
+
+	cargarCategorizacionHallazgo : async function(sql_filter) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'ts_find_category',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
+	cargarFuncionalidadHallazgo : async function(sql_filter) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'ts_find_context',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
 	},
 	cargarHijosHallazgos : async function(hallazgo) {
 		try {

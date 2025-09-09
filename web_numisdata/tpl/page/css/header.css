@@ -56,18 +56,14 @@ header{
   .titulo_web p{
     width: 90%;
     height: 90%;
+    line-height: 8.0vh;
     color: #e8c65f;
     font-size: 4em;
     font-weight: bold;
     text-align: center;
     margin: auto;
   }
-  .proyect{
-    display: none !important;
-  } 
 }
-
-
 
 .container_header {
     width: 100%;

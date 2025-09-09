@@ -53,6 +53,11 @@ var page = {
 					name	: "ARCGIS",
 					url		: '//server.arcgisonline.com/ArcGIS/' + 'rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 					options	: {}
+				},
+				{
+					name	: "AWMC",
+					url		: 'http://cawm.lib.uiowa.edu/tiles/{z}/{x}/{y}.png',
+					options	: {}
 				}
 			],
 			// popup otions

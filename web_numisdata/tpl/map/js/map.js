@@ -712,6 +712,21 @@ cargarTodoYCrearMapa : async function(resultado) {
 						const datos_location = JSON.parse(api_response.result[0].map)
 						location.lat = datos_location.lat;
 						location.lon = datos_location.lon;
+						
+						if(api_response.result[0].table == "mints"){
+
+							const monedas_cecas = await self.cargarMonedasCecas(api_response.result[0].name);
+							await self.render_rows(api_response.result[0],monedas_cecas.result);
+						}
+						if(api_response.result[0].table == "findspots"){
+							const monedas_hallazgos = await self.cargarMonedasHallazgos(api_response.result[0].name);
+							await self.render_rows(api_response.result[0],monedas_hallazgos.result);
+						}
+						if(api_response.result[0].table == "hoards"){
+							const monedas_complejos = await self.cargarMonedasComplejos(api_response.result[0].name);
+							await self.render_rows(api_response.result[0],monedas_complejos.result) ;
+						}
+						
 						self.map_factory_instance.move_map_to_point(location)
 						self.map_container.style.display = "block";
 						self.map_container_numismatic_group.style.display = "none";

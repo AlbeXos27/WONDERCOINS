@@ -422,10 +422,10 @@ function form_factory() {
 	* Set a imput node of the form with the value and config searc of the psqo item object
 	*/
 	this.set_form_item = function(psqo_item) {
-		// console.log("set_form_item psqo_item:",psqo_item);
+		//console.log("set_form_item psqo_item:",psqo_item);
 
 		const self = this
-		const q_column = psqo_item[0].$and[0].field
+		const q_column = psqo_item.id
 
 		// find form_items match q_column
 			const form_item = (()=>{
@@ -455,7 +455,7 @@ function form_factory() {
 			form_item.eq_out	= psqo_item.eq_out || form_item.eq_out
 		// const clean_value = psqo_item.value.replace(^'\[")|(^'\%?)|(\%?'$)|("\]'$)
 		// const clean_value = decodeURIComponent(psqo_item.q)
-		const clean_value = psqo_item[0].$and[0].value
+		const clean_value = psqo_item.q
 
 		// add value
 			if (psqo_item.q_type==='q_selected') {
@@ -1070,41 +1070,6 @@ function form_factory() {
 
 						}
 
-						const people_creators = {};
-
-							if(table_resolved === "catalog"){
-								
-								if(q_column == "ref_type_creators_data"){
-												
-									await data_manager.request({
-
-												body : {
-													dedalo_get	: 'records',
-													table		: "people",
-													ar_fields	: ["*"],
-													sql_filter	: `name IS NOT NULL` ,
-													limit		: 0,
-													order		: order
-												}
-										})
-										.then((api_response) => {
-
-											for (let index = 0; index < api_response.result.length; index++) {
-														
-												people_creators[api_response.result[index].section_id] = api_response.result[index].name + (api_response.result[index].surname != null ? api_response.result[index].surname : "");
-														
-											}
-
-										})
-
-								}
-
-
-
-
-
-							}
-
 				
 
 						await data_manager.request({
@@ -1186,19 +1151,6 @@ function form_factory() {
 
 											const found = ar_result.find(el => el.value===term_name)
 											
-											if(Object.keys(people_creators).length > 0){
-
-												if (!found && term_name.length > 0 && people_creators[term_name]) {
-													ar_result.push({
-														label : people_creators[term_name] ? people_creators[term_name] : term_name,
-														value : term_name
-													})
-												}
-
-											}else{
-
-										
-
 												if (!found && term_name.length > 0 && !set_creators.has(term_name.split(",")[0].trim())) {
 													set_creators.add(term_name.split(",")[0].trim())
 													ar_result.push({
@@ -1207,10 +1159,7 @@ function form_factory() {
 													})
 													
 												}
-												
-											}
-
-																
+				
 											
 										}
 

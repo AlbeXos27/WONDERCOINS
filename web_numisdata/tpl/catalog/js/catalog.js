@@ -200,6 +200,7 @@ var catalog = {
 
 				// if psqo is received, recreate the original search into the current form and submit
 				const decoded_psqo = psqo_factory.decode_psqo(psqo)
+				console.log(decoded_psqo)
 				if (decoded_psqo) {
 
 					self.form.parse_psqo_to_form(decoded_psqo)
@@ -345,7 +346,7 @@ var catalog = {
 				}
 			})
 
-		// creator (autoridad)
+		// Cargo
 			self.form.item_factory({
 				id				: "role",
 				name			: "role",
@@ -372,9 +373,8 @@ var catalog = {
 				id				: "creator",
 				name			: "creator",
 				label			: tstring.creator || "creator",
-				q_column		: "ref_type_creators_data", //"p_creator",
+				q_column		: "ref_type_creators_full_name", //"p_creator",
 				// value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
-				value_split 	: ' | ',
 				// q_splittable 	: true,
 				q_selected_eq 	: 'LIKE',
 				eq_in			: "%",

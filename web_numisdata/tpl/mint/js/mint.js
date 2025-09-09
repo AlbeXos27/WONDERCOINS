@@ -48,7 +48,7 @@ var mint = {
 				section_id : self.section_id
 			})
 			.then(function(response){
-				// console.log("--> set_up get_row_data API response:",response.result);
+				console.log("--> set_up get_row_data API response:",response.result);
 
 				// mint draw
 					const mint = response.result.find( el => el.id==='mint')
@@ -74,7 +74,6 @@ var mint = {
 						};
 				
 					resultado.cecas.datos.push(mint_data)
-					console.log("Lista rows ",mint_data);
 						const map = map_fact.init({
 							map_container : map_container,
 							map_position  : mint_data.map,
@@ -116,6 +115,15 @@ var mint = {
 							console.warn("Ignored invalid _mint_catalog:",_mint_catalog);
 							console.warn("mint_catalog:",mint_catalog);
 						}
+					}
+
+					const mint_types = response.result.find( el => el.id==='mint_types')
+					if(mint_types.result){
+						console.log("TIENE TIPOS")
+					}
+					const mint_coins = response.result.find( el => el.id==='mint_coins')
+					if(mint_coins.result){
+						console.log("TIENE MONEDAS")
 					}
 
 				// send event data_request_done (used by buttons download)
@@ -213,6 +221,35 @@ var mint = {
 					sql_filter	: "term_data='[\"" + parseInt(section_id) + "\"]'"
 				}
 			})
+
+			ar_calls.push({
+				id		: "mint_types",
+				options	: {
+					dedalo_get	: 'records',
+					table		: 'types',
+					db_name		: page_globals.WEB_DB,
+					lang		: page_globals.WEB_CURRENT_LANG_CODE,
+					ar_fields	: ["*"],
+					count		: false,
+					limit		: 0,
+					sql_filter	: "mint_data='[\"" + parseInt(section_id) + "\"]'"
+				}
+			})
+
+			ar_calls.push({
+				id		: "mint_coins",
+				options	: {
+					dedalo_get	: 'records',
+					table		: 'coins',
+					db_name		: page_globals.WEB_DB,
+					lang		: page_globals.WEB_CURRENT_LANG_CODE,
+					ar_fields	: ["*"],
+					count		: false,
+					limit		: 0,
+					sql_filter	: "mint_data='[\"" + parseInt(section_id) + "\"]'"
+				}
+			})
+
 
 		// catalog call
 			// ar_calls.push({

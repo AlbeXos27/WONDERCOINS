@@ -35,6 +35,7 @@ var catalog_row_fields = {
 		}
 
 
+
 		switch(term_table){
 
 			case "types":
@@ -48,6 +49,7 @@ var catalog_row_fields = {
 						})
 
 					// type info
+					
 						self.node_factory(item, "term", term_line, "span", null)
 						self.node_factory(item, "ref_type_material", term_line, null, null)
 						self.node_factory(item, "ref_type_denomination", term_line, null, null)
@@ -316,14 +318,6 @@ var catalog_row_fields = {
 							}
 						});
 						
-				
-
-							
-					
-							
-							
-
-							
 
 						if (window.matchMedia) {
 							window.matchMedia('print').addListener(function(mql) {
@@ -356,7 +350,7 @@ var catalog_row_fields = {
 				common.create_dom_element({
 					element_type	: "div",
 					class_name		: "mint",
-					text_content	: item.term, // + " [" + term_table + "]",
+					text_content	: item.p_creator != null ? "("+ item.p_creator +")": "" +  item.term, // + " [" + term_table + "]",
 					parent			: fragment
 				})
 
@@ -369,6 +363,8 @@ var catalog_row_fields = {
 						parent			: fragment
 					})
 				}
+
+
 				break;
 
 			default:
@@ -386,8 +382,6 @@ var catalog_row_fields = {
 			class_name		: "row_node "+term_table
 		})
 		node.appendChild(fragment)
-
-
 
 		
 

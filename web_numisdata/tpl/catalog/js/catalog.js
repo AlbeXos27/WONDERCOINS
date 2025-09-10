@@ -200,7 +200,7 @@ var catalog = {
 
 				// if psqo is received, recreate the original search into the current form and submit
 				const decoded_psqo = psqo_factory.decode_psqo(psqo)
-				console.log(decoded_psqo)
+				//console.log(decoded_psqo)
 				if (decoded_psqo) {
 
 					self.form.parse_psqo_to_form(decoded_psqo)
@@ -1436,28 +1436,30 @@ var catalog = {
 
 					// 	return null
 					// }
-				const parsed_filter    = self.form.parse_sql_filter(filter, group,true)
-				let parsed_filter_final = parsed_filter;
+				let parsed_filter    = self.form.parse_sql_filter(filter, group,true)
+	
 
 				if(/\bBronce\b/i.test(parsed_filter) && !/\bEmplomado\b/i.test(parsed_filter)){
 
-					parsed_filter_final += ' OR `ref_type_material` LIKE "%AE%"' 
+					parsed_filter += ' OR `ref_type_material` LIKE "%AE%"' 
 
 				}
 
-                const sql_filter    = parsed_filter
-                    ? '(' + parsed_filter_final + ')'
+                let sql_filter    = parsed_filter
+                    ? '(' + parsed_filter + ')'
                     : null;
-					let sql_filter_final = sql_filter;
 
-				if(sql_filter.includes("`p_group`")){
 
-					sql_filter_final = "`p_group` LIKE '%"+ filter.$and[0].$or[0].$and[0].q+"%' and p_group != '' "
+				const filter_values = self.obtain_values_filter(filter)
+
+				if(sql_filter.includes("`p_group`") || filter_values.id == "number"){
+
+					sql_filter = `JSON_CONTAINS(p_group, '"${filter_values.q}"') AND p_group <> ''`
 					
 				}
 
 
-				console.log("Final sql_filter:", sql_filter_final)
+				
 
 			// debug
 				if(SHOW_DEBUG===true) {
@@ -1471,7 +1473,7 @@ var catalog = {
 					table			: 'catalog',
 					ar_fields		: ar_fields,
 					lang			: lang,
-					sql_filter		: sql_filter_final,
+					sql_filter		: sql_filter,
 					limit			: limit,
 					group			: (group.length>0) ? group.join(",") : null,
 					count			: false,
@@ -1501,7 +1503,14 @@ var catalog = {
 		})
 	},//end search_rows
 
-
+	obtain_values_filter: function (filter) {
+		if (typeof filter === "object" && filter !== null && Object.keys(filter).length < 2) {
+			const primeraClave = Object.keys(filter)[0]; 
+			return this.obtain_values_filter(filter[primeraClave]); 
+		} else {
+			return filter; // valor final
+		}
+	},
 
 	/**
 	* DRAW_ROWS
@@ -1556,7 +1565,6 @@ var catalog = {
 					const fragment = new DocumentFragment();
 
 					const ar_mints = ar_rows.filter(item => item.term_table==='mints')
-
 					const ar_parent = []
 					for (let i = 0; i < ar_mints.length; i++) {
 						const parent = (ar_mints[i].parent && typeof ar_mints[i].parent[0]!=="undefined")
@@ -1575,6 +1583,7 @@ var catalog = {
 							ar_parent.push(mint_parent)
 						}
 					}
+
 					self.parents = ar_parent
 					// create the nodes with the unique parents: ar_parents
 					for (let i = 0; i < ar_parent.length; i++) {
@@ -1652,10 +1661,25 @@ var catalog = {
 		const self = this
 
 		const row_object 	= ar_rows.find(item => item.section_id==section_id)
-
+		console.log("row_object",row_object)
 		if (row_object) {
 			const row_node 	= self.render_rows(row_object, ar_rows)
 			parent_node.appendChild( row_node )
+			if(parent_node.parentElement){
+
+				const padre = parent_node.parentElement;
+				if (padre.classList.contains("mints")){
+
+					const mintElemento = padre.getElementsByClassName("mint")[0];
+					if (mintElemento) {
+						console.log("macaco")
+						mintElemento.textContent += (row_object.ref_type_creators_data != null ? row_object.ref_type_creators_data : "");
+					}
+
+				}
+
+			}
+			
 
 			if(row_object.children){
 				self.get_children(ar_rows, row_object, row_node)
@@ -1689,7 +1713,6 @@ var catalog = {
 
 		// fix and set rows to catalog_row_fields
 			catalog_row_fields.ar_rows = ar_rows
-
 		// catalog_row_fields set
 			const node = catalog_row_fields.draw_item(row_object)
 

@@ -273,7 +273,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'mints'
+						table		: 'mints',
+						activate_filter : false
 					})
 				}
 			})
@@ -329,7 +330,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'findspots',
-						parent_in   : true
+						parent_in   : true,
+						activate_filter : false
 					})
 				}
 			})
@@ -348,7 +350,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'hoards',
-						parent_in		: true
+						parent_in		: true,
+						activate_filter : false
 					})
 				}
 			})
@@ -367,7 +370,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'catalog',
-						id			: false
+						id			: false,
+						activate_filter : false
 					})
 				}
 			})

@@ -13,6 +13,7 @@ function form_factory() {
 	this.node		= null
 	// form operators_node
 	this.operators_node = null
+	this.group = []
 
 
 
@@ -863,6 +864,8 @@ function form_factory() {
 			const order			= options.order || 'name ASC'; // 'name' is the generic column alias
 			const parent_in = options.parent_in || false;
 			const global_search = options.global_search || false;
+			const activate_filter = options.activate_filter == false ? false : true;
+			console.log(options.activate_filter)
 			const parse_result	= options.parse_result || function(ar_result, term) {
 				return ar_result.map(function(item){
 					item.label	= item.label.replace(/<br>/g," ")
@@ -1040,7 +1043,7 @@ function form_factory() {
 
 					// sql_filter
 
-						const sql_filter = self.parse_sql_filter(filter,undefined,false,global_search) // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
+						const sql_filter = self.parse_sql_filter(filter,self.group,activate_filter,global_search)  // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
 					// table resolved
 						const table_resolved = typeof table==="function" ? table() : table;
 
@@ -1070,7 +1073,8 @@ function form_factory() {
 
 						}
 
-				
+						
+
 
 						await data_manager.request({
 							body : {
@@ -1222,7 +1226,7 @@ function form_factory() {
 									}//end if (form_item.value_split)
 								}
 							}
-							console.log("set_material ", set_material);
+							//console.log("set_material ", set_material);
 							// parse result
 								const ar_result_final = parse_result(ar_result, term)
 

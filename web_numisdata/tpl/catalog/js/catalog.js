@@ -263,7 +263,7 @@ var catalog = {
 			class_name 		: "form-row fields",
 			parent 			: fragment
 		})
-
+		
 
 		 // global_search
 			self.form.item_factory({
@@ -323,7 +323,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -341,7 +342,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -363,7 +365,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -384,7 +387,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -402,7 +406,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -420,7 +425,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -440,7 +446,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -459,7 +466,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -478,7 +486,8 @@ var catalog = {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -496,7 +505,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -513,7 +523,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -547,7 +558,8 @@ var catalog = {
 				callback	: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'catalog'
+						table		: 'catalog',
+						
 					})
 				}
 			})
@@ -1438,7 +1450,7 @@ var catalog = {
 					// }
 				let parsed_filter    = self.form.parse_sql_filter(filter, group,true)
 	
-
+	
 				if(/\bBronce\b/i.test(parsed_filter) && !/\bEmplomado\b/i.test(parsed_filter)){
 
 					parsed_filter += ' OR `ref_type_material` LIKE "%AE%"' 
@@ -1458,7 +1470,7 @@ var catalog = {
 					
 				}
 
-
+				console.log("sql_filter_catalog", sql_filter)
 				
 
 			// debug
@@ -1661,7 +1673,6 @@ var catalog = {
 		const self = this
 
 		const row_object 	= ar_rows.find(item => item.section_id==section_id)
-		console.log("row_object",row_object)
 		if (row_object) {
 			const row_node 	= self.render_rows(row_object, ar_rows)
 			parent_node.appendChild( row_node )
@@ -1672,7 +1683,6 @@ var catalog = {
 
 					const mintElemento = padre.getElementsByClassName("mint")[0];
 					if (mintElemento) {
-						console.log("macaco")
 						mintElemento.textContent += (row_object.ref_type_creators_data != null ? row_object.ref_type_creators_data : "");
 					}
 

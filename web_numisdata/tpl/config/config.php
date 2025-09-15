@@ -192,20 +192,20 @@
 // sendmail
 	// mailer. Send configuration
 		$mconfig = (object)[
-			'Host'			=> 'smtp.mydomain.org',
+			'Host'			=> 'smtp.uca.es',
 			'SMTPAuth'		=> true,
-			'Username'		=> 'user@mydomain.org',
-			'Password'		=> 'XXXXXXXXXXXXXXXXX',
-			'SMTPSecure'	=> 'tls',
-			'Port'			=> 587
+			'Username'		=> 'alberto.contreras@uca.es',
+			'Password'		=> 'Buleria2702_',
+			'SMTPSecure'	=> 'ssl',
+			'Port'			=> 465
 		];
 	// mail vars config
 		// sender info
 		$mconfig->From		= $mconfig->Username;
-		$mconfig->FromName	= "Site mydomain.org";
+		$mconfig->FromName	= "wwwondercoins.uca.es";
 		// target info
-		$mconfig->to		= 'user@mydomain.org';
-		$mconfig->reply_to	= 'no-reply@mydomain.org';
-		$mconfig->bcc		= 'webmaster@mydomain.org';
+		$mconfig->to		= 'charbelboueri123@gmail.com';
+		$mconfig->reply_to	= $mconfig->From;
+		$mconfig->bcc		= '';
 	// mail header logo
 		$logo_url = 'https://mydomain.org/images/logo.svg';

@@ -1,0 +1,287 @@
+
+/* Configura el wrapper para que ocupe toda la altura del body */
+#wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Configura #main para que ocupe todo el espacio disponible en el wrapper */
+#main {
+    flex: 1;
+    overflow: hidden;
+    padding-bottom: 2rem;
+}
+
+/* Estilos para la clase .inner */
+#main .inner {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Estilos para el título */
+#main h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Estilos para el separador dorado */
+.golden-separator {
+    height: 4px;
+    background-color: gold;
+    width: 50%;
+    margin: 1rem auto;
+}
+
+/* Estilos para la sección de resultados */
+section.result {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.result #row_detail {
+    margin-bottom: 2em;
+}
+
+.result #row_detail label {
+    margin: 0;
+}
+
+.result #row_detail .line-tittle-wrap .info_value {
+    display: inline-block;
+    margin-left: .5em;
+}
+
+.result #row_detail .line-tittle-wrap .authorship {
+    margin-left: .7em;
+    font-size: .8em;
+    letter-spacing: 1px;
+}
+
+.result #row_detail .info_text_block {
+    display: block;
+    padding-bottom: .5rem !important;
+    padding-top: .5rem !important;
+}
+
+.result #row_detail .info_text_block br {
+    display: block;
+    margin: 1.2em 0;
+    content: " ";
+}
+
+.result #row_detail .icon_link {
+    margin-top: .5rem;
+}
+
+.result #row_detail .icon_link:before {
+    margin-right: .5rem;
+}
+
+.result #types {
+    padding: 1em;
+    margin-top: 1em;
+    border-radius: .25em;
+    border: 1px solid #ccc;
+}
+
+.result #types>.type_row {
+    display: table;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.result #types>.type_row>span {
+    padding-right: 1em;
+}
+
+.result #types>.type_row .equivalents {
+    display: block;
+}
+
+.result .rows_list {
+    min-height: 10rem;
+}
+
+/* Estilos para el botón de ícono simple */
+.button_icon_simple {
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+    background-size: contain;
+    opacity: .7;
+}
+
+.button_icon_simple:active {
+    opacity: .5;
+}
+
+.button_icon_simple:hover {
+    opacity: 1;
+}
+
+.result a.section_id {
+    float: right;
+}
+
+.result > div {
+    margin-bottom: 2em;
+}
+
+.map_container {
+    height: 75vh;
+    font-size: 1rem;
+    margin-bottom: 3em;
+    background-color: #b1c9e2;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    transition: opacity 0.5s ease-in-out 0.5s;
+}
+
+.coins_container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.title_info{
+  font-size: 1.8rem;
+  text-transform: uppercase !important;
+  text-align: left;
+  text-transform: none;
+}
+
+.info_container {
+    width: 33.33%;
+    margin-bottom: 0.5em;
+    font-size: 80%;
+    border-right: 1px solid #e3e3e3;
+    padding: 0.5em;
+    border-radius: 4px;
+}
+
+.title-container{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    margin-bottom: 2rem;          /* Oculta el texto que sobra */
+}
+
+.type_link{
+    font-size: 1.0rem;
+    text-align: center;
+    border-bottom: none !important;
+    color: #9b6c29;
+    text-decoration: none;
+    text-overflow: ellipsis !important;  /* Agrega puntos suspensivos al final si el texto es demasiado largo */
+    overflow: hidden !important;   
+    white-space: nowrap; 
+}
+
+
+.data-container{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+
+.img-container{
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+
+}
+
+.img_obverse{
+    max-width: 40%;
+    height: 100%;
+    margin: 0 5px;
+}
+
+.collection-container{
+    font-size: 1.0rem;
+    color :#9b6c29;
+    font-weight: bold;
+    margin-top: 2rem;
+}
+
+.public-info{
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}   
+
+.coin_link{
+    margin-left: 1.0rem;
+    font-size: 0.9rem;
+}
+
+.coin_icon{
+    width: 0.8rem;
+    height: 0.8rem;
+    padding-right: 0.1rem;
+}
+
+@media screen and (max-width: 1100px) {
+  .img_obverse{
+    max-width: 47%; 
+    }
+   
+
+    .title_container{
+    
+        justify-content: center !important;  
+        text-align: center !important;
+    }
+    .info_container{
+        width: 50%;
+        justify-content: center !important;
+    }
+}
+
+
+
+
+@media screen and (max-width: 700px) {
+  .img_obverse{
+    max-width: 65%; 
+    }
+
+    .img-container{
+        height: 140px;
+        gap: 0.7rem;
+    }
+    .info_container{
+        width: 100%;
+        border-bottom: 1px solid #e3e3e3;
+        border-right: none;
+        margin-bottom: 1rem;
+    }  
+    .type_link{
+        text-overflow: none !important;  /* Agrega puntos suspensivos al final si el texto es demasiado largo */
+    overflow: none !important;   
+    white-space: wrap; 
+    }
+}
+
+@media screen and (max-width: 500px) {
+ 
+    .img-container{
+        height: 100px;
+       }
+}
+
+
+
+/*# sourceMappingURL=hoard.css.map */

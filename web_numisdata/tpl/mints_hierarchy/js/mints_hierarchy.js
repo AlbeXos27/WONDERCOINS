@@ -50,7 +50,7 @@ var mints_hierarchy =  {
 
 
         let label = cecas.result[index].term_section_label;
-		console.log ("Label: "+label);
+		//console.log ("Label: "+label);
 
 		if (typeof label === "string" && label.trim().startsWith("[")) {
 		try {
@@ -60,17 +60,17 @@ var mints_hierarchy =  {
 		}
 		}
 
-		if (Array.isArray(label) && (label.includes("Tipos") || label.includes("Cecas"))) {
+		if (Array.isArray(label) && (label.includes("Tipo") || label.includes("Cecas"))) {
 
 			let type = cecas.result[index].term_data ? cecas.result[index].term_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;
-
+			console.log("Type: "+cecas.result[index].term_data);
 			const enlace = common.create_dom_element({
 				element_type: "a",
 				text_content: cecas.result[index].term,
 				parent: info_node
 			});
 
-			if (label.includes("Tipos")) {
+			if (label.includes("Tipo") && (type != 0 || type)) {
 				enlace.href = `/web_numisdata/type/${type}`;
 				enlace.style.fontWeight = "normal";   // <- aquí fuerzas normal
 			} else if (label.includes("Cecas")) {
@@ -80,7 +80,7 @@ var mints_hierarchy =  {
 
 		} else {
 			info_node.textContent = cecas.result[index].term;
-			if (label.includes("Tipos")) {
+			if (label.includes("Tipo")) {
 				info_node.style.fontWeight = "normal";
 			} else if (nivel === 0 || label.includes("Cecas"))  {
 				info_node.style.fontWeight = "bold";

@@ -327,24 +327,7 @@ var hoards =  {
 		//refs.typology.querySelector('.grid-stack-item-content').innerHTML = hallazgo.typology;
 		//refs.date.querySelector('.grid-stack-item-content').innerHTML = `<span style="font-size:2.5rem">${hallazgo.date_in} / ${hallazgo.date_out}</span>`;
 		refs.indexation.querySelector('.grid-stack-item-content').innerHTML = hallazgo.indexation;
-		refs.public_info.querySelector('.grid-stack-item-content').innerHTML = `
-				<div style="font-size: 1.3rem; text-align:center; position:absolute; top:0; width:100%;">
-					<h2 style="
-					margin: 5px 0 10px; 
-					font-size: 1.3rem; 
-					font-weight: bold; 
-					border-bottom: 3px solid transparent;
-					border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
-					display: inline-block;
-					margin-top: 50px !important; 
-					">
-					Información pública
-					</h2>
-					<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
-					${hallazgo.public_info}
-					</div>
-				</div>
-				`;
+
 
 		// 📚 Bibliografía
 		const bibliografia_array = hallazgo.bibliography_data.map(b => 
@@ -352,22 +335,45 @@ var hoards =  {
 			);
 
 			refs.bibliography.querySelector('.grid-stack-item-content').innerHTML = `
-			<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;">
-				<h2 style="
-				margin: 0 0 10px; 
-				font-size: 1.3rem; 
-				font-weight: bold; 
-				border-bottom: 3px solid transparent;
-				border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
-				display: inline-block;
-				">
-				Bibliografía
-				</h2>
-				<div style="text-align: left;">
-				${bibliografia_array.join("<br>")}
-				</div>
-			</div>
-			`;
+			<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;margin-top:10px;">
+							<h2 style="
+								margin: 15px 0 15px; 
+								font-size: 1.3rem;
+								height: auto; 
+								font-weight: bold; 
+								border-bottom: 3px solid transparent;
+								border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+								display: inline-block;
+								text-align: center;
+								">
+								Bibliografía
+							</h2>
+							<div style="text-align: left;">
+								${bibliografia_array.join("<br>")}
+							</div>
+						</div>
+				`;
+
+
+		refs.public_info.querySelector('.grid-stack-item-content').innerHTML = `
+				
+							<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:20px;">
+								<h2 style="
+									margin: 25px 0 10px; 
+									font-size: 1.3rem;
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+								">
+									Información pública
+								</h2>
+								<div style="text-align: left; margin-top: 16px;">
+									${api_response.result[id_hallazgo].public_info}
+								</div>
+							</div>
+						`;
+
 
 		// ✍️ Autores
 		const nombres_array = [];
@@ -381,7 +387,7 @@ var hoards =  {
 			nombres_array.push(`${nombres} ${apellidos} / ${rol}`);
 		}
 		refs.authors.querySelector('.grid-stack-item-content').innerHTML = `
-			<div style="white-space: pre-line; font-size: 1.6rem; text-align:center; position:absolute; top:0;width:100%;padding-right:10px;">
+			<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;padding-right:10px;">
 				<h2 style="
 				margin: 0 0 10px; 
 				font-size: 1.3rem; 
@@ -543,7 +549,7 @@ var hoards =  {
 					? '(' + parsed_filter + ')'
 					: null
 				if(SHOW_DEBUG===true) {
-					console.log("-> coins form_submit sql_filter:",sql_filter);
+					//console.log("-> coins form_submit sql_filter:",sql_filter);
 				}
 				if (sql_filter) {
 					final_filter = base_filter + ' AND ' + sql_filter
@@ -566,7 +572,7 @@ var hoards =  {
 					while (buttons_move_group[0].hasChildNodes()) {
 						buttons_move_group[0].removeChild(buttons_move_group[0].lastChild);
 					}
-				console.log(final_filter)
+				//console.log(final_filter)
 
 			data_manager.request({
 				body : {
@@ -801,11 +807,11 @@ var hoards =  {
 							parent			: container_titulo
 						})
 
-						const separator = common.create_dom_element({
+						/*const separator = common.create_dom_element({
 							element_type	: "div",
 							class_name		: "golden-separator mobile",
 							parent			: rows_container
-						})
+						})*/
 
 
 						let road_arbol = ""
@@ -945,13 +951,12 @@ var hoards =  {
 									})
 		
 
-									
+						//console.log("Nombre de Ceca 2:", api_response.result[id_hallazgo].name);			
 						const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
 
 						let contentceca = `<div class="ceca-widget">`;
 
 						coin.result.forEach(coin => {
-							console.log("MONEDASSSSSS",coin);
 							const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
 							const image_reverse = "https://wondercoins.uca.es" + coin.image_reverse;
 							const name = coin.type_full_value || "";
@@ -977,30 +982,69 @@ var hoards =  {
 
 
 						//const typology = grid.addWidget({w:4,h:1,content: `${api_response.result[id_hallazgo].typology}`})
-						//const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})					
-						const indexation = grid.addWidget({w:8,h:2,content: `${api_response.result[id_hallazgo].indexation}`})
-						const public_info = grid.addWidget({
-							w: 8,
-							h: 4,
-							content: `
-								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
-								<h2 style="
-									margin: 5px 0 10px; 
-									font-size: 1.3rem;
-									margin-top: 50px !important; 
-									font-weight: bold; 
-									border-bottom: 3px solid transparent;
-									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
-									display: inline-block;
-								">
-									Información pública
-								</h2>
-								<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
-									${api_response.result[hallazgo_resultado].public_info}
-								</div>
-								</div>
-							`
-							});
+						//const date = grid.addWidget({w:4,h:1,content: `<span style="font-size:2.5rem">${api_response.result[id_hallazgo].date_in} /${api_response.result[id_hallazgo].date_out}</span>`})				
+						//const indexation = grid.addWidget({w:8,h:3,content: `${api_response.result[id_hallazgo].indexation}`})
+
+						const indexation_ids = JSON.parse(api_response.result[id_hallazgo].indexation_data)
+						let sql_filter_indexation = "";
+
+						for (let index = 0; index < indexation_ids.length; index++) {
+							
+							sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+							
+						}
+
+
+						//CATEGORIZACION DEL HALLAZGO
+
+						const categorizacionhallazgo = await self.cargarCategorizacionHallazgo(sql_filter_indexation);
+
+						let categorizacion_array = []
+
+						for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+							categorizacion_array.push(categorizacionhallazgo.result[index].term)
+						}
+
+						const categorizacion = grid.addWidget({w:8,h:1,content: categorizacion_array.join(" - ") })
+
+
+						//FUNCIONALIDAD DEL HALLAZGO
+
+						const idsABorrar = [];
+						
+						for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+							idsABorrar.push(categorizacionhallazgo.result[index].section_id)
+						}
+
+						const funcionalidadhallazgo = await self.cargarFuncionalidadHallazgo(sql_filter_indexation);
+						funcionalidadhallazgo.result = funcionalidadhallazgo.result.filter(item => !idsABorrar.includes(item.section_id));
+
+						let funcionalidad_array = []
+
+						for (let index = 0; index < funcionalidadhallazgo.result.length; index++) {
+
+							const rawTerm = funcionalidadhallazgo.result[index].term
+
+							const term = rawTerm
+								? (rawTerm.includes("|") ? rawTerm.split("|")[0].trim() : rawTerm.trim())
+								: ""
+							funcionalidad_array.push(term)
+						}
+
+						const funcionalidad = grid.addWidget({w:8,h:1,content: funcionalidad_array.join(" - ") })
+
+						console.log("categorizacion",categorizacionhallazgo.result)
+						console.log("funcionalidad",funcionalidadhallazgo.result)
+
+						//PERIODO DEL HALLAZGO
+						
+						const periodohallazgo = api_response.result[id_hallazgo].period;
+
+						const periodo = grid.addWidget({w:8,h:1,content: periodohallazgo })
+
+						console.log("periodo",periodohallazgo);
+
+						//-----------------------------------------------------------------------------------------
 
 
 						let bibliografia_array = []
@@ -1013,14 +1057,12 @@ var hoards =  {
 						let bibliografia = ""
 						bibliografia = bibliografia_array.join("\n")
 
-
-						
-
 						const bibliography = grid.addWidget({
-								w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
-									<h2 style="
-									margin: 0 0 10px; 
-									font-size: 1.3rem; 
+								w: 8, h: 3, content: `<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;margin-top:10px;">
+								<h2 style="
+									margin: 15px 0 15px; 
+									font-size: 1.3rem;
+									height: auto; 
 									font-weight: bold; 
 									border-bottom: 3px solid transparent;
 									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
@@ -1028,13 +1070,37 @@ var hoards =  {
 									text-align: center;
 									">
 									Bibliografía
-									</h2>
-									<div style="text-align: left;">
-									${bibliografia_array.join("<br>")}
-									</div>
-								</div>
-								`
+								</h2>
+							<div style="text-align: left;">
+								${bibliografia_array.join("<br>")}
+							</div>
+						</div>
+						`
 							});
+
+
+						const public_info = grid.addWidget({
+							w: 8,
+							h: 4,
+							content: `
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:20px;">
+								<h2 style="
+									margin: 25px 0 10px; 
+									font-size: 1.3rem;
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+								">
+									Información pública
+								</h2>
+								<div style="text-align: left; margin-top: 16px;">
+									${api_response.result[id_hallazgo].public_info}
+								</div>
+								</div>
+							`
+							});
+
 						
 
 						let nombres_array = []
@@ -1067,10 +1133,10 @@ var hoards =  {
 
 						const authors = grid.addWidget({w:4,h:4,content: 
 							
-							`<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;">
+							`<div style=" font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;padding-right:7px;">
 
 								<h2 style="
-								margin: 0 0 10px; 
+								margin: 20 0 2 0px; 
 								font-size: 1.3rem; 
 								font-weight: bold; 
 								border-bottom: 3px solid transparent;
@@ -1373,10 +1439,12 @@ var hoards =  {
 					})
 
 	
-
+					//console.log("Nombre de Ceca 2:", api_response.result[hallazgo_resultado].name);			
+					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].name);
 
 
 					const grid = GridStack.init(estructura);
+					
 					const titulo = grid.addWidget({w:12,h:2,content: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
@@ -1415,8 +1483,6 @@ var hoards =  {
 									findspot			: true
 								})
 
-								
-					const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
 
 						let contentceca = `<div class="ceca-widget">`;
 
@@ -1445,32 +1511,70 @@ var hoards =  {
 						});
 					
 					//grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
-					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})					
-					grid.addWidget({w:8,h:2,content: `${api_response.result[hallazgo_resultado].indexation}`})
-					grid.addWidget({
-							w: 8,
-							h: 4,
-							content: `
-								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
-								<h2 style="
-									margin: 5px 0 10px; 
-									font-size: 1.3rem;
-									margin-top: 50px !important; 
-									font-weight: bold; 
-									border-bottom: 3px solid transparent;
-									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
-									display: inline-block;
-								">
-									Información pública
-								</h2>
-								<div style="text-align: left; margin-top: 6px; white-space: pre-line;">
-									${api_response.result[hallazgo_resultado].public_info}
-								</div>
-								</div>
-							`
-							});
+					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})		
+					const indexation_ids = JSON.parse(api_response.result[hallazgo_resultado].indexation_data)
+					let sql_filter_indexation = "";
 
-					
+					for (let index = 0; index < indexation_ids.length; index++) {
+						
+						sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+						
+					}
+
+					//CATEGORIZACION DEL HALLAZGO
+
+						const categorizacionhallazgo = await self.cargarCategorizacionHallazgo(sql_filter_indexation);
+
+						let categorizacion_array = []
+
+						for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+							categorizacion_array.push(categorizacionhallazgo.result[index].term)
+						}
+
+						const categorizacion = grid.addWidget({w:8,h:1,content: categorizacion_array.join(" - ") })
+
+
+						//FUNCIONALIDAD DEL HALLAZGO
+
+						const idsABorrar = [];
+						
+						for (let index = 0; index < categorizacionhallazgo.result.length; index++) {
+							idsABorrar.push(categorizacionhallazgo.result[index].section_id)
+						}
+
+						const funcionalidadhallazgo = await self.cargarFuncionalidadHallazgo(sql_filter_indexation);
+						funcionalidadhallazgo.result = funcionalidadhallazgo.result.filter(item => !idsABorrar.includes(item.section_id));
+
+						let funcionalidad_array = []
+
+						for (let index = 0; index < funcionalidadhallazgo.result.length; index++) {
+
+							const rawTerm = funcionalidadhallazgo.result[index].term
+
+							const term = rawTerm
+								? (rawTerm.includes("|") ? rawTerm.split("|")[0].trim() : rawTerm.trim())
+								: ""
+							funcionalidad_array.push(term)
+						}
+
+						const funcionalidad = grid.addWidget({w:8,h:1,content: funcionalidad_array.join(" - ") })
+
+						console.log("categorizacion",categorizacionhallazgo.result)
+						console.log("funcionalidad",funcionalidadhallazgo.result)
+
+						//PERIODO DEL HALLAZGO
+						
+						const periodohallazgo = api_response.result[id_hallazgo].period;
+
+						const periodo = grid.addWidget({w:8,h:1,content: periodohallazgo })
+
+						console.log("periodo",periodohallazgo);
+
+					//-----------------------------------------------------------------------------------------------------
+
+
+					//grid.addWidget({w:8,h:3,content: `${api_response.result[hallazgo_resultado].indexation}`})
+
 
 					let bibliografia_array = []
 
@@ -1483,10 +1587,11 @@ var hoards =  {
 					bibliografia = bibliografia_array.join("\n")
 
 					grid.addWidget({
-						w: 8, h: 4, content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;">
+						w: 8, h: 3, content: `<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:10px;margin-top:10px;">
 							<h2 style="
-							margin: 0 0 10px; 
-							font-size: 1.3rem; 
+							margin: 15px 0 15px; 
+							font-size: 1.3rem;
+							height: auto; 
 							font-weight: bold; 
 							border-bottom: 3px solid transparent;
 							border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
@@ -1502,24 +1607,51 @@ var hoards =  {
 						`
 					});
 
-					let nombres_array = []
-					const rawAutores = api_response.result[hallazgo_resultado].authorship_names;
-					let total_autores = rawAutores ? rawAutores.split("|").length : 0;
+					grid.addWidget({
+							w: 8,
+							h: 4,
+							content: `
+								<div style="font-size: 1.3rem; text-align:center; position:absolute;top:0;width:100%;padding-right:20px;">
+								<h2 style="
+									margin: 25px 0 10px; 
+									font-size: 1.3rem;
+									font-weight: bold; 
+									border-bottom: 3px solid transparent;
+									border-image: linear-gradient(to right, #d4af37, #ffd700, #d4af37) 1;
+									display: inline-block;
+								">
+									Información pública
+								</h2>
+								<div style="text-align: left; margin-top: 16px;">
+									${api_response.result[hallazgo_resultado].public_info}
+								</div>
+								</div>
+							`
+							});
 
-					for (let index = 0; index < total_autores; index++) {
+					
 
-						nombres_array.push(api_response.result[hallazgo_resultado].authorship_names.split("|")[index] + " " + api_response.result[hallazgo_resultado].authorship_surnames.split("|")[index] + "/" + api_response.result[hallazgo_resultado].authorship_roles.split("|")[index])
-				
-					}
+					let nombres_array = [];
 
-					let nombres_autores = ""
+						const rawAutores = api_response.result[hallazgo_resultado].authorship_names || "";
+						const rawRoles   = api_response.result[hallazgo_resultado].authorship_roles || "";
 
-					nombres_autores = nombres_array.join("\n");
+						const autores = rawAutores.split("|");
+						const roles   = rawRoles.split("|");
+
+						const total_autores = Math.max(autores.length, roles.length);
+
+						for (let index = 0; index < total_autores; index++) {
+						nombres_array.push(
+							(autores[index] || "") + "/" + (roles[index] || "")
+						);
+						}
 
 
-					grid.addWidget({w:4,h:4,content: `<div style="white-space: pre-line; font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;">
+
+					grid.addWidget({w:4,h:4,content: `<div style="font-size: 1.3rem; text-align:center; position:absolute; top:0;width:100%;">
 							<h2 style="
-							margin: 0 0 10px; 
+							margin: 20px 0 15px; 
 							font-size: 1.3rem; 
 							font-weight: bold; 
 							border-bottom: 3px solid transparent;
@@ -1663,6 +1795,49 @@ var hoards =  {
 		return findspots_tree
 
 	},
+
+	cargarCategorizacionHallazgo : async function(sql_filter) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'ts_find_category',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
+	cargarFuncionalidadHallazgo : async function(sql_filter) {
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'ts_find_context',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	},
 	cargarHijosHallazgos : async function(hallazgo) {
 		try {
 			const hijos = await data_manager.request({
@@ -1780,7 +1955,7 @@ var hoards =  {
 
 		if(node.info_nodo.coins != null){
 						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
-						console.log ("Nombre de ceca: "+node.info_nodo.name);
+						//console.log ("Nombre de ceca: "+node.info_nodo.name);
 
 						const button_display = common.create_dom_element({
 							element_type	: "button",
@@ -1895,10 +2070,17 @@ var hoards =  {
 								parent: findspot_container
 							});
 
+							const rawFindspot = coins.result[index].findspot || "";
+							let cleanFindspot = rawFindspot.split(" | ")[0].trim();
+
+							// Si es "lugar de hallazgo", lo dejamos vacío
+							if (cleanFindspot.toLowerCase() === "Lugar del hallazgo") {
+							cleanFindspot = "";
+							}
 							common.create_dom_element({
 								element_type: "p",
 								class_name: "findspot_text",
-								text_content: coins.result[index].findspot.split(" | ")[0],
+								text_content: cleanFindspot,
 								parent: findspot_container
 							});
 

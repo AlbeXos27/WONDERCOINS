@@ -17,11 +17,8 @@ var findspots_hierarchy =  {
 
 		const self = this
 
-		self.rows_container	= options.rows_container
+		self.rows_container	= options.rows_container;
 
-		const cecas_iniciales = await this.get_data_mints(21057)
-
-		const nivel = 0;
 
 		const arbol_completo = common.create_dom_element({
 			element_type : "div",
@@ -29,7 +26,7 @@ var findspots_hierarchy =  {
 			parent		 : self.rows_container
 		})
 
-		await this.generate_data_mint(21057,arbol_completo,0,0);
+		await this.generate_data_mint(943,arbol_completo,0,0);
 
 		return true;
 
@@ -37,7 +34,7 @@ var findspots_hierarchy =  {
 
 	generate_data_mint: async function(ind, nodo_padre, tab, nivel) {
 
-    const hallazgos = await this.get_data_mints(ind);
+    const hallazgos = await this.get_data_findspots(ind);
 
     for (let index = 0; index < hallazgos.total; index++) {
 	
@@ -49,14 +46,18 @@ var findspots_hierarchy =  {
 		info_node.style.paddingLeft = `${tab}em`;
 
 
-		const enlace = common.create_dom_element({
-			element_type: "a",
-			text_content: hallazgos.result[index].term,
-			parent: info_node,
-            href : "/web_numisdata/findspot/" // Valor por defecto, se actualizará abajo
-                
-		});
+		if (hallazgos.result[index].coins) {
 
+			const enlace = common.create_dom_element({
+				element_type: "a",
+				text_content: hallazgos.result[index].name,
+				parent: info_node,
+				href : `/web_numisdata/findspot/${hallazgos.result[index].section_id}` // Valor por defecto, se actualizará abajo
+			});
+
+		}else{
+			info_node.textContent = hallazgos.result[index].name;
+		}
 
 
 

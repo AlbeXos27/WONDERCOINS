@@ -663,7 +663,7 @@ function form_factory() {
 	* @param object filter
 	* @return string
 	*/
-	this.parse_sql_filter = function(filter, group, recursive, global_search){
+	this.parse_sql_filter = function(filter, group, recursive, global_search,table){
 
 		const self = this
 		const sql_filter = (filter)
@@ -671,7 +671,7 @@ function form_factory() {
 
 				const op		= Object.keys(filter)[0]
 				const ar_query	= filter[op]
-
+				const item_table = table
 				const ar_filter = []
 				const ar_query_length = ar_query.length
 				for (let i = 0; i < ar_query_length; i++) {
@@ -682,7 +682,7 @@ function form_factory() {
 
 						// recursion
 						if(recursive){
-							const current_filter_line = "" + self.parse_sql_filter(item, group,recursive) + ""
+							const current_filter_line = "" + self.parse_sql_filter(item, group,recursive,global_search,table) + ""
 							ar_filter.push(current_filter_line)
 						}
 
@@ -714,11 +714,15 @@ function form_factory() {
 					if(item_field == "term"){
 							filter_line += ` AND term_section_label LIKE '%Grupo numismático%' AND parent LIKE  '["21057"]'`;
 					}
+
 					if(global_search){
 						filter_line += ` OR parents_text LIKE ${item.value}`
 					}
 
-
+					if(item_table == "findspots"){
+						filter_line += `AND coins != "null"` 
+					}
+					console.log(filter_line)
 					ar_filter.push(filter_line)
 
 					// group
@@ -1043,7 +1047,7 @@ function form_factory() {
 
 					// sql_filter
 
-						const sql_filter = self.parse_sql_filter(filter,self.group,activate_filter,global_search)  // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
+						const sql_filter = self.parse_sql_filter(filter,self.group,activate_filter,global_search,table)  // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
 					// table resolved
 						const table_resolved = typeof table==="function" ? table() : table;
 
@@ -1151,10 +1155,10 @@ function form_factory() {
 												continue
 											}
 
-											
+									
 
 											const found = ar_result.find(el => el.value===term_name)
-											
+
 												if (!found && term_name.length > 0 && !set_creators.has(term_name.split(",")[0].trim())) {
 													set_creators.add(term_name.split(",")[0].trim())
 													ar_result.push({
@@ -1168,11 +1172,11 @@ function form_factory() {
 										}
 
 									}else{
-
 										const found = ar_result.find(el => el.value===item_name)
 										let camino_hallazgo = " | "
+
 										if(table_resolved === "findspots"){
-					
+											
 											const camino_hallazgo_json = JSON.parse(item.parents_text)
 											if(camino_hallazgo_json){
 
@@ -1184,31 +1188,6 @@ function form_factory() {
 
 											}
 										}
-							
-
-										if(table_resolved === "catalog"){
-
-											if(q_column === "ref_type_material"){
-												let name = item_name.toLowerCase();
-												(!name.includes("ae")) ? set_material.add(item_name) : "" ; 
-
-											}
-
-										}
-
-
-									
-										if(q_column === "ref_type_material"){
-
-											if (!found && item_value.trim().length > 0 && set_material.has(item_name)) {
-										
-												ar_result.push({
-													label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
-													value : item_value // item.name
-												})
-											}
-
-										}else{
 
 											if (!found && item_value.trim().length > 0) {
 										
@@ -1217,11 +1196,6 @@ function form_factory() {
 													value : item_value // item.name
 												})
 											}
-
-
-										}
-
-									
 
 									}//end if (form_item.value_split)
 								}

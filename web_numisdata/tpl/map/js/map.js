@@ -179,7 +179,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 			map_position: [36.5297, -6.2924],
 			source_maps: page.maps_config.source_maps,
 			result: resultado,
-			map_node : this
+			map_node : this,
+			DEV_MODE :	true
 		});
 	} catch (error) {
 		console.error("Error cargando datos:", error);
@@ -704,7 +705,8 @@ cargarTodoYCrearMapa : async function(resultado) {
 							source_maps: page.maps_config.source_maps,
 							result: resultado1,
 							map_node : self,
-							zoom	 : 6
+							zoom	 : 6,
+							DEV_MODE :	true
 						});
 
 						self.map_container_numismatic_group.style.display = "block";

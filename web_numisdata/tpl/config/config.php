@@ -204,7 +204,7 @@
 		$mconfig->From		= $mconfig->Username;
 		$mconfig->FromName	= "wwwondercoins.uca.es";
 		// target info
-		$mconfig->to		= 'charbelboueri123@gmail.com';
+		$mconfig->to		= 'wondercoins@uca.es';
 		$mconfig->reply_to	= $mconfig->From;
 		$mconfig->bcc		= '';
 	// mail header logo

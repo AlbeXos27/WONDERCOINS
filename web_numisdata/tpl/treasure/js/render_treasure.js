@@ -334,6 +334,73 @@ var render_hoard = {
 								parent: link
 								});
 
+							/*
+							//Date 
+
+							const dateInRaw = coins.result[index].date_in;
+								const dateOutRaw = coins.result[index].date_out;
+
+								const hasDateIn = !!dateInRaw;
+								const hasDateOut = !!dateOutRaw;
+
+								const dateIn = hasDateIn ? (dateInRaw.includes('-') ? Math.abs(parseInt(dateInRaw)) + " A.C." : dateInRaw + " D.C.") : "N/A";
+								const dateOut = hasDateOut ? (dateOutRaw.includes('-') ? Math.abs(parseInt(dateOutRaw)) + " A.C." : dateOutRaw + " D.C.") : "N/A";
+
+								const dateText = !hasDateIn && !hasDateOut
+								? "N/A - N/A"
+								: dateIn + " - " + dateOut;
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "date_text",
+								text_content: dateText,
+								parent: info_container
+							});
+
+							const weightText = coins.result[index].weight ? coins.result[index].weight + " gramos" : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "weight_text",
+								text_content: weightText,
+								parent: info_container
+							});
+
+							const diameterText = coins.result[index].diameter ? coins.result[index].diameter + " mm" : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "diameter_text",
+								text_content: diameterText,
+								parent: info_container
+							});
+
+							const collectionText = coins.result[index].collection ? coins.result[index].collection : "N/A";
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "collection_text",
+								text_content: collectionText,
+								parent: info_container
+							});
+
+							//Findspot
+
+							const findspot_container = common.create_dom_element({
+								element_type: "div",
+								class_name: "findspot_container",
+								parent: coinsContainer
+							});
+
+							common.create_dom_element({
+								element_type: "p",
+								class_name: "findspot_text",
+								text_content: coins.result[index].findspot.split(" | ")[0],
+								parent: findspot_container
+							});
+
+
+							*/
                         }
 						
 		return fragment

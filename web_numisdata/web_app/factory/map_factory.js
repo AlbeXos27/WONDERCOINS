@@ -16,6 +16,8 @@ function map_factory() {
 	this.findspot = false
 	this.unique = false
 	this.zoom = 8
+	this.DEV_MODE = false;
+
 	this.init = function(options) {
 
 		const self = this;
@@ -28,7 +30,7 @@ function map_factory() {
 		self.findspot = options.findspot || false;
 		self.unique = options.unique || false;
 		self.zoom = options.zoom || 8;
-
+		self.DEV_MODE = options.DEV_MODE || false;
 		// Asegurarte de obtener el elemento DOM
 		const containerElement = typeof self.map_container === "string"
 			? document.getElementById(self.map_container)
@@ -227,7 +229,7 @@ function map_factory() {
 
 		this.create_legend = function(map,clusters){
 
-			const DEV_MODE = true;
+			
 
 			L.control.Legend({
 			position: "bottomleft",
@@ -281,7 +283,7 @@ function cargarRutasCache() {
 
 
 	// Control de dibujo: todas las polilíneas verdes y grosor 6
-	if (DEV_MODE) {
+	if (this.DEV_MODE) {
 
     const drawControl = new L.Control.Draw({
         draw: {

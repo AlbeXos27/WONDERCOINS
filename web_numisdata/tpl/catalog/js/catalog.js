@@ -380,6 +380,7 @@ var catalog = {
 				// value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
 				// q_splittable 	: true,
 				q_selected_eq 	: 'LIKE',
+				value_split		: " | ",
 				eq_in			: "%",
 				eq_out			: "%",
 				is_term			: false, //true
@@ -1449,13 +1450,6 @@ var catalog = {
 					// 	return null
 					// }
 				let parsed_filter    = self.form.parse_sql_filter(filter, group,true)
-	
-	
-				if(/\bBronce\b/i.test(parsed_filter) && !/\bEmplomado\b/i.test(parsed_filter)){
-
-					parsed_filter += ' OR `ref_type_material` LIKE "%AE%"' 
-
-				}
 
                 let sql_filter    = parsed_filter
                     ? '(' + parsed_filter + ')'
@@ -1674,16 +1668,28 @@ var catalog = {
 
 		const row_object 	= ar_rows.find(item => item.section_id==section_id)
 		if (row_object) {
-			const row_node 	= self.render_rows(row_object, ar_rows)
-			parent_node.appendChild( row_node )
+			const row_node 	= self.render_rows(row_object, ar_rows);
+			parent_node.appendChild(row_node);
+
+
 			if(parent_node.parentElement){
 
 				const padre = parent_node.parentElement;
+
 				if (padre.classList.contains("mints")){
 
 					const mintElemento = padre.getElementsByClassName("mint")[0];
 					if (mintElemento) {
-						mintElemento.textContent += (row_object.ref_type_creators_data != null ? row_object.ref_type_creators_data : "");
+
+						if(row_object.ref_type_creators_full_name){
+
+							if(!mintElemento.textContent.toLowerCase().trim().includes(row_object.ref_type_creators_full_name.split("|")[0].trim().toLowerCase())){
+								mintElemento.textContent += " / ("+row_object.ref_type_creators_full_name.split("|")[0].trim()+")";
+
+							}
+
+						}
+						
 					}
 
 				}

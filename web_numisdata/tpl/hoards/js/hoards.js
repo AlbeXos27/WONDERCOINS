@@ -987,12 +987,16 @@ var hoards =  {
 
 						const indexation_ids = JSON.parse(api_response.result[id_hallazgo].indexation_data)
 						let sql_filter_indexation = "";
+						if(indexation_ids){
 
-						for (let index = 0; index < indexation_ids.length; index++) {
+							for (let index = 0; index < indexation_ids.length ; index++) {
 							
-							sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+								sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
 							
+							}
+
 						}
+
 
 
 						//CATEGORIZACION DEL HALLAZGO
@@ -1514,13 +1518,16 @@ var hoards =  {
 					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})		
 					const indexation_ids = JSON.parse(api_response.result[hallazgo_resultado].indexation_data)
 					let sql_filter_indexation = "";
+					
+					if(indexation_ids){
 
-					for (let index = 0; index < indexation_ids.length; index++) {
-						
-						sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+						for (let index = 0; index < indexation_ids.length; index++) {
+							
+							sql_filter_indexation += (index < indexation_ids.length-1 ? "section_id = " + indexation_ids[index] + " OR ":"section_id = " + indexation_ids[index] )
+							
+						}
 						
 					}
-
 					//CATEGORIZACION DEL HALLAZGO
 
 						const categorizacionhallazgo = await self.cargarCategorizacionHallazgo(sql_filter_indexation);

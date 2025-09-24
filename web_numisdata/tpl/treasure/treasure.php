@@ -8,7 +8,7 @@
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/markercluster/MarkerCluster.css',
 			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leaflet.legend.css',
-			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leafletdraw/leaflet.draw.css'
+			__WEB_TEMPLATE_WEB__ . '/assets/lib/leaflet/leafletdraw/leaflet.draw.css',
 		);
 
 

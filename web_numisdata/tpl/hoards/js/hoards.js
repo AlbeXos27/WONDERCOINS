@@ -404,7 +404,7 @@ var hoards =  {
 			</div>`;
 
 		// 🪙 Monedas
-		const coin = await self.cargarMonedasHallazgos(hallazgo.name);
+		const coin = await self.cargarMonedasHallazgos(hallazgo.coins);
 		let contentceca = `<div class="ceca-widget">`;
 		coin.result.forEach(coin => {
 			const image_obverse = "https://wondercoins.uca.es" + coin.image_obverse;
@@ -416,7 +416,7 @@ var hoards =  {
 						<img src="${image_obverse}" alt="anverso" class="coin-img">
 						<img src="${image_reverse}" alt="reverso" class="coin-img">
 					</div>
-					<p class="coin-name">${name}</p>
+					<a class="coin-name" href="/web_numisdata/coin/${coin.section_id}">${name}</a>
 				</div>
 			`;
 		});
@@ -952,7 +952,7 @@ var hoards =  {
 		
 
 						//console.log("Nombre de Ceca 2:", api_response.result[id_hallazgo].name);			
-						const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].name);
+						const coin = await self.cargarMonedasHallazgos(api_response.result[id_hallazgo].coins);
 
 						let contentceca = `<div class="ceca-widget">`;
 
@@ -966,7 +966,7 @@ var hoards =  {
 									<div class = "coin-imagenes">
 									<img src="${image_obverse}" alt="anverso" class="coin-img">
 									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
-									<p class="coin-name">${name}</p>
+									<a class="coin-name" href="/web_numisdata/coin/${coin.section_id}">${name}</a>
 								</div>
 							`;
 						});
@@ -1444,7 +1444,7 @@ var hoards =  {
 
 	
 					//console.log("Nombre de Ceca 2:", api_response.result[hallazgo_resultado].name);			
-					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].name);
+					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].coins);
 
 
 					const grid = GridStack.init(estructura);
@@ -1500,7 +1500,7 @@ var hoards =  {
 									<div class = "coin-imagenes">
 									<img src="${image_obverse}" alt="anverso" class="coin-img">
 									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
-									<p class="coin-name">${name}</p>
+									<a class="coin-name" href="/web_numisdata/coin/${coin.section_id}">${name}</a>
 								</div>
 							`;
 						});
@@ -1894,7 +1894,7 @@ var hoards =  {
 
 	},
 
-	cargarMonedasHallazgos : async function(ceca) {
+	/*cargarMonedasHallazgos : async function(ceca) {
 		try {
 			const monedas = await data_manager.request({
 				body: {
@@ -1914,7 +1914,34 @@ var hoards =  {
 		} catch (error) {
 			console.error("Error cargando datos:", error);
 		}
-	},
+	},*/
+cargarMonedasHallazgos : async function(ids) {
+		try {
+    // si ids es un array -> conviértelo en lista separada por comas
+			const filtro = Array.isArray(ids)
+			? `section_id IN (${ids.join(",")})`
+			: `section_id = ${ids}`;
+
+			const monedas = await data_manager.request({
+			body: {
+				dedalo_get: "records",
+				table: "coins",
+				ar_fields: ["*"],
+				sql_filter: filtro,
+				limit: 0,
+				count: true,
+				offset: 0,
+				order: "section_id ASC",
+				process_result: null,
+			},
+			});
+
+			return monedas;
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+},
+	
 
 	generate_Tree_completo : async function(tree,node,node_parent,padding,level,font_size){
 			const Shades = [
@@ -1961,7 +1988,7 @@ var hoards =  {
 
 
 		if(node.info_nodo.coins != null){
-						const coins = await this.cargarMonedasHallazgos(node.info_nodo.name)
+						const coins = await this.cargarMonedasHallazgos(node.info_nodo.coins)
 						//console.log ("Nombre de ceca: "+node.info_nodo.name);
 
 						const button_display = common.create_dom_element({

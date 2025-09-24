@@ -45,7 +45,7 @@ var treasures_rows = {
 							};
 					
 
-		resultado.complejos.datos = row
+		resultado.complejos.datos.push(row)
 
         const map_fact = new map_factory() // creates / get existing instance of map
 

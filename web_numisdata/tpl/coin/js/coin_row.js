@@ -517,6 +517,7 @@ var coin_row = {
 			for (let i = 0; i < row.catalogue_type_mint.length; i++) {
 				const catalogue = row.catalogue_type_mint[i]
 				if(catalogue === page_globals.OWN_CATALOG_ACRONYM ) continue;
+				try{
 
 				const value_type_node = common.create_dom_element({
 					element_type	: "span",
@@ -524,6 +525,18 @@ var coin_row = {
 					inner_html		: catalogue + " " + row.type[i],
 					parent			: info_container
 				})
+
+				}catch(e){
+
+				const value_type_node = common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values equivalents",
+					inner_html		: catalogue + " " + row.type_data.section_id,
+					parent			: info_container
+				})
+
+				}
+
 			}
 		// obverse
 			common.create_dom_element({

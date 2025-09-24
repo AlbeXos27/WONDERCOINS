@@ -189,7 +189,7 @@ var render_hoard = {
 				const title_coin = common.create_dom_element({
 						element_type	: "h2",
 						class_name 		: "title_info",
-						text_content	: "Monedas Hallazgos",
+						text_content	: "Monedas Encontradas",
 						parent 			: fragment
 					})
 

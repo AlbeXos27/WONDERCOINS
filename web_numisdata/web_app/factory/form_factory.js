@@ -16,7 +16,6 @@ function form_factory() {
 	this.group = []
 
 
-
 	/**
 	* ITEM_FACTORY
 	*/
@@ -716,13 +715,18 @@ function form_factory() {
 					}
 
 					if(global_search){
-						filter_line += ` OR parents_text LIKE ${item.value}`
+						filter_line = "(" + filter_line;
+						filter_line += ` OR parents_text LIKE ${item.value})`;
 					}
 
-					if(item_table == "findspots"){
-						filter_line += `AND coins != "null"` 
+					if(item_table == "findspots" ){
+						filter_line += ` AND typology != '' `;
 					}
-					console.log(filter_line)
+
+
+					filter_line += " AND lang = 'lg-spa'"
+					console.log("item_field ",item)
+					console.log("filter_line ",filter_line)
 					ar_filter.push(filter_line)
 
 					// group
@@ -855,534 +859,391 @@ function form_factory() {
 	* @param object options
 	*/
 	this.activate_autocomplete = function(options) {
+	const self = this;
 
-		const self = this
+	const form_item = options.form_item;
+	const id = options.id || false;
+	const label = options.label || "";
+	const limit = options.limit || 0;
+	const table = options.table || form_item.table;
+	const cross_filter = options.cross_filter || true;
+	const order = options.order || 'name ASC';
+	const parent_in = options.parent_in || false;
+	const global_search = options.global_search || false;
+	const activate_filter = options.activate_filter === false ? false : true;
+	const parse_result = options.parse_result || function(ar_result, term) {
+		return ar_result.map(function(item){
+			item.label = item.label.replace(/<br>/g," ");
+			if (typeof page.parse_legend_svg==='function') {
+				item.label = page.parse_legend_svg(item.label);
+			}
+			return item;
+		});
+	};
 
-		// options
-			const form_item		= options.form_item;
-			const id			= options.id || false;
-			const label 		= options.label || "";
-			const limit			= options.limit || 30;
-			const table			= options.table || form_item.table;
-			const cross_filter	= options.cross_filter || true; // look the other form values to generate the sql filter (default true)
-			const order			= options.order || 'name ASC'; // 'name' is the generic column alias
-			const parent_in = options.parent_in || false;
-			const global_search = options.global_search || false;
-			const activate_filter = options.activate_filter == false ? false : true;
-			console.log(options.activate_filter)
-			const parse_result	= options.parse_result || function(ar_result, term) {
-				return ar_result.map(function(item){
-					item.label	= item.label.replace(/<br>/g," ")
-					// temporal mib
-						if (typeof page.parse_legend_svg==='function') {
-							item.label	= page.parse_legend_svg(item.label)
+	if (!form_item.pagination) {
+		form_item.pagination = { currentPage: 1, lastTerm: "" };
+	}
+
+	(function($){
+		var proto = $.ui.autocomplete.prototype,
+			initSource = proto._initSource;
+
+		function filter(array, term) {
+			var matcher = new RegExp($.ui.autocomplete.escapeRegex(term), "i");
+			return $.grep(array, function(value) {
+				return matcher.test($("<div>").html(value.label || value.value || value).text());
+			});
+		}
+
+		$.extend(proto, {
+			_initSource: function() {
+				if (this.options.html && $.isArray(this.options.source)) {
+					this.source = function(request, response) {
+						response(filter(this.options.source, request.term));
+					};
+				} else {
+					initSource.call(this);
+				}
+			},
+			_renderItem: function(ul, item) {
+				var final_label = item.label;
+				var ar_parts = final_label.split(' | ');
+				var ar_clean = [];
+				for (var i = 0; i < ar_parts.length; i++) {
+					var current = ar_parts[i];
+					if (current.length > 1 && current !== '<i>.</i>') ar_clean.push(current);
+				}
+				final_label = ar_clean.join(' | ');
+				return $("<li class='ui-menu-item'></li>")
+					.data("item.autocomplete", item)
+					.append($("<div class='ui-menu-item-wrapper'></div>")[this.options.html ? "html" : "text"](final_label))
+					.appendTo(ul);
+			}
+		});
+	})(jQuery);
+		
+	const cache = {};
+	$(form_item.node_input).autocomplete({
+		delay: 150,
+		minLength: 0,
+		html: true,
+		source: async function(request, response) {
+			const term = request.term;
+			const pagData = form_item.pagination;
+
+			// Reiniciar búsqueda si cambia el término, pero mantener currentPage
+			if (term !== pagData.lastTerm) {
+				pagData.lastTerm = term;
+			}
+
+			const field = form_item.q_name;
+			const q_column = form_item.q_column;
+			const q_column_group = form_item.q_column_group || q_column;
+
+			const op = "$and";
+			const filterObj = {};
+			filterObj[op] = [];
+
+			const value_parsed = (form_item.eq_in) + term + (form_item.eq_out);
+			const safe_value = typeof value_parsed === 'string' ? value_parsed.replace(/(')/g, "''") : value_parsed;
+
+			filterObj[op].push({
+				field: form_item.q_column_filter || q_column,
+				value: `'${safe_value}'`,
+				op: form_item.eq,
+				group: q_column_group
+			});
+
+			if (cross_filter) {
+				const c_op = "$and";
+				const c_filter = {};
+				c_filter[c_op] = [];
+
+				for (let [id, current_form_item] of Object.entries(self.form_items)) {
+					if (current_form_item.id === form_item.id) continue;
+
+					if ((current_form_item.q.length !== 0 && current_form_item.q !== '*') || current_form_item.sql_filter) {
+						c_filter[c_op].push({
+							field: current_form_item.q_column,
+							value: `'%${current_form_item.q}%'`,
+							op: "LIKE",
+							sql_filter: current_form_item.sql_filter,
+							wrapper: current_form_item.wrapper
+						});
+					}
+
+					if (current_form_item.q_selected.length !== 0) {
+						for (let k = 0; k < current_form_item.q_selected.length; k++) {
+							const value = current_form_item.q_selected[k];
+							const safe_value2 = typeof value === 'string' ? value.replace(/(')/g, "''") : value;
+							c_filter[c_op].push({
+								field: current_form_item.q_column,
+								value: (current_form_item.is_term === true) ? `'%"${safe_value2}"%'` : `'${safe_value2}'`,
+								op: (current_form_item.is_term === true) ? "LIKE" : "=",
+								sql_filter: current_form_item.sql_filter,
+								wrapper: current_form_item.wrapper
+							});
 						}
-					return item
-				})
-			}; // (!) always terminate with ;
+					}
+				}
 
-		/*
-		 * jQuery UI Autocomplete HTML Extension
-		 *
-		 * Copyright 2010, Scott González (http://scottgonzalez.com)
-		 * Dual licensed under the MIT or GPL Version 2 licenses.
-		 *
-		 * http://github.com/scottgonzalez/jquery-ui-extensions
-		 */
-		(function( $ ) {
+				if (c_filter[c_op].length > 0) {
+					filterObj[op].push(c_filter);
+				}
+			}
 
-			var proto = $.ui.autocomplete.prototype,
-				initSource = proto._initSource;
 
-			function filter( array, term ) {
-				var matcher = new RegExp( $.ui.autocomplete.escapeRegex(term), "i" );
-				return $.grep( array, function(value) {
-					return matcher.test( $( "<div>" ).html( value.label || value.value || value ).text() );
+			if (filterObj[op].length === 1 && term in cache && pagData.currentPage === 1) {
+				response(cache[term]);
+				return;
+			}
+
+			const sql_filter = self.parse_sql_filter(filterObj, self.group, activate_filter, global_search, table);
+			const table_resolved = typeof table === "function" ? table() : table;
+
+			const field_beats = q_column.split(' AS ');
+			const plain_field = field_beats[0];
+			let section_id = "";
+			const lang = "lg-spa";
+
+			if(id){
+				await data_manager.request({
+					body: {
+						dedalo_get: 'records',
+						table: table_resolved,
+						lang: lang,
+						ar_fields: [plain_field + " AS name", "section_id"],
+						sql_filter: !id ? sql_filter : " `term` LIKE '%" + label + "%'",
+						group: plain_field,
+						limit: limit,
+						order: order
+					}
+				}).then((api_response) => {
+					section_id = api_response.result[0].section_id;
 				});
 			}
 
-			$.extend( proto, {
-				_initSource: function() {
-					if ( this.options.html && $.isArray(this.options.source) ) {
-						this.source = function( request, response ) {
-							response( filter( this.options.source, request.term ) );
-						};
-					} else {
-						initSource.call( this );
-					}
-				},
-
-				_renderItem: function( ul, item) {
-
-					var final_label = item.label
-
-					// remove empty values when separator is present
-						var ar_parts 	= final_label.split(' | ')
-						var ar_clean 	= []
-						for (var i = 0; i < ar_parts.length; i++) {
-							var current = ar_parts[i]
-							if (current.length>1 && current!=='<i>.</i>') {
-								ar_clean.push(current)
-							}
-						}
-						final_label = ar_clean.join(' | ') // overwrite
-
-					return $( "<li class=\"ui-menu-item\"></li>" )
-						.data( "item.autocomplete", item )
-						//.append( $( "<a></a>" )[ this.options.html ? "html" : "text" ]( item.label ) )
-						.append( $( "<div class=\"ui-menu-item-wrapper\"></div>" )[ this.options.html ? "html" : "text" ]( final_label ) )
-						.appendTo( ul );
+			await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: table_resolved,
+					lang: lang,
+					ar_fields: [plain_field + " AS name", (table_resolved === "findspots" || table_resolved === "catalog") ? "parents_text" : "section_id"],
+					sql_filter: !id ? sql_filter : `parent LIKE  '["${section_id}"]'`,
+					group: plain_field,
+					limit: 20,
+					offset: (pagData.currentPage - 1) * 20,
+					order: order
 				}
+			}).then((api_response) => {
+				const ar_result = [];
+				const len = api_response.result.length;
+
+				if (pagData.currentPage > 1) {
+					ar_result.push({
+						label: "<div class='ac-nav-btn'>&laquo; Página anterior</div>",
+						value: "__prev__"
+					});
+				}
+
+				for (let i = 0; i < len; i++) {
+					const item = api_response.result[i];
+					if (!item.name || item.name.length < 1) continue;
+
+					let base_value = (item.name.indexOf("[\"")===0 && item.name.indexOf("] | [")!==-1)
+						? JSON.stringify([].concat(...item.name.split(" | ").map(el => JSON.parse(el))))
+						: item.name;
+
+					const current_ar_value = (base_value.indexOf("[\"")===0)
+						? JSON.parse(base_value)
+						: (Array.isArray(base_value) ? base_value : [base_value]);
+
+					for (let j = 0; j < current_ar_value.length; j++) {
+						const item_name = current_ar_value[j];
+						if (!item_name || item_name === '[]') continue;
+
+						let extra_label = "";
+						if (item.parents_text && table_resolved === "findspots" && parent_in) {
+							try {
+								const camino = JSON.parse(item.parents_text);
+								if (Array.isArray(camino)) extra_label = " | " + camino.join(" | ");
+							} catch(e) { extra_label = " | " + item.parents_text; }
+						}
+
+						if (!ar_result.find(el => el.value === item_name)) {
+							ar_result.push({ label: `${item_name}${extra_label}`, value: item_name });
+						}
+					}
+				}
+
+				if (len === 20) {
+					ar_result.push({
+						label: "<div class='ac-nav-btn'>Página siguiente &raquo;</div>",
+						value: "__next__"
+					});
+				}
+
+				const ar_result_final = parse_result(ar_result, term);
+				if (filterObj[op].length === 1 && typeof table !== "function" && pagData.currentPage === 1) {
+					cache[term] = ar_result_final;
+				}
+
+				response(ar_result_final);
 			});
-		})( jQuery );
+		},
+		select: function(event, ui) {
+			event.preventDefault();
+			const pagData = form_item.pagination;
 
-
-		const cache = {}
-		$(form_item.node_input).autocomplete({
-			delay		: 150,
-			minLength	: 0,
-			html		: true,
-			source		: async function( request, response ) {
-
-				const term = request.term
-
-				const field				= form_item.q_name // Like 'mint'
-				const q_column			= form_item.q_column // Like 'term'
-				const q_column_group	= form_item.q_column_group || q_column
-
-				// filter build
-					const op 	 = "$and"
-					const filter = {}
-						  filter[op] = []
-
-					const value_parsed = (form_item.eq_in) + term + (form_item.eq_out)
-
-					const safe_value = (typeof value_parsed==='string' || value_parsed instanceof String)
-							? value_parsed.replace(/(')/g, "''")
-							: value_parsed
-
-					// main column search item
-						filter[op].push({
-							field	: form_item.q_column_filter || q_column,
-							value	: `'${safe_value}'`,
-							op		: form_item.eq, // 'LIKE',
-							group	: q_column_group // q_column
-						})
-
-					// optional second column 'term_table' search item. Add column name filter
-						// const q_table	= form_item.q_table
-						// if (q_table!=="any") {
-						// 	filter[op].push({
-						// 		field	: "term_table",
-						// 		value	: `'${q_table}'`,
-						// 		op		: '='
-						// 	})
-						// }
-
-					// cross filter. Add other selected values to the filter to create a interactive filter
-						if (cross_filter) {
-							const c_op		= "$and"
-							const c_filter	= {}
-								  c_filter[c_op] = []
-							for (let [id, current_form_item] of Object.entries(self.form_items)) {
-								if (current_form_item.id===form_item.id) continue; // skip self
-
-								// q . Value from input
-									if ((current_form_item.q.length!==0 && current_form_item.q!=='*') || current_form_item.sql_filter) {
-
-										// q element
-											const element = {
-												field		: current_form_item.q_column,
-												value		: `'%${current_form_item.q}%'`,
-												op			: "LIKE", // fixed as 'LIKE'
-												sql_filter	: current_form_item.sql_filter,
-												wrapper		: current_form_item.wrapper
-											}
-
-											c_filter[c_op].push(element)
-									}
-
-								// q_selected. Values from user already selected values
-									if (current_form_item.q_selected.length!==0) {
-
-										for (let k = 0; k < current_form_item.q_selected.length; k++) {
-
-											const value = current_form_item.q_selected[k]
-
-											// escape html strings containing single quotes inside.
-											// Like 'leyend <img data="{'lat':'452.6'}">' to 'leyend <img data="{''lat'':''452.6''}">'
-											// const safe_value = value.replace(/(')/g, "''")
-											const safe_value = (typeof value==='string' || value instanceof String)
-												? value.replace(/(')/g, "''")
-												: value
-
-											// elemet
-											const element = {
-												field		: current_form_item.q_column,
-												value		: (current_form_item.is_term===true) ? `'%"${safe_value}"%'` : `'${safe_value}'`,
-												op			: (current_form_item.is_term===true) ? "LIKE" : "=",
-												sql_filter	: current_form_item.sql_filter,
-												wrapper		: current_form_item.wrapper
-											}
-
-											c_filter[c_op].push(element)
-										}
-									}
-							}
-							if (c_filter[c_op].length>0) {
-								filter[op].push(c_filter)
-							}
-						}
-
-					// cache . Use only when there are no cross filters
-						if (filter[op].length===1) {
-							if ( term in cache ) {
-								if(SHOW_DEBUG===true) {
-									// console.warn("Returning values from cache:", cache[term])
-								}
-								response( cache[ term ] );
-								return;
-							}
-						}
-
-					// sql_filter
-
-						const sql_filter = self.parse_sql_filter(filter,self.group,activate_filter,global_search,table)  // + ' AND `'+q_column+'` IS NOT NULL' // + ' AND `'+q_column+'`!=\'\''
-					// table resolved
-						const table_resolved = typeof table==="function" ? table() : table;
-
-					// field
-						const field_beats = q_column.split(' AS ')
-						const plain_field = field_beats[0]
-						let section_id  = ""
-					// search
-						if(id){
-					
-							await data_manager.request({
-							body : {
-								dedalo_get	: 'records',
-								table		: table_resolved,
-								ar_fields	: [plain_field + " AS name","section_id"],
-								sql_filter	: !id  ? sql_filter : " `term` LIKE '%" + label + "%'",
-								group		: plain_field, // q_column,
-								limit		: limit,
-								order		: order
-							}
-							}).then((api_response) => {
-
-								section_id = api_response.result[0].section_id
-
-							})
-
-
-						}
-
-						
-
-
-						await data_manager.request({
-							body : {
-								dedalo_get	: 'records',
-								table		: table_resolved,
-								ar_fields	: [plain_field + " AS name",(table_resolved == "findspots" || table_resolved == "catalog") ? "parents_text" : "section_id"],
-								sql_filter	: !id  ? sql_filter : `parent LIKE  '["${section_id}"]'` ,
-								group		: plain_field, // q_column,
-								limit		: limit,
-								order		: order
-							}
-						})
-						.then(async (api_response) => { // return results in standard format (label, value)
-							 console.log("-->autocomplete api_response:", api_response);
-
-							const ar_result	= []
-							let set_creators = new Set();
-							const set_material = new Set(); 
-							const result	= api_response.result
-							const len		= api_response.result.length
-							for (let i = 0; i < len; i++) {
-
-								const item = api_response.result[i]
-
-								if (!item.name || item.name.length<1) { continue; }
-
-								// name. Could be as ["Arse"] | ["Arse"]
-									let base_value = []
-									if (item.name.indexOf("[\"")===0 && item.name.indexOf("] | [")!==-1) {
-										// split and group
-										const beats			= item.name.split(" | ")
-										const parsed_beats	= beats.map(el => JSON.parse(el))
-
-										let ar_final = []
-										for (let k = 0; k < parsed_beats.length; k++) {
-											ar_final.concat(parsed_beats[k])
-										}
-										// unify expected string format
-										base_value = JSON.stringify(ar_final)
-
-									}else{
-										base_value = item.name
-									}
-
-								// const current_ar_value = (item.name.indexOf("[\"")===0)
-								// 	? JSON.parse(item.name)
-								// 	: [item.name]
-								const current_ar_value = (base_value.indexOf("[\"")===0)
-									? JSON.parse(base_value)
-									: (Array.isArray(base_value) ? base_value : [base_value])
-								
-							
-
-								for (let j = 0; j < current_ar_value.length; j++) {
-
-									const item_name		= current_ar_value[j] // self.format_drop_down_list(q_column, current_ar_value[j])
-									const item_value	= current_ar_value[j]
-									// const item_name = item.name.replace(/[\["|"\]]/g, '')
-
-									if (!item_name || item_name==='[]') continue;
-
-									if (form_item.value_split) {
-										const terms = item_name.split(form_item.value_split)
-
-										for (let k = 0; k < terms.length; k++) {
-
-											// split sub_filter when the item has other terms in the same row
-											const term_name = terms[k].trim()
-											// all term to lower case for compare it
-											const term_name_lowercase = term_name.toLowerCase()
-											const search_name_lowercase = request.term.toLowerCase()
-											// it the search don't match with the current_term continue to other
-											if(term_name_lowercase.indexOf(search_name_lowercase)===-1){
-												continue
-											}
-
-									
-
-											const found = ar_result.find(el => el.value===term_name)
-
-												if (!found && term_name.length > 0 && !set_creators.has(term_name.split(",")[0].trim())) {
-													set_creators.add(term_name.split(",")[0].trim())
-													ar_result.push({
-														label : term_name.split(",")[0].trim(),
-														value : term_name.split(",")[0].trim()
-													})
-													
-												}
-				
-											
-										}
-
-									}else{
-										const found = ar_result.find(el => el.value===item_name)
-										let camino_hallazgo = " | "
-
-										if(table_resolved === "findspots"){
-											
-											const camino_hallazgo_json = JSON.parse(item.parents_text)
-											if(camino_hallazgo_json){
-
-												for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
-													
-													camino_hallazgo += camino_hallazgo_json[index]  + (index == camino_hallazgo_json.length-2 ? "" : " | ");
-													
-												}
-
-											}
-										}
-
-											if (!found && item_value.trim().length > 0) {
-										
-												ar_result.push({
-													label : parent_in ? item_name + camino_hallazgo : item_name, // item_name,
-													value : item_value // item.name
-												})
-											}
-
-									}//end if (form_item.value_split)
-								}
-							}
-							//console.log("set_material ", set_material);
-							// parse result
-								const ar_result_final = parse_result(ar_result, term)
-
-							// cache . Use only when there are no cross filters
-								if (filter[op].length===1 && typeof table!=="function") {
-									cache[ term ] = ar_result_final
-								}
-
-
-							// debug
-								if(SHOW_DEBUG===true) {
-									// console.log("--- autocomplete api_response:",api_response);
-									// console.log("autocomplete ar_result_final:",ar_result_final);
-								}
-
-							response(ar_result_final)
-						})
-			},
-			// When a option is selected in list
-			select: function( event, ui ) {
-				// prevent set selected value to autocomplete input
-				event.preventDefault();
-
-				self.add_selected_value(form_item, ui.item.label, ui.item.value)
-
-				// reset input value
-				this.value = ''
-
+			if (ui.item.value === "__next__") {
+				pagData.currentPage++;
+				setTimeout(() => $(form_item.node_input).focus().autocomplete('search', pagData.lastTerm), 0);
 				return false;
-			},
-			// When a option is focus in list
-			focus: function() {
-				// prevent value inserted on focus
-				return false;
-			},
-			close: function( event, ui ) {
-
-			},
-			change: function( event, ui ) {
-
-			},
-			response: function( event, ui ) {
-				//console.log(ui);
 			}
-		})
-		.on("keydown", function( event ) {
-			//return false
-			//console.log(event)
-			if ( event.keyCode===$.ui.keyCode.ENTER  ) {
-				// prevent set selected value to autocomplete input
-				//event.preventDefault();
-				//var term = $(this).val();
-				$(this).autocomplete('close')
-			}//end if ( event.keyCode===$.ui.keyCode.ENTER  )
-		})// bind
-		.focus(function() {
-		    $(this).autocomplete('search', null)
-		})
-		// .blur(function() {
-		//     //$(element).autocomplete('close');
-		// })
+			if (ui.item.value === "__prev__") {
+				// 🔹 Evitar que currentPage baje de 1
+				pagData.currentPage = Math.max(1, pagData.currentPage - 1);
+				setTimeout(() => $(form_item.node_input).focus().autocomplete('search', pagData.lastTerm), 0);
+				return false;
+			}
+
+			self.add_selected_value(form_item, ui.item.label, ui.item.value);
+			this.value = '';
+			return false;
+		},
+		focus: function() { return false; }
+	})
+	.on("keydown", function(event) {
+		if (event.keyCode === $.ui.keyCode.ENTER) $(this).autocomplete('close');
+	})
+	.focus(function() {
+		$(this).autocomplete('search', null);
+	});
+
+	$(form_item.node_input).on("mousedown", ".ac-nav-btn", function(e){ e.preventDefault(); });
+
+	return true;
+}
+
+	//end activate_autocomplete
 
 
-		return true
-	}//end activate_autocomplete
+
+		/**
+		* FORM_TO_SQL_FILTER (DEPRECATED!)
+		* Builds a plain sql filter from the form nodes values
+		*/
+		this.form_to_sql_filter = function(options) {
+			console.error("WARNING! form_to_sql_filter is DEPRECATED! Use build_filter instead!");
+
+			const self = this
+
+			// options
+				const form_node = options.form_node
+
+			// short vars
+				const form_items = self.form_items
 
 
+			const ar_query_elements = []
+			for (let [id, form_item] of Object.entries(form_items)) {
 
-	/**
-	* FORM_TO_SQL_FILTER (DEPRECATED!)
-	* Builds a plain sql filter from the form nodes values
-	*/
-	this.form_to_sql_filter = function(options) {
-		console.error("WARNING! form_to_sql_filter is DEPRECATED! Use build_filter instead!");
+				const current_group = []
 
-		const self = this
+				const group_op = "AND"
+				const group = {}
+					group[group_op] = []
 
-		// options
-			const form_node = options.form_node
+				// q value
+					if (form_item.q.length!==0) {
 
-		// short vars
-			const form_items = self.form_items
-
-
-		const ar_query_elements = []
-		for (let [id, form_item] of Object.entries(form_items)) {
-
-			const current_group = []
-
-			const group_op = "AND"
-			const group = {}
-				  group[group_op] = []
-
-			// q value
-				if (form_item.q.length!==0) {
-
-					const c_group_op = 'AND'
-					const c_group = {}
-						  c_group[c_group_op] = []
-
-					const safe_value = form_item.q.replace(/(')/g, "''")
-
-					const value_parsed = (form_item.eq_in) + safe_value + (form_item.eq_out)
-
-					// q element
-						const element = {
-							field	: form_item.q_column,
-							value	: value_parsed, // `'${form_item.q}'`,
-							op		: form_item.eq // default is 'LIKE'
-						}
-
-						c_group[c_group_op].push(element)
-
-					// add basic group
-						group[group_op].push(c_group)
-				}
-
-			// q_selected values
-				if (form_item.q_selected.length!==0) {
-
-					for (let j = 0; j < form_item.q_selected.length; j++) {
-
-						// value
-							const value = form_item.q_selected[j]
-
-							// escape html strings containing single quotes inside.
-							// Like 'leyend <img data="{'lat':'452.6'}">' to 'leyend <img data="{''lat'':''452.6''}">'
-							const safe_value = value.replace(/(')/g, "''")
-
-						const c_group_op = "AND"
+						const c_group_op = 'AND'
 						const c_group = {}
-							  c_group[c_group_op] = []
+							c_group[c_group_op] = []
 
-						// elemet
-						const element = {
-							field	: form_item.q_column,
-							value	: (form_item.is_term===true) ? `'%"${safe_value}"%'` : `'${safe_value}'`,
-							op		: (form_item.is_term===true) ? "LIKE" : "="
-						}
-						c_group[c_group_op].push(element)
+						const safe_value = form_item.q.replace(/(')/g, "''")
 
-						group[group_op].push(c_group)
+						const value_parsed = (form_item.eq_in) + safe_value + (form_item.eq_out)
+
+						// q element
+							const element = {
+								field	: form_item.q_column,
+								value	: value_parsed, // `'${form_item.q}'`,
+								op		: form_item.eq // default is 'LIKE'
+							}
+
+							c_group[c_group_op].push(element)
+
+						// add basic group
+							group[group_op].push(c_group)
 					}
+
+				// q_selected values
+					if (form_item.q_selected.length!==0) {
+
+						for (let j = 0; j < form_item.q_selected.length; j++) {
+
+							// value
+								const value = form_item.q_selected[j]
+
+								// escape html strings containing single quotes inside.
+								// Like 'leyend <img data="{'lat':'452.6'}">' to 'leyend <img data="{''lat'':''452.6''}">'
+								const safe_value = value.replace(/(')/g, "''")
+
+							const c_group_op = "AND"
+							const c_group = {}
+								c_group[c_group_op] = []
+
+							// elemet
+							const element = {
+								field	: form_item.q_column,
+								value	: (form_item.is_term===true) ? `'%"${safe_value}"%'` : `'${safe_value}'`,
+								op		: (form_item.is_term===true) ? "LIKE" : "="
+							}
+							c_group[c_group_op].push(element)
+
+							group[group_op].push(c_group)
+						}
+					}
+
+				if (group[group_op].length>0) {
+					ar_query_elements.push(group)
+				}
+			}
+
+			// debug
+				if(SHOW_DEBUG===true) {
+					// console.log("self.form_items:",self.form_items);
+					// console.log("ar_query_elements:",ar_query_elements);
 				}
 
-			if (group[group_op].length>0) {
-				ar_query_elements.push(group)
-			}
-		}
+			// empty form case
+				if (ar_query_elements.length<1) {
+					console.warn("-> form_to_sql_filter empty elements selected:", ar_query_elements)
+					return null
+				}
 
-		// debug
-			if(SHOW_DEBUG===true) {
-				// console.log("self.form_items:",self.form_items);
-				// console.log("ar_query_elements:",ar_query_elements);
-			}
+			// operators value
+				const input_operators = form_node.querySelector('input[name="operators"]')
+				const operators_value = input_operators
+					? form_node.querySelector('input[name="operators"]:checked').value
+					: "AND";
 
-		// empty form case
-			if (ar_query_elements.length<1) {
-				console.warn("-> form_to_sql_filter empty elements selected:", ar_query_elements)
-				return null
-			}
+				const filter = {}
+					filter[operators_value] = ar_query_elements
 
-		// operators value
-			const input_operators = form_node.querySelector('input[name="operators"]')
-			const operators_value = input_operators
-				? form_node.querySelector('input[name="operators"]:checked').value
-				: "AND";
+			// debug
+				if(SHOW_DEBUG===true) {
+					// console.log("-> form_to_sql_filter filter:",filter)
+				}
 
-			const filter = {}
-				  filter[operators_value] = ar_query_elements
-
-		// debug
-			if(SHOW_DEBUG===true) {
-				// console.log("-> form_to_sql_filter filter:",filter)
-			}
-
-		// sql_filter
-			const sql_filter = self.parse_sql_filter(filter,undefined,true)
+			// sql_filter
+				const sql_filter = self.parse_sql_filter(filter,undefined,true)
 
 
-		return sql_filter
-	}//end form_to_sql_filter
+			return sql_filter
+		}//end form_to_sql_filter
 
 
 

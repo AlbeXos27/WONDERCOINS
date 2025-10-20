@@ -1098,7 +1098,7 @@ var catalog = {
 		// search rows exec against API
 			const js_promise = self.search_rows({
 				filter			: filter,
-				limit			: 100,
+				limit			: 300,
 				process_result	: {
 					fn		: 'process_result::add_parents_and_children_recursive',
 					columns	: [{name : "parents"}]
@@ -1460,7 +1460,7 @@ var catalog = {
 
 				if(sql_filter.includes("`p_group`") || filter_values.id == "number"){
 
-					sql_filter = `JSON_CONTAINS(p_group, '"${filter_values.q}"') AND p_group <> ''`
+					sql_filter = `parents_text LIKE '%${filter_values.q}%' `
 					
 				}
 
@@ -1481,7 +1481,6 @@ var catalog = {
 					lang			: lang,
 					sql_filter		: sql_filter,
 					limit			: limit,
-					group			: (group.length>0) ? group.join(",") : null,
 					count			: false,
 					order			: order,
 					process_result	: process_result
@@ -1571,7 +1570,8 @@ var catalog = {
 					const fragment = new DocumentFragment();
 
 					const ar_mints = ar_rows.filter(item => item.term_table==='mints')
-					const ar_parent = []
+					//console.log("ar_mints ",ar_mints)
+					let ar_parent = []
 					for (let i = 0; i < ar_mints.length; i++) {
 						const parent = (ar_mints[i].parent && typeof ar_mints[i].parent[0]!=="undefined")
 							? ar_mints[i].parent[0]
@@ -1583,14 +1583,53 @@ var catalog = {
 							console.warn("mint don't have public parent:",ar_mints[i]);
 							continue
 						}
-						// check if the parent is inside the ar_aprents, if not push inside else nothing
+						// check if the parent is inside the ar_parents, if not push inside else nothing
 						const unique_parent = ar_parent.find(item => item.section_id==parent)
 						if(typeof unique_parent==='undefined'){
 							ar_parent.push(mint_parent)
 						}
 					}
 
+					if(ar_mints.length == 0){
+
+						const ar_numismatic_group = ar_rows.filter(item => item.term_section_label[0] === "Grupo numismático");
+						const SetParents = new Set(ar_numismatic_group.flatMap(item => item.parents));
+						const filteredItems = ar_numismatic_group.filter(item => !SetParents.has(String(item.section_id)));
+						
+						filteredItems.forEach(item => {
+							ar_parent.push(ar_rows.find(itemrows => item.parent == String(itemrows.section_id)));
+							});
+						//console.log("ar_parent_todo",ar_parent)
+						const padres_encontrados = new Set(); 
+						ar_parent.forEach(item =>{
+
+							const padre_encontrado = ar_rows.find(itemrows  => itemrows.section_id == item.parent)
+
+							if(padre_encontrado){
+								
+								const found = ar_rows.find(item => 
+									item.parent == padre_encontrado.section_id && item.term_table !== "mints"
+								);
+
+								if (found) {
+									found.term_table = "mints";
+								}
+																
+								padres_encontrados.add(padre_encontrado)
+
+							}
+
+						});
+						console.log(ar_rows)
+						ar_parent = [];
+
+						padres_encontrados.forEach(item => ar_parent.push(item));
+						//console.log(ar_parent)
+					}
+					//console.log(ar_parent)
+
 					self.parents = ar_parent
+					//console.log("self_parents ",self.parents)
 					// create the nodes with the unique parents: ar_parents
 					for (let i = 0; i < ar_parent.length; i++) {
 						// render_mints
@@ -1640,22 +1679,17 @@ var catalog = {
 		const self = this
 
 		const children = parent.children
-
+		
 		// wrapper
 			const catalog_row_wrapper = common.create_dom_element({
 				element_type	: "div",
-				class_name		: "children_contanier"
+				class_name		: parent.term_table != "mints" ? "children_contanier" : "children_contanier hide"
 			})
 			parent_node.appendChild( catalog_row_wrapper )
+			
 
 		if(children){
 			for (let i = 0; i < children.length; i++) {
-
-				const finded = self.parents.find(el => el.section_id == children[i])
-
-				if(finded){
-					continue
-				}
 
 				self.get_child(ar_rows, children[i], catalog_row_wrapper)
 			}

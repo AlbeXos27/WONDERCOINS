@@ -28,7 +28,7 @@
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/hoards/js/render_hoards'.JS_SUFFIX.'.js';
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/gridstack/gridstack-all.js';
 		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/assets/lib/swiper/swiper-bundle.min.js';
-
+		page::$js_ar_url[]	= __WEB_TEMPLATE_WEB__ . '/map/js/map-min.js';
 
 	// page basic vars
 		$title		= $this->get_element_from_template_map('title', $template_map->{$mode});

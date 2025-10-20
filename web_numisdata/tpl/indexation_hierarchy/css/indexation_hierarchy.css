@@ -1,0 +1,12 @@
+.button_display{
+  width: 1.7rem;
+  transform: translateX(20%) translateY(25%);
+}
+
+.container_hallazgos{
+  font-size: 1.5rem;
+}
+
+.arbol_completo{
+  margin-top: 10px;
+}

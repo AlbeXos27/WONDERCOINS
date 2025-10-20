@@ -18,11 +18,7 @@ var mints_hierarchy =  {
 		const self = this
 
 		self.rows_container	= options.rows_container
-
-		const cecas_iniciales = await this.get_data_mints(21057)
-
-		const nivel = 0;
-
+		
 		const arbol_completo = common.create_dom_element({
 			element_type : "div",
 			class_name	 : "arbol_completo",

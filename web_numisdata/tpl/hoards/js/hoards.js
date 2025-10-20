@@ -3,11 +3,7 @@
 
 "use strict";
 
-
-
 var hoards =  {
-
-
 
 	/**
 	* VARS
@@ -20,7 +16,7 @@ var hoards =  {
 		form_container	: null,
 		rows_container	: null,
 		table			: null,
-
+		WEB_ROOT_WEB	: "/web_numisdata",
 	/**
 	* SET_UP
 	* When the HTML page is loaded
@@ -91,166 +87,192 @@ var hoards =  {
 			})
  */
 
-
-		 // global_search
+			// global_search
 			self.form.item_factory({
-				id 			: "global_search",
-				name 		: "global_search",
-				label		: tstring.global_search || "global_search",
-				q_column 	: "name",
-				eq 			: "LIKE",
-				eq_in 		: "%",
-				eq_out 		: "%",
-				// q_table 	: "mints",
-				class_name	: 'global_search',
-				parent		: form_row,
-				callback	: function(form_item) {
+				id: "global_search",
+				name: "global_search",
+				label: tstring.global_search || "global_search",
+				q_column: "name",
+				eq: "LIKE",
+				eq_in: "%",
+				eq_out: "%",
+				class_name: 'global_search',
+				parent: form_row,
+				callback: function(form_item) {
 
-					const node_input = form_item.node_input
-					let autocomplete_initialized = false
+					// Inicializamos la paginación
+					form_item.pagination = { currentPage: 1, lastTerm: "" };
+
+					const node_input = form_item.node_input;
+					let autocomplete_initialized = true;
+					let debounceTimer;
+					const debounceDelay = 200;
+					let dynamicFormItem = null;
 
 					node_input.addEventListener("input", function() {
-					const value = node_input.value.trim()
+						const value = node_input.value.trim();
+						clearTimeout(debounceTimer);
 
-					if (value.length >= 3) {
-						if (!autocomplete_initialized) {
-							// activar autocomplete solo cuando hay 3+ letras
-							self.form.activate_autocomplete({
-								form_item	: form_item,
-								table		: 'findspots',
-								parent_in	: true,
-								global_search : true
-							})
-							autocomplete_initialized = true
+						// Si borró todo, eliminar el campo dinámico si existe
+						if (value === "" && dynamicFormItem) {
+							const formItemNode = dynamicFormItem.node_input.parentNode;
+							formItemNode.remove();
+							delete self.form.form_items.global_search_extra;
+							dynamicFormItem = null;
+							return;
 						}
-						// refrescar resultados
-						node_input.dispatchEvent(new Event("keyup"))
-					} else {
-						// menos de 3 letras → eliminar autocomplete
-						if (autocomplete_initialized) {
-							// destruir completamente el widget
-							$(node_input).autocomplete("destroy")
-							autocomplete_initialized = false
-						}
-					}
-				})
 
+						debounceTimer = setTimeout(() => {
+							if (value.length >= 3 && !dynamicFormItem) {
+								const id = `global_search_extra`;
+								self.form.item_factory({
+									id: id,
+									name: id,
+									lang: "lg-spa",
+									label: `Lista Hallazgo Global`,
+									q_column: "name",
+									eq: "LIKE",
+									eq_in: "%",
+									eq_out: "%",
+									parent: form_row,
+									callback: function(new_form_item) {
+										new_form_item.pagination = { currentPage: 1, lastTerm: "" };
+										const table = self.table==='findspots' ? 'findspots' : 'hoards';
+										self.form.activate_autocomplete({
+											form_item: new_form_item,
+											table: table,
+											parent_in: true,
+											global_search: true
+										});
+										dynamicFormItem = new_form_item;
+									}
+								});
+							}
 
+							if (!autocomplete_initialized) {
+								const table = self.table==='findspots' ? 'findspots' : 'hoards';
+								self.form.activate_autocomplete({
+									form_item: form_item,
+									table: table,
+									parent_in: true,
+									global_search: true
+								});
+								autocomplete_initialized = true;
+							}
 
+						}, debounceDelay);
+					});
+
+					
 					const button_info = common.create_dom_element({
-						element_type	: "div",
-						class_name		: "search_operators_info",
-						parent			: node_input.parentNode
-					})
+						element_type: "div",
+						class_name: "search_operators_info",
+						parent: node_input.parentNode
+					});
 
-					let operators_info
+					let operators_info;
 					button_info.addEventListener('click', function(event) {
-						event.stopPropagation()
+						event.stopPropagation();
 						if (operators_info) {
-							operators_info.remove()
-							operators_info = null
-							return
+							operators_info.remove();
+							operators_info = null;
+							return;
 						}
-						operators_info = self.form.full_text_search_operators_info()
-						node_input.parentNode.appendChild(operators_info)
-					})
+						operators_info = self.form.full_text_search_operators_info();
+						node_input.parentNode.appendChild(operators_info);
+					});
 
 					window.addEventListener('click', function(e){
 						if (operators_info && !node_input.contains(e.target)){
-							// Clicked outside the box
-							operators_info.remove()
-							operators_info = null
+							operators_info.remove();
+							operators_info = null;
 						}
-					})
-
-
-
-
+					});
 				}
-			}) 
+			});
 
-		// name
+			// name
 			self.form.item_factory({
-				id			: "name",
-				name		: "name",
-				label		: "Toponimia actual" || "Name",
-				q_column	: "name",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					const table = self.table==='findspots' // hoards | findspots
-						? 'findspots'
-						: 'hoards'
+				id: "name",
+				name: "name",
+				label: "Toponimia actual",
+				q_column: "name",
+				eq: "LIKE",
+				eq_in: "%",
+				eq_out: "%",
+				parent: form_row,
+				callback: function(form_item) {
+					form_item.pagination = { currentPage: 1, lastTerm: "" };
+					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: table,
-						parent_in	: true 
-					})
+						form_item: form_item,
+						table: table,
+						parent_in: true
+					});
 				}
-			})
+			});
 
-		// place
+			// place
 			self.form.item_factory({
-				id			: "place",
-				name		: "place",
-				label		: "Toponomia histórica" || "Place",
-				q_column	: "place",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					const table = self.table==='findspots' // hoards | findspots
-						? 'findspots'
-						: 'hoards'
+				id: "place",
+				name: "place",
+				label: "Toponomia histórica",
+				q_column: "place",
+				eq: "LIKE",
+				eq_in: "%",
+				eq_out: "%",
+				parent: form_row,
+				callback: function(form_item) {
+					form_item.pagination = { currentPage: 1, lastTerm: "" };
+					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: table
-					})
+						form_item: form_item,
+						table: table
+					});
 				}
-			})
-		// typology
+			});
+
+			// typology
 			self.form.item_factory({
-				id			: "typology",
-				name		: "typology",
-				label		: tstring.typology || "Typology",
-				q_column	: "typology",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					const table = self.table==='publications' // hoards | findspots
-						? 'publications'
-						: 'publications'
+				id: "typology",
+				name: "typology",
+				label: tstring.typology || "Typology",
+				q_column: "typology",
+				eq: "LIKE",
+				eq_in: "%",
+				eq_out: "%",
+				parent: form_row,
+				callback: function(form_item) {
+					form_item.pagination = { currentPage: 1, lastTerm: "" };
+					const table = self.table==='findspots' ? 'findspots' : 'findspots';
 					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: table
-					})
+						form_item: form_item,
+						table: table
+					});
 				}
-			})
-		// indexation
+			});
+
+			// indexation
 			self.form.item_factory({
-				id			: "indexation",
-				name		: "indexation",
-				label		: tstring.indexation || "Indexation",
-				q_column	: "indexation",
-				eq			: "LIKE",
-				eq_in		: "%",
-				eq_out		: "%",
-				parent		: form_row,
-				callback	: function(form_item) {
-					const table = self.table==='findspots' // hoards | findspots
-						? 'findspots'
-						: 'hoards'
+				id: "indexation",
+				name: "indexation",
+				label: tstring.indexation || "Indexation",
+				q_column: "indexation",
+				eq: "LIKE",
+				eq_in: "%",
+				eq_out: "%",
+				parent: form_row,
+				callback: function(form_item) {
+					form_item.pagination = { currentPage: 1, lastTerm: "" };
+					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
-						form_item	: form_item,
-						table		: table
-					})
+						form_item: form_item,
+						table: table
+					});
 				}
-			})
+			});
+
+			
 		// submit button
 			const submit_group = common.create_dom_element({
 				element_type	: "div",
@@ -266,14 +288,11 @@ var hoards =  {
 				parent 			: submit_group
 			})
 
-
 			const buttons_move_group = common.create_dom_element({
 				element_type	: "div",
 				class_name 		: "buttons_move",
 				parent 			: fragment
 			})
-
-			
 
 			submit_button.addEventListener("click",function(e){
 				e.preventDefault()
@@ -344,18 +363,23 @@ var hoards =  {
 				// parse_sql_filter
 				const group			= []
 				const parsed_filter	= self.form.parse_sql_filter(filter, group,true)
-				const base_filter = "(name != '' AND map != '')"
+				const base_filter = "(name != '' AND map != '' AND coins != '')"
 				let final_filter = base_filter
 				const sql_filter	= parsed_filter
-					? '(' + parsed_filter + ')'
-					: null
+				
+
 				if(SHOW_DEBUG===true) {
 					//console.log("-> coins form_submit sql_filter:",sql_filter);
 				}
 				if (sql_filter) {
+					
 					final_filter = base_filter + ' AND ' + sql_filter
+					if(self.form.form_items.global_search_extra){
+						
+						final_filter = `name LIKE "%${self.form.form_items.global_search_extra.q_selected}%"`
+						
+					}
 				}
-			
 			
 				// if (!sql_filter|| sql_filter.length<3) {
 				// 	return new Promise(function(resolve){
@@ -395,9 +419,6 @@ var hoards =  {
 					let camino_hallazgo = " "
 					let id_hallazgo = 0;
 					
-
-
-
 					if (!data) {
 						rows_container.classList.remove("loading")
 						resolve(null)
@@ -417,9 +438,8 @@ var hoards =  {
 						parent 			: rows_container
 					})
 
-
-
 					const camino_hallazgo_json = JSON.parse(api_response.result[hallazgo_resultado].parents_text)
+					
 					if(camino_hallazgo_json){
 
 						for (let index = 0; index < camino_hallazgo_json.length-1; index++) {
@@ -431,13 +451,11 @@ var hoards =  {
 					}
 
 
-
-
 					const titulo_movil = common.create_dom_element({
 						element_type	: "a",
 						class_name 		: "title_mobile",
 						text_content	: `${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}`,
-						href			: `/web_numisdata/findspot/${api_response.result[hallazgo_resultado].section_id}`,
+						href			: hoards.WEB_ROOT_WEB+`/findspot/${api_response.result[hallazgo_resultado].section_id}`,
 						parent 			: movil
 					})
 
@@ -468,7 +486,8 @@ var hoards =  {
 						map_position  : api_response.result[hallazgo_resultado].map,
 						source_maps   : page.maps_config.source_maps,
 						result        : resultado,
-						findspot      : true
+						findspot      : true,
+						
 						});
 
 
@@ -564,24 +583,17 @@ var hoards =  {
 						class_name		: "grid-stack",
 						parent			: rows_container
 					})
-
-	
-					//console.log("Nombre de Ceca 2:", api_response.result[hallazgo_resultado].name);			
+			
 					const coin = await self.cargarMonedasHallazgos(api_response.result[hallazgo_resultado].coins);
-
 
 					const grid = GridStack.init(estructura);
 					
-					const titulo = grid.addWidget({w:12,h:2,content: `<a href="/web_numisdata/findspot/${api_response.result[hallazgo_resultado].section_id}" class="title_mobile">${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}</a>`})
+					const titulo = grid.addWidget({w:12,h:2,content: `<a href="${hoards.WEB_ROOT_WEB}/findspot/${api_response.result[hallazgo_resultado].section_id}" class="title_mobile">${api_response.result[hallazgo_resultado].name} | ${camino_hallazgo}</a>`})
 					const contentDiv = titulo.querySelector('.grid-stack-item-content');
 					contentDiv.id = "titulo-ficha";
 
-					
-
 					const map_fact = new map_factory() // creates / get existing instance of map
-								
-
-
+							
 					const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
 					img_ident.id = "img_ident"
@@ -607,7 +619,8 @@ var hoards =  {
 									map_position		: api_response.result[hallazgo_resultado].map,
 									source_maps			: page.maps_config.source_maps,
 									result				: resultado,
-									findspot			: true
+									findspot			: true,
+									map_node : self
 								})
 
 
@@ -623,7 +636,7 @@ var hoards =  {
 									<div class = "coin-imagenes">
 									<img src="${image_obverse}" alt="anverso" class="coin-img">
 									<img src="${image_reverse}" alt="reverso" class="coin-img"> </div>
-									<a class="coin-name" href="/web_numisdata/coin/${coin.section_id}">${name}</a>
+									<a class="coin-name" href="${hoards.WEB_ROOT_WEB}/coin/${coin.section_id}">${name}</a>
 								</div>
 							`;
 						});
@@ -637,8 +650,6 @@ var hoards =  {
 							content: contentceca
 						});
 					
-					//grid.addWidget({w:4,h:1,content: `${api_response.result[hallazgo_resultado].typology}`})
-					//grid.addWidget({w: 4,h: 1,content: `<span style="font-size:2.5rem">${api_response.result[hallazgo_resultado].date_in} /${api_response.result[hallazgo_resultado].date_out}</span>`})		
 					const indexation_ids = JSON.parse(api_response.result[hallazgo_resultado].indexation_data)
 					let sql_filter_indexation = "";
 					
@@ -693,16 +704,10 @@ var hoards =  {
 
 						const funcionalidad = grid.addWidget({w:8,h:1,content:`<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Funcionalidad:</span> ${funcionalidad_array.join(" - ")}</p>` })
 
-						console.log("categorizacion",categorizacionhallazgo.result)
-						//console.log("funcionalidad",funcionalidadhallazgo.result)
-
-						//PERIODO DEL HALLAZGO
-						
 						const periodohallazgo = api_response.result[id_hallazgo].period;
 
 						const periodo = grid.addWidget({w:8,h:1,content: `<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Cronología:</span> ${periodohallazgo}</p>` })
 
-						//console.log("periodo",periodohallazgo);
 
 					//-----------------------------------------------------------------------------------------------------
 
@@ -1071,7 +1076,7 @@ cargarMonedasHallazgos : async function(ids) {
 
 	generate_Tree_completo : async function(tree,node,node_parent,padding,level,font_size){
 			const Shades = [
-			"#453000ff", // un poco más oscuro que antes para contraste
+			"#453000ff",
 			"#5a3f00ff",
 			"#6d4d00ff",
 			"#7f5b00ff",
@@ -1103,7 +1108,7 @@ cargarMonedasHallazgos : async function(ids) {
 					element_type: "a",
 					class_name: "info_link",
 					text_content: node.info_nodo.name,
-					href: `/web_numisdata/findspot/${node.info_nodo.section_id}`,
+					href: hoards.WEB_ROOT_WEB+`/findspot/${node.info_nodo.section_id}`,
 					parent: info_node
 		});
 
@@ -1211,7 +1216,7 @@ cargarMonedasHallazgos : async function(ids) {
 							common.create_dom_element({
 								element_type: "a",
 								class_name: "type_link",
-								href: `/web_numisdata/type/${coin_type}`,
+								href: hoards.WEB_ROOT_WEB+`/type/${coin_type}`,
 								text_content: type_none, 
 								parent: type_container
 							});

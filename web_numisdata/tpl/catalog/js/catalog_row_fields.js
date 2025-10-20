@@ -35,7 +35,6 @@ var catalog_row_fields = {
 		}
 
 
-
 		switch(term_table){
 
 			case "types":
@@ -347,14 +346,16 @@ var catalog_row_fields = {
 
 
 			case "mints":
+				const filas_sin_inicio = self.ar_rows.filter(el => el.section_id == item.parent)
+				console.log(filas_sin_inicio)
 				common.create_dom_element({
 					element_type	: "div",
 					class_name		: "mint",
-					text_content	: item.p_creator != null ? "("+ item.p_creator +")": "" +  item.term, // + " [" + term_table + "]",
+					text_content	: filas_sin_inicio[0].term_section_label[0].startsWith("Grupo") ? "("+ filas_sin_inicio[0].term +") "+ item.term: "" +  item.term, // + " [" + term_table + "]",
 					parent			: fragment
 				})
 
-				if (item.term_section_id) {
+				if (item.term_section_id && item.term_section_label[0] == "Cecas") {
 					const link = common.create_dom_element({
 						element_type	: "a",
 						class_name		: "link link_mint",
@@ -483,6 +484,23 @@ var catalog_row_fields = {
 		return false
 	},//end node_factory
 
+ subcadenaComunVarias: function(cadenas) {
+    if (cadenas.length === 0) return "";
+
+    let cadenaBase = cadenas[0];
+    let maxSub = "";
+
+    for (let len = cadenaBase.length; len > 0; len--) { // longitud de subcadena
+        for (let i = 0; i <= cadenaBase.length - len; i++) {
+            const sub = cadenaBase.slice(i, i + len);
+            if (cadenas.every(c => c.includes(sub))) {
+                return sub; // devuelve la primera subcadena más larga encontrada
+            }
+        }
+    }
+
+    return "";
+},
 
 	load_type_coins : function(id) {
 		const js_promise = data_manager.request({
@@ -528,7 +546,7 @@ var catalog_row_fields = {
 			if (response.result && response.result.length > 0) {
 				if (response.result[0].coin_references && response.result[0].coin_references.length > 0) {
 					imageObverse = response.result[0].coin_references[0];
-					console.log("imageObverse asignada:", imageObverse);
+					//console.log("imageObverse asignada:", imageObverse);
 				}
 			}
 		} catch (error) {
@@ -536,7 +554,8 @@ var catalog_row_fields = {
 		}
 	
 		return imageObverse; // Devuelve el valor una vez que la promesa se resuelve
-	}
+	},
+
 	/**
 	* FORM_NODE_FACTORY
 	*/

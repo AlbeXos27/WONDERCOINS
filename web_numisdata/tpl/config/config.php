@@ -31,7 +31,7 @@
 		define('__WEB_MEDIA_BASE_URL__', 'https://wondercoins.uca.es');
 
 	// __web_root_web__
-		$base = '/web_numisdata';
+		$base = '/web_numisdata/';
 		define('__WEB_ROOT_WEB__', $base);
 
 	// is_production. used like 'mib_web'

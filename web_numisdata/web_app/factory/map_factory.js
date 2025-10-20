@@ -18,6 +18,33 @@ function map_factory() {
 	this.zoom = 8
 	this.DEV_MODE = false;
 
+
+	this.obtain_location = function(georef){
+
+		for (let index = 0; index < georef.layer_data.length; index++) {
+				
+			if (georef.layer_data[index].type == "Point") {
+				
+				return [georef.layer_data[index].lat,georef.layer_data[index].lon,"Point"]
+			}else{
+
+				let lat = 0;
+				let lon = 0;
+
+				for (let j = 0; j < georef.layer_data[index].lon.length; j++) {
+					lon += georef.layer_data[index].lon[j][0];
+					lat += georef.layer_data[index].lon[j][1];
+				}
+
+				return [lat/georef.layer_data[index].lon.length,lon/georef.layer_data[index].lon.length,"Polygon"]
+			}
+			
+		}
+
+
+	}
+
+
 	this.init = function(options) {
 
 		const self = this;
@@ -38,7 +65,7 @@ function map_factory() {
 
 		if (!containerElement) {
 			console.error("Contenedor del mapa no válido.");
-			return;// FILTRO PARA HALLAZGOS ESTA BUGGED NO SE PORQUE?
+			return;
 		}
 
 		// Crear el mapa con Leaflet centrado en Cádiz
@@ -138,13 +165,36 @@ function map_factory() {
 
 			// --- Hallazgos ---
 			for (let index = 0; index < data.hallazgos.datos.length; index++) {
-				let data_hallazgo = null;
-				try {
-					data_hallazgo = JSON.parse(data.hallazgos.datos[index].map);
-				} catch (error) {
-					data_hallazgo = data.hallazgos.datos[index].map;
-				}
 
+				let data_hallazgo = {
+					lat : "",
+					lon : ""
+				};
+
+				
+				const georef_hallazgo = JSON.parse(data.hallazgos.datos[index].georef)
+				
+				if(georef_hallazgo){
+
+					
+					const location = this.obtain_location(georef_hallazgo[0]);
+					data_hallazgo.lat = location[0]
+					data_hallazgo.lon = location[1]
+				
+				}else{
+
+					try {
+
+						data_hallazgo = JSON.parse(data.hallazgos.datos[index].map)
+
+					} catch (error) {
+
+						data_hallazgo = data.hallazgos.datos[index].map
+
+					}
+
+				}
+				
 				if (data_hallazgo != null) {
 					const markerHallazgo = L.marker([data_hallazgo.lat, data_hallazgo.lon], { icon: iconoHallazgo })
 						.bindPopup(`<b>Hallazgo</b><br>${data.hallazgos.datos[index].name}`)

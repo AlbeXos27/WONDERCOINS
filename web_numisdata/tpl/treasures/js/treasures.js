@@ -74,9 +74,9 @@ var treasures =  {
 
 				self.pagination = {
 					total		: null,
-					 limit	: 10,
+					limit	: 10,
 					offset		: 0,
-					 n_nodes	: 8
+					n_nodes	: 8
 				}
 				self.form_submit()
 			}

@@ -22,8 +22,9 @@
 						<h1><?php echo $title ?></h1>
 						<div class="golden-separator"></div>
 					<!-- Result -->
+						<section id="tree_container" class="search"></section>
 						<section id="rows_container" class="result"></section>
-						<section id="result_search" class="result"></section>
+						
 				</div>
 			</div>
 
@@ -37,6 +38,7 @@
 <script>
 dom_ready(function(){
 	indexation_hierarchy.set_up({
+		tree_container	: document.getElementById('tree_container'),
 		rows_container	: document.getElementById('rows_container')
 	})
 })

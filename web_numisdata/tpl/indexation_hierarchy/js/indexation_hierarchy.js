@@ -1,181 +1,216 @@
-/*global tstring, form_factory, list_factory, Promise, 																																									psqo_factory, mints_rows, SHOW_DEBUG, common, page, data_manager, event_manager */
-/*eslint no-undef: "error"*/
-
 "use strict";
 
+var indexation_hierarchy = {
 
+    rows_container: null,
+    tree_container: null,
+    list: null,
+    pagination: null,
+    current_node_id: null, // Nodo activo
 
-var indexation_hierarchy =  {
+    set_up: async function(options) {
+        const self = this;
 
-		// DOM items ready from page html
-		rows_container	: null,
+        self.rows_container = options.rows_container;
+        self.tree_container = options.tree_container;
 
-	/**
-	* SET_UP
-	*/
-	set_up : async function(options) {
+        self.pagination = {
+            total: null,
+            limit: 10,
+            offset: 0,
+            n_nodes: 8
+        };
 
-		const self = this
+        const arbol_completo = common.create_dom_element({
+            element_type: "div",
+            class_name: "arbol_completo",
+            parent: self.tree_container
+        });
 
-		self.rows_container	= options.rows_container;
+        // Generar árboles de categorías y contextos
+        await self.generate_data(1, arbol_completo, 0, 0, "ts_find_category");
+        await self.generate_data(134, arbol_completo, 0, 0, "ts_find_context");
+    },
 
+    generate_data: async function(id, nodo_padre, tab, nivel, table) {
+        const self = this;
 
-		const arbol_completo = common.create_dom_element({
-			element_type : "div",
-			class_name	 : "arbol_completo",
-			parent		 : self.rows_container
-		})
+        const datos = await self.get_data(table, id, nivel === 0);
+        if (!datos || !datos.result) return;
 
-		await this.generate_data(1,arbol_completo,0,0,"ts_find_category");
-		await this.generate_data(134,arbol_completo,0,0,"ts_find_context");
-		
-		
+        for (let i = 0; i < datos.result.length; i++) {
+            const node_data = datos.result[i];
 
-
-		return true;
-
-	},//end set_up
-
-	generate_data: async function(id, nodo_padre, tab, nivel,table){
-
-		if(nivel == 0){
-
-			const datos_inicial = await this.get_data(table,id,true);
-			
-			const nodo_inicial = common.create_dom_element({
-				element_type : "div",
-				class_name	 : "container_indexation",
-				parent		 : nodo_padre
-			});
-
-			nodo_inicial.classList.add(table);
-			nodo_inicial.textContent = datos_inicial.result[0].term;
-
-			const button_display = common.create_dom_element({
-                element_type: "img",
-                class_name: "button_display",
-                src: "tpl/assets/images/arrow-right.svg",
-                parent: nodo_inicial
+            const nodo = common.create_dom_element({
+                element_type: "div",
+                class_name: "container_indexation",
+                parent: nodo_padre
             });
 
-			button_display.classList.add(`button_display_${datos_inicial.result[0].section_id}_${table}`);
+            nodo.classList.add(table);
+            nodo.style.paddingLeft = `${tab}em`;
+            nodo.textContent = node_data.term;
 
-			let estado_mostrar_monedas = false;
-            let hijos_creados_monedas = false;
+            let estado_mostrar = false;
+            let hijos_creados = false;
 
-            button_display.addEventListener("mousedown", (e) => {
-				e.stopPropagation();
+            // Crear botón de flecha si tiene hijos
+            if (node_data.children || nivel === 0) {
+                const button = common.create_dom_element({
+                    element_type: "img",
+                    class_name: "button_display",
+                    src: "tpl/assets/images/arrow-right.svg",
+                    parent: nodo
+                });
 
-				// Ocultables: hijos que sean nodos de subnivel
-				const hijos_ocultables = Array.from(nodo_inicial.children)
-					.filter(hijo => hijo.classList.contains("container_indexation"));
+                button.classList.add(`button_display_${node_data.section_id}_${table}`);
 
-				if (estado_mostrar_monedas) {
-					button_display.style.transform = "rotate(0deg) translateY(20%) translateX(30%)";
-					hijos_ocultables.forEach(hijo => hijo.style.display = 'none');
-				} else {
-					button_display.style.transform = "rotate(90deg) translateX(30%) translateY(-20%)";
-					hijos_ocultables.forEach(hijo => hijo.style.display = 'block');
+                button.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    const hijos_ocultables = Array.from(nodo.children)
+                        .filter(hijo => hijo.classList.contains("container_indexation"));
 
-					if (!hijos_creados_monedas) {
-						this.generate_data(datos_inicial.result[0].section_id, nodo_inicial, 1.5, nivel+1,table);
-						hijos_creados_monedas = true;
-					}
-				}
+                    if (estado_mostrar) {
+                        button.style.transform = "rotate(0deg)";
+                        hijos_ocultables.forEach(h => h.style.display = "none");
+                    } else {
+                        button.style.transform = "rotate(90deg)";
+                        hijos_ocultables.forEach(h => h.style.display = "block");
 
-				estado_mostrar_monedas = !estado_mostrar_monedas;
-			});
+                        if (!hijos_creados) {
+                            self.generate_data(node_data.section_id, nodo, tab + 1.5, nivel + 1, table);
+                            hijos_creados = true;
+                        }
+                    }
 
+                    estado_mostrar = !estado_mostrar;
+                });
+            }
 
-		}else{
+            // Evento de clic en el nodo para actualizar la lista
+            nodo.addEventListener("click", async function(e) {
+                e.stopPropagation();
 
-			const datos_iniciales = await this.get_data(table,id,false);
+                self.current_node_id = node_data.section_id; // Guardar nodo activo
+                self.pagination.offset = 0; // resetear página
 
-			for (let index = 0; index < datos_iniciales.total; index++) {
-				
-				 const info_node = common.create_dom_element({
-					element_type: "div",
-					class_name: "container_indexation",
-					parent: nodo_padre
-				});
+                if(nivel != 0){
 
-				info_node.classList.add(table);
-				info_node.style.paddingLeft = `${tab}em`;
-				info_node.textContent = datos_iniciales.result[index].term;
+                    await self.reload_current_node();
 
-				if(datos_iniciales.result[index].children){
+                }
+                
+                // Suscribirse al evento paginate (solo una vez)
+                if (!self._paginate_event_subscribed) {
+                    self._paginate_event_subscribed = true;
+                    event_manager.subscribe('paginate', async function(offset) {
+                        self.pagination.offset = offset;
+                        await self.reload_current_node();
+                    });
+                }
 
-				const button_display = common.create_dom_element({
-					element_type: "img",
-					class_name: "button_display",
-					src: "tpl/assets/images/arrow-right.svg",
-					parent: info_node
-				});
+                const div_result = document.querySelector("#rows_container");
+                if (div_result) {
+                    div_result.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+                }
+            });
+        }
+    },
 
-				button_display.classList.add(`button_display_${datos_iniciales.result[index].section_id}_${table}`);
+    reload_current_node: async function() {
+        const self = this;
+        if (!self.current_node_id) return;
 
-				let estado_mostrar_monedas = false;
-				let hijos_creados_monedas = false;
+        const filas = await self.get_rows_container(self.current_node_id);
+        if (!filas || !filas.result) return;
 
-				button_display.addEventListener("mousedown", (e) => {
-					e.stopPropagation();
+        const data = page.parse_hoard_data(filas.result);
+        self.pagination.total = filas.total;
 
-					// Ocultables: hijos que sean nodos de subnivel
-					const hijos_ocultables = Array.from(info_node.children)
-						.filter(hijo => hijo.classList.contains("container_indexation"));
+        // Limpiar resultados anteriores
+        while (self.rows_container.firstChild) {
+            self.rows_container.removeChild(self.rows_container.firstChild);
+        }
 
-					if (estado_mostrar_monedas) {
-						button_display.style.transform = "rotate(0deg) translateY(20%) translateX(30%)";
-						hijos_ocultables.forEach(hijo => hijo.style.display = 'none');
-					} else {
-						button_display.style.transform = "rotate(90deg) translateX(30%) translateY(-20%)";
-						hijos_ocultables.forEach(hijo => hijo.style.display = 'block');
+        // Crear nueva lista
+        self.list = new list_factory();
+        self.list.init({
+            data: data,
+            fn_row_builder: function(d) {
+                return indexation_hierarchy.generate_row(d, self.rows_container);
+            },
+            pagination: self.pagination,
+            caller: self
+        });
 
-						if (!hijos_creados_monedas) {
-							this.generate_data(datos_iniciales.result[index].section_id, info_node, 1.5, nivel+1,table);
-							hijos_creados_monedas = true;
-						}
-					}
+        self.list.render_list().then(function(list_node) {
+            if (list_node) self.rows_container.appendChild(list_node);
+        });
+    },
 
-					estado_mostrar_monedas = !estado_mostrar_monedas;
-				});
-				
-				}
-			
-			} 
+    get_data: async function(table, id, parent) {
+        const sql_filter = !parent
+            ? `parent LIKE "%${table === "ts_find_category" ? "tchicategory" : "cont"}1_${id}%"`
+            : `section_id = ${id}`;
 
-		}
+        try {
+            return await data_manager.request({
+                body: {
+                    dedalo_get: "records",
+                    table: table,
+                    ar_fields: ["*"],
+                    sql_filter: sql_filter,
+                    limit: 0,
+                    count: true,
+                    offset: 0,
+                    order: "norder",
+                    process_result: null
+                }
+            });
+        } catch (err) {
+            console.error("Error fetching data:", err);
+            return null;
+        }
+    },
 
-	},
+    get_rows_container: async function(id) {
+        const self = this;
+        try {
+            return await data_manager.request({
+                body: {
+                    dedalo_get: "records",
+                    table: "findspots",
+                    ar_fields: ["*"],
+                    sql_filter: `JSON_CONTAINS(indexation_data,'"${id}"')`,
+                    limit: self.pagination.limit,
+                    count: true,
+                    offset: self.pagination.offset,
+                    order: "section_id",
+                    process_result: null
+                }
+            });
+        } catch (err) {
+            console.error("Error fetching rows:", err);
+            return null;
+        }
+    },
 
+    generate_row: function(data, parent) {
+        const container = common.create_dom_element({
+            element_type: "h4",
+            class_name: "container_row_indexation_findspots",
+            parent: parent
+        });
 
-	get_data: async function(table,id,parent) {
-			const sql_filter = !parent ? `parent LIKE "%${table == "ts_find_category" ? "tchicategory" : "cont" }1_${id}%"` : `section_id = ${id}`;
-			try {
-				const context = await data_manager.request({
-					body: {
-						dedalo_get: 'records',
-						table: table,
-						ar_fields: ["*"],
-						sql_filter: sql_filter,
-						limit: 0,
-						count: true,
-						offset: 0,
-						order: 'norder',
-						process_result: null
-					}
-				});
-				return context;
-			} catch (err) {
-				console.error("Error fetching mints:", err);
-				return null;
-			}
-	},
+        common.create_dom_element({
+            element_type: "a",
+            class_name: "row_indexation_findspots",
+            href: `findspot/${data.section_id}`,
+            text_content: data.name,
+            parent: container
+        });
 
+        return container;
+    }
 
-
-
-
-}
-
-	
+};

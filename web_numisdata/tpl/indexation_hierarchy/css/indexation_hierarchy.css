@@ -10,3 +10,17 @@
 .arbol_completo{
   margin-top: 10px;
 }
+
+#rows_container{
+  margin-top: 10px;
+  border-top: 0.4vh solid #a8a8a8;
+}
+.rows_container :first-child{
+  padding-top: 2vh;
+}
+.pagination{
+  margin-top: 2vh;
+}
+.pagination.bottom{
+  display: none;
+}

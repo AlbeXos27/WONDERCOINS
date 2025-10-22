@@ -24,6 +24,7 @@
 .pagination.bottom{
   display: none;
 }
-.container_row_indexation_findspots{
-  padding-bottom: 1vh;
+.row_indexation_findspots{
+
+  font-size: 25px;
 }

@@ -704,7 +704,7 @@ var hoards =  {
 
 						const funcionalidad = grid.addWidget({w:8,h:1,content:`<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Funcionalidad:</span> ${funcionalidad_array.join(" - ")}</p>` })
 
-						const periodohallazgo = api_response.result[id_hallazgo].period;
+						const periodohallazgo = api_response.result[id_hallazgo].period || "";
 
 						const periodo = grid.addWidget({w:8,h:1,content: `<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Cronología:</span> ${periodohallazgo}</p>` })
 
@@ -773,16 +773,18 @@ var hoards =  {
 					let nombres_array = [];
 
 						const rawAutores = api_response.result[hallazgo_resultado].authorship_names || "";
+						const rawApellidosAutores = api_response.result[hallazgo_resultado].authorship_surnames || "";
 						const rawRoles   = api_response.result[hallazgo_resultado].authorship_roles || "";
 
 						const autores = rawAutores.split("|");
+						const apellidos = rawApellidosAutores.split("|");
 						const roles   = rawRoles.split("|");
 
 						const total_autores = Math.max(autores.length, roles.length);
 
 						for (let index = 0; index < total_autores; index++) {
 						nombres_array.push(
-							(autores[index] || "") + "/" + (roles[index] || "")
+							(autores[index] || "") + " " + (apellidos[index].trim() || "") + " / " + (roles[index] != undefined ? roles[index].trim() : "")
 						);
 						}
 

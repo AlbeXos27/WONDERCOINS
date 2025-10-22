@@ -181,7 +181,7 @@ var indexation_hierarchy = {
                     dedalo_get: "records",
                     table: "findspots",
                     ar_fields: ["*"],
-                    sql_filter: `JSON_CONTAINS(indexation_data,'"${id}"')`,
+                    sql_filter: `JSON_CONTAINS(indexation_data,'"${id}"') AND typology != ""`,
                     limit: self.pagination.limit,
                     count: true,
                     offset: self.pagination.offset,
@@ -197,16 +197,18 @@ var indexation_hierarchy = {
 
     generate_row: function(data, parent) {
         const container = common.create_dom_element({
-            element_type: "h4",
+            element_type: "div",
             class_name: "container_row_indexation_findspots",
             parent: parent
         });
+        
+        const camino = JSON.parse(data.parents_text).join(" | ");
 
         common.create_dom_element({
             element_type: "a",
             class_name: "row_indexation_findspots",
             href: `findspot/${data.section_id}`,
-            text_content: data.name,
+            text_content: ("- " + data.name + " " + camino),
             parent: container
         });
 

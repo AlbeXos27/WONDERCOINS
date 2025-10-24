@@ -174,7 +174,8 @@ var render_hoard = {
 							datos: []
 						}
 						};
-				
+					const mints = await this.get_mint_points(row.types);
+					resultado.cecas.datos = mints.result;
 					resultado.hallazgos.datos.push(row)
 					
 						const map = map_fact.init({
@@ -414,6 +415,40 @@ var render_hoard = {
 			console.error("Error cargando datos:", error);
 		}
 },
+
+	get_mint_points : async function(types) {
+		
+		let sql_filter = "";
+
+		for (let index = 0; index < types.length; index++) {
+			
+			sql_filter += index != types.length - 1 ? `JSON_CONTAINS(relations_types, '"${types[index]}"') OR ` : `JSON_CONTAINS(relations_types, '"${types[index]}"')`
+	
+		}
+
+
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'mints',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+
+
+	}
 	
 
 }//end render_hoard

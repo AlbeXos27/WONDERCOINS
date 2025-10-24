@@ -21,7 +21,7 @@ var mint = {
 	* SET_UP
 	* When the HTML page is loaded
 	*/
-	set_up : function(options) {
+	set_up : async function(options) {
 
 		const self = this
 
@@ -47,7 +47,7 @@ var mint = {
 			self.get_row_data({
 				section_id : self.section_id
 			})
-			.then(function(response){
+			.then(async function(response){
 				console.log("--> set_up get_row_data API response:",response.result);
 
 				// mint draw
@@ -72,8 +72,10 @@ var mint = {
 							datos: []
 						}
 						};
-				
+					const hallazgos = await self.get_findspots_points(mint_data.relations_types);
+					resultado.hallazgos.datos = hallazgos.result;
 					resultado.cecas.datos.push(mint_data)
+					console.log(resultado)
 						const map = map_fact.init({
 							map_container : map_container,
 							map_position  : mint_data.map,
@@ -83,13 +85,14 @@ var mint = {
 							});
 				// types draw
 					const mint_catalog = response.result.find( el => el.id==='mint_catalog')
+					
 					if (mint_catalog.result) {
 						const _mint_catalog = mint_catalog.result.find(el => el.term_table==='mints')
 						if (_mint_catalog && _mint_catalog.section_id) {
 							self.get_types_data2({
 								section_id : _mint_catalog.section_id
 							})
-							.then(function(result){
+							.then(async function(result){
 								// self.draw_types({
 								// 	target	: document.getElementById('types'),
 								// 	ar_rows	: result
@@ -101,7 +104,7 @@ var mint = {
 									//result[i].term_section_id = result[i].term_section_id.section_id
 								}
 
-								const types_node = self.draw_types2({
+								const types_node = await self.draw_types2({
 									ar_rows			: result,
 									mint_section_id	: _mint_catalog.section_id
 								})
@@ -117,14 +120,6 @@ var mint = {
 						}
 					}
 
-					const mint_types = response.result.find( el => el.id==='mint_types')
-					if(mint_types.result){
-						console.log("TIENE TIPOS")
-					}
-					const mint_coins = response.result.find( el => el.id==='mint_coins')
-					if(mint_coins.result){
-						console.log("TIENE MONEDAS")
-					}
 
 				// send event data_request_done (used by buttons download)
 					event_manager.publish('data_request_done', {
@@ -334,7 +329,7 @@ var mint = {
 	* DRAW_TYPES2
 	* @return
 	*/
-	draw_types2 : function(options) {
+	draw_types2 : async function(options) {
 
 		// options
 			const ar_rows			= options.ar_rows
@@ -377,7 +372,7 @@ var mint = {
 					}
 
 				// append
-					const node = mint_row.draw_type_item(row)
+					const node = await mint_row.draw_type_item(row)
 					if (node) {
 						ar_nodes.push(node)
 						fragment.appendChild(node)
@@ -1486,7 +1481,40 @@ var mint = {
 		// console.log("--map_data map_points:",map_points);
 
 		return map_points
-	}//end map_data
+	},
+	get_findspots_points : async function(types) {
+		
+		let sql_filter = "";
+
+		for (let index = 0; index < types.length; index++) {
+			
+			sql_filter += index != types.length - 1 ? `JSON_CONTAINS(types, '"${types[index]}"') OR ` : `JSON_CONTAINS(types, '"${types[index]}"')`
+	
+		}
+
+
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'findspots',
+					ar_fields: ["*"],
+					sql_filter: sql_filter,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+
+
+	} //end map_data
 
 
 

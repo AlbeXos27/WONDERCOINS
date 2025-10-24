@@ -8,7 +8,7 @@ var mint_row = {
 
 
 
-	draw_type_item : function(row) {
+	draw_type_item : async function(row) {
 
 		const self = this
 
@@ -51,7 +51,7 @@ var mint_row = {
 				}else{
 					// case final type
 
-					const node = self.create_type_element(row, false)
+					const node = await self.create_type_element(row, false)
 					if (node) {
 						wrapper.classList.add("unit")
 						// const parent_container = wrapper.parentNode // .querySelector(":scope > .container")
@@ -95,8 +95,7 @@ var mint_row = {
 
 
 
-	create_type_element : function(row, isSubtype){
-
+	create_type_element : async function(row, isSubtype){
 		// const row_term = (row.term.indexOf(",") == -1)
 		// 	? row.term
 		// 	: row.term.slice(0,row.term.indexOf(","))
@@ -183,16 +182,19 @@ var mint_row = {
 
 			const diameter = row.ref_type_averages_diameter
 
+			const coins_row = await this.get_data_coins(row.term_data[0].section_id);
+			console.log(coins_row.result[0])
+
 			const img_obverse = common.create_dom_element({
 				element_type	: "img",
-				src				: row.ref_coins_image_obverse_thumb,
+				src				: "https://wondercoins.uca.es"+coins_row.result[0].image_obverse,
 				title 			: row.section_id,
 				dataset 		: {caption: page_globals.OWN_CATALOG_ACRONYM + " " + mint_number + c_name  },
 				parent			: img_link_ob
 			})
 			img_obverse.style.width = (diameter + (diameter * 8/100)) + 'mm'
 			img_obverse.style.height = (diameter + (diameter * 8/100)) + 'mm'
-			img_obverse.hires	= row.ref_coins_image_obverse
+			img_obverse.hires	= "https://wondercoins.uca.es"+coins_row.result[0].image_obverse
 			img_obverse.loading	= "lazy"
 			img_obverse.addEventListener("load", page.load_hires, false)
 
@@ -205,14 +207,14 @@ var mint_row = {
 
 			const img_reverse = common.create_dom_element({
 				element_type	: "img",
-				src 			: row.ref_coins_image_reverse_thumb,
+				src 			: "https://wondercoins.uca.es"+coins_row.result[0].image_reverse,
 				title 			: row.section_id,
 				dataset 		: {caption: page_globals.OWN_CATALOG_ACRONYM +" " + mint_number + c_name  },
 				parent 			: img_link_re
 			})
 			img_reverse.style.width = (diameter + (diameter * 8/100)) + 'mm'
 			img_reverse.style.height = (diameter + (diameter * 8/100)) + 'mm'
-			img_reverse.hires	= row.ref_coins_image_reverse
+			img_reverse.hires	= "https://wondercoins.uca.es"+coins_row.result[0].image_reverse
 			img_reverse.loading	= "lazy"
 			img_reverse.addEventListener("load", page.load_hires, false)
 
@@ -410,9 +412,37 @@ var mint_row = {
 		// page.activate_images_gallery(img_wrap)
 
 		return row_type
-	}//end create_type_element
+	},//end create_type_element
+
+
+
+	get_data_coins: async function(section_id){
+
+		try {
+			const hijos = await data_manager.request({
+				body: {
+					dedalo_get: 'records',
+					table: 'coins',
+					ar_fields: ["*"],
+					sql_filter: `JSON_CONTAINS(type_data, '"${section_id}"')`,
+					limit: 0,
+					count: true,
+					offset: 0,
+					order: 'section_id ASC',
+					process_result: null
+				}
+			});
+			return hijos;
+
+		} catch (error) {
+			console.error("Error cargando datos:", error);
+		}
+	}
+
+
+}
 
 
 
 
-}//end mint_row
+//end mint_row

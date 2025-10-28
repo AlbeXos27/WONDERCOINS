@@ -354,8 +354,8 @@ var catalog = {
 				name			: "role",
 				label			: tstring.role || "Role",
 				q_column		: "ref_type_creators_roles", //"p_creator",
-				// value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
-				// q_splittable 	: true,
+				//value_wrapper	: ['["','"]'], // to obtain ["value"] in selected value only
+				//q_splittable 	: true,
 				value_split : "|",
 				q_selected_eq 	: 'LIKE',
 				eq_in			: "%",
@@ -366,6 +366,7 @@ var catalog = {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'catalog',
+						value_splittable : true
 						
 					})
 				}
@@ -389,6 +390,7 @@ var catalog = {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
 						table		: 'catalog',
+						value_splittable : true
 						
 					})
 				}
@@ -1763,6 +1765,7 @@ var catalog = {
 
 		// fix and set rows to catalog_row_fields
 			catalog_row_fields.ar_rows = ar_rows
+			catalog_row_fields.rows_painted = []
 		// catalog_row_fields set
 			const node = catalog_row_fields.draw_item(row_object)
 

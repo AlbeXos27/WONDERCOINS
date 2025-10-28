@@ -871,6 +871,7 @@ function form_factory() {
 	const parent_in = options.parent_in || false;
 	const global_search = options.global_search || false;
 	const activate_filter = options.activate_filter === false ? false : true;
+	const value_splittable = options.value_splittable === true ? true : false;
 	const parse_result = options.parse_result || function(ar_result, term) {
 		return ar_result.map(function(item){
 			item.label = item.label.replace(/<br>/g," ");
@@ -922,7 +923,8 @@ function form_factory() {
 			}
 		});
 	})(jQuery);
-		
+	const set_repetidos = new Set();
+	
 	const cache = {};
 	$(form_item.node_input).autocomplete({
 		delay: 150,
@@ -994,11 +996,6 @@ function form_factory() {
 			}
 
 
-			if (filterObj[op].length === 1 && term in cache && pagData.currentPage === 1) {
-				response(cache[term]);
-				return;
-			}
-
 			const sql_filter = self.parse_sql_filter(filterObj, self.group, activate_filter, global_search, table);
 			const table_resolved = typeof table === "function" ? table() : table;
 
@@ -1023,7 +1020,8 @@ function form_factory() {
 					section_id = api_response.result[0].section_id;
 				});
 			}
-
+			const ar_result = [];
+			
 			await data_manager.request({
 				body: {
 					dedalo_get: 'records',
@@ -1032,12 +1030,12 @@ function form_factory() {
 					ar_fields: [plain_field + " AS name", (table_resolved === "findspots" || table_resolved === "catalog") ? "parents_text" : "section_id"],
 					sql_filter: !id ? sql_filter : `parent LIKE  '["${section_id}"]'`,
 					group: plain_field,
-					limit: 20,
-					offset: (pagData.currentPage - 1) * 20,
+					limit: 0,
+					offset : (pagData.currentPage - 1) * 20,
 					order: order
 				}
 			}).then((api_response) => {
-				const ar_result = [];
+
 				const len = api_response.result.length;
 
 				if (pagData.currentPage > 1) {
@@ -1071,25 +1069,91 @@ function form_factory() {
 							} catch(e) { extra_label = " | " + item.parents_text; }
 						}
 
-						if (!ar_result.find(el => el.value === item_name)) {
-							ar_result.push({ label: `${item_name}${extra_label}`, value: item_name });
+						if(value_splittable){
+
+							const splittable_values = item_name.split("|");
+
+							splittable_values.forEach(splittable_value => {
+								const clean_value = splittable_value.trim();
+
+								const split_value = clean_value.split(',');
+								if(split_value.length > 1){
+
+									split_value.forEach(splitted_values => {
+
+										const clean_value_splitted = splitted_values.trim();
+										if(!clean_value_splitted.includes("Digitali")){
+
+											if (!ar_result.find(el => el.label.includes(clean_value_splitted) )) {
+												ar_result.push({ label: clean_value_splitted, value: clean_value_splitted });
+											}
+
+										}	
+
+									})
+
+								}else{
+
+									if (!ar_result.find(el => el.label.includes(clean_value))) {
+										ar_result.push({ label: clean_value, value: clean_value });
+									}
+
+								}
+
+								
+							})
+
+						}else{
+
+							if (!ar_result.find(el => el.value === item_name)) {
+								ar_result.push({ label: `${item_name}${extra_label}`, value: item_name });
+							}
+
+
 						}
+						
+						
 					}
 				}
 
-				if (len === 20) {
-					ar_result.push({
+				let ar_result_final = parse_result(ar_result, term);
+				const results_per_page = 20;
+				let has_next_page = false;
+				const offset = (pagData.currentPage - 1) * 20;
+				let items_only = ar_result_final.filter(item => item.value !== '__prev__');
+
+
+				if ((pagData.currentPage)*20 <= items_only.length) {
+					has_next_page = true;
+				}
+
+				let final_results = items_only.slice(offset, results_per_page + offset);
+
+				// 4. Reinsertar los botones de navegación
+				if (pagData.currentPage > 1) {
+					// Reinsertar el botón "Anterior" si corresponde
+					final_results.unshift({
+						label: "<div class='ac-nav-btn'>&laquo; Página anterior</div>",
+						value: "__prev__"
+					});
+				}
+
+				if (has_next_page) {
+					// Añadir el botón "Siguiente"
+					final_results.push({
 						label: "<div class='ac-nav-btn'>Página siguiente &raquo;</div>",
 						value: "__next__"
 					});
 				}
 
-				const ar_result_final = parse_result(ar_result, term);
+				// 5. Lógica de Caché (CORREGIDA para incluir botones)
 				if (filterObj[op].length === 1 && typeof table !== "function" && pagData.currentPage === 1) {
-					cache[term] = ar_result_final;
+					// Cacheamos el resultado final CON botones para la página 1
+					cache[term] = final_results; 
 				}
 
-				response(ar_result_final);
+				// 6. Responder
+				response(final_results);
 			});
 		},
 		select: function(event, ui) {

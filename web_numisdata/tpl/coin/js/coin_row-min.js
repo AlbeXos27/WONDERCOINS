@@ -1,1 +1,1183 @@
-"use strict";var coin_row={caller:null,draw_coin:function(e){SHOW_DEBUG;const t=new DocumentFragment;if(!e)return t;if(!0===dedalo_logged){common.create_dom_element({element_type:"a",class_name:"section_id go_to_dedalo",text_content:e.section_id,href:"/dedalo/lib/dedalo/main/?t=numisdata4&id="+e.section_id,parent:t}).setAttribute("target","_blank")}const n=common.create_dom_element({element_type:"div",class_name:"identify_images_wrapper gallery coins-sides-wrapper",parent:t});let l=tstring.number||"Number";if(l+=" "+e.section_id,e.image_obverse&&e.image_obverse.length>0){const t=common.create_dom_element({element_type:"a",class_name:"image_link",href:e.image_obverse,parent:n}),a=common.create_dom_element({element_type:"img",class_name:"image image_obverse",title:l,src:e.image_obverse,parent:t});if(e.collection&&e.collection.length>0){const t=e.former_collection&&e.former_collection.length>0?e.collection+" ("+e.former_collection+")":e.collection,n=e.number&&e.number.length>0?t+" "+e.number:t;a.setAttribute("data-caption",n)}if(e.ref_auction_group)for(let t=0;t<e.ref_auction_group.length;t++){const n=e.ref_auction_group[t];let l="";n.name&&(l+=n.name),n.date&&(l+=" "+n.date),n.number&&(l+=", "+n.number),e.number&&(l+=", "+(tstring.lot||"lot")+" "+e.number),a.setAttribute("data-caption",l)}if(e.image_obverse_data[0]&&e.image_obverse_data[0].photographer){const t=a.getAttribute("data-caption");a.setAttribute("data-caption",t+'<spam> | </spam> <i class="fa fa-camera"></i> '+e.image_obverse_data[0].photographer)}}if(e.image_reverse&&e.image_reverse.length>0){const t=common.create_dom_element({element_type:"a",class_name:"image_link",href:e.image_reverse,parent:n});common.create_dom_element({element_type:"img",class_name:"image image_reverse",title:l,src:e.image_reverse,parent:t})}const a=common.create_dom_element({element_type:"div",class_name:"info_container",parent:t});e.section_id&&e.section_id>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:"ID",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.section_id,parent:a})),e.denomination&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:"DENOMINACIÓN",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.denomination.split("|")[0],parent:a}));const _=[],o=[];e.collection&&e.collection.length>0&&(_.push(tstring.collection||"Collection"),o.push(e.collection)),e.former_collection&&e.former_collection.length>0&&o.push("("+e.former_collection+")"),o.length>0&&e.number&&e.number.length>0&&o.push(e.number);common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:_.join(""),parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:o.join(" "),parent:a});const m=null!=e.findspot_data?JSON.parse(e.findspot_data)[0]:null;if(m){common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:"Hallazgo",parent:a}),common.create_dom_element({element_type:"a",class_name:"rigth-values type_label",inner_html:e.findspot+' <a class="icon_link"></a> ',href:page_globals.__WEB_ROOT_WEB__+"/findspot/"+m,target:"_blank",parent:a})}if(e.ref_auction_group){const t=[];t.push(tstring.auction||"Auction");common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:t.join(" | "),parent:a});for(let t=0;t<e.ref_auction_group.length;t++){const n=e.ref_auction_group[t],l=[];n.name&&(l.push(n.name),l.push(" ")),n.date&&(l.push(n.date),l.push(", ")),n.number&&(l.push(n.number||e.number),l.push(", ")),e.number&&(l.push(tstring.lot||"Lot"),l.push(" "+e.number)),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:l.join(""),parent:a})}}const r=[];if(e.ref_related_coin_auction_group&&e.ref_related_coin_auction_group.length>0)for(let t=0;t<e.ref_related_coin_auction_group.length;t++){const n=[];e.ref_related_coin_auction_group[t].name.length>0&&(n.push("= "+e.ref_related_coin_auction_group[t].name),e.ref_related_coin_auction_group[t].number&&e.ref_related_coin_auction_group[t].number.length>0&&n.push(e.ref_related_coin_auction_group[t].number)),r.push(n.join(" | "))}common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:r.join(" <br> "),parent:a});const s=tstring.type||"Type",c=e.type_data.find((e=>e.catalogue===page_globals.OWN_CATALOG_ACRONYM))?e.type_data.find((e=>e.catalogue===page_globals.OWN_CATALOG_ACRONYM)):e.type_data[0],i=void 0!==c?c.creators_data:null;if(i&&i.length>0){const e=JSON.parse(i),t=c.creators_names?c.creators_names.split(" | "):[],n=c.creators_surnames?c.creators_surnames.split(" | "):[],l=c.creators_roles?c.creators_roles.split("|"):[],_=[],o=e.length;for(var p=0;p<o;p++){const e=t[p]?t[p]:"",a=n[p]?n[p]:"",o=l[p]?"("+l[p]+")":"",m=(e+" "+a).trim()+" "+o;_.push(m.trim())}common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.authorities||"Authorities",parent:a});common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:_,parent:a})}const d=c.mint?c.mint:"",g=c.mint_number?c.mint_number:"",u=c.number?c.number:"",b=d?d+" "+c.catalogue+" "+g+"/"+u:+c.catalogue+" "+u,h=page_globals.__WEB_ROOT_WEB__+"/type/"+c.section_id,f='<a class="icon_link" href="'+h+'"></a> ';common.create_dom_element({element_type:"label",class_name:"left-labels",inner_html:s,parent:a}),common.create_dom_element({element_type:"a",class_name:"rigth-values type_label",inner_html:b+" "+f,href:h,target:"_blank",parent:a});for(let t=0;t<e.catalogue_type_mint.length;t++){const n=e.catalogue_type_mint[t];if(n!==page_globals.OWN_CATALOG_ACRONYM)try{common.create_dom_element({element_type:"span",class_name:"rigth-values equivalents",inner_html:n+" "+e.type[t],parent:a})}catch(t){common.create_dom_element({element_type:"span",class_name:"rigth-values equivalents",inner_html:n+" "+e.type_data.section_id,parent:a})}}common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.obverse.toUpperCase()||"OBVERSE",parent:a});const y=void 0!==c?c.design_obverse:null,v={$and:[{id:"design_obverse",q:y,op:"="}]},x=psqo_factory.build_safe_psqo(v),O=psqo_factory.encode_psqo(x);if(y&&y.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.design||"design",parent:a});const e=page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+O;common.create_dom_element({element_type:"a",class_name:"rigth-values",inner_html:y,href:e,parent:a})}const k=void 0!==c?c.symbol_obverse:null;if(k&&k.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.symbol||"symbol",parent:a});const e=page_globals.__WEB_ROOT_WEB__+"/catalog/?item_type=symbol_obverse&label="+k+"&value="+k;common.create_dom_element({element_type:"a",class_name:"rigth-values",inner_html:k,href:e,parent:a})}const q=void 0!==c?c.legend_obverse:null;if(q&&q.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.legend||"legend",parent:a});const e=page.render_legend({value:q,style:"median legend_obverse_box rigth-values"});a.appendChild(e)}const A=void 0!==c?c.legend_obverse_transcription:null;if(A&&A.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.transcription||"Transcription",parent:a});common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:A,parent:a})}if(e.countermark_obverse&&e.countermark_obverse.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.countermark||"countermark",parent:a});const t=page.render_legend({value:e.countermark_obverse,style:"median countermark_obverse_box rigth-values"});a.appendChild(t)}common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.reverse.toUpperCase()||"REVERSE",parent:a});const E=void 0!==c?c.design_reverse:null,C={$and:[{id:"design_reverse",q:E,op:"="}]},w=psqo_factory.build_safe_psqo(C),W=psqo_factory.encode_psqo(w);if(E&&E.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.design||"design",parent:a});const e=page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+W;common.create_dom_element({element_type:"a",class_name:"rigth-values",inner_html:E,href:e,parent:a})}const B=void 0!==c?c.symbol_reverse:null;B&&B.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.symbol||"symbol",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:B,parent:a}));const N=void 0!==c?c.legend_reverse:null;if(N&&N.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.legend||"legend",parent:a});const e=page.render_legend({value:N,style:"median legend_reverse_box rigth-values"});a.appendChild(e)}const R=void 0!==c?c.legend_reverse_transcription:null;if(R&&R.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.transcription||"Transcription",parent:a});common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:R,parent:a})}if(e.countermark_reverse&&e.countermark_reverse.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels sub-label",text_content:tstring.countermark||"countermark",parent:a});const t=page.render_legend({value:e.countermark_reverse,style:"median countermark_reverse_box rigth-values"});a.appendChild(t)}e.weight&&e.weight.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.weight||"weight",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.weight+" g",parent:a})),e.diameter&&e.diameter.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.diameter||"diameter",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.diameter+" mm",parent:a})),e.dies&&e.dies.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.dies||"dies",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.dies,parent:a})),e.technique&&e.technique.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.technique||"technique",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.technique,parent:a})),e.find_type&&e.find_type.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.find_type||"find_type",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.find_type,parent:a})),e.hoard&&e.hoard.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.hoard||"hoard",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.hoard,parent:a})),e.findspot_place&&e.findspot_place.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.findspot_place||"findspot_place",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.findspot_place,parent:a})),e.find_date&&e.find_date.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.find_date||"find_date",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.find_date,parent:a})),e.public_info&&e.public_info.length>1&&'<br data-mce-bogus="1">'!==e.public_info&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.public_info||"public_info",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:e.public_info,parent:a}));const T=e.coin_uri,j='<a class="icon_link info_value" target="_blank" href="'+T+'"> '+T+" </a> ";if(e.coin_uri&&e.coin_uri.length>0&&(common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.uri||"uri",parent:a}),common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:j,parent:a})),e.uri&&e.uri.length>0)for(let t=0;t<e.uri.length;t++){const n=e.uri[t],l='<a class="icon_link info_value" target="_blank" href="'+n.value+'"> '+n.label+"</a> ";common.create_dom_element({element_type:"span",class_name:"rigth-values",inner_html:l,parent:a})}if(e.bibliography_data&&e.bibliography_data.length>0){common.create_dom_element({element_type:"label",class_name:"left-labels",text_content:tstring.bibliography||"bibliography",parent:a});const t=common.create_dom_element({element_type:"div",class_name:"vertical-group",parent:a}),n=e.bibliography_data,l=n.length;for(let e=0;e<l;e++){const l=biblio_row_fields.render_row_bibliography(n[e]);common.create_dom_element({element_type:"div",class_name:"rigth-values sub-vertical-group",parent:t}).appendChild(l)}}const S=common.create_dom_element({element_type:"div",class_name:"row_wrapper"});return S.appendChild(t),S}};
+/*global tstring, page_globals, SHOW_DEBUG, dedalo_logged, common, page, biblio_row_fields, DocumentFragment, tstring */
+/*eslint no-undef: "error"*/
+/*jshint esversion: 6 */
+"use strict";
+
+
+
+var coin_row = {
+
+
+
+	caller  : null,
+
+
+
+	draw_coin : function(row) {
+		if(SHOW_DEBUG===true) {
+			// console.log("-- draw_coin row:",row)
+		}
+
+		const fragment = new DocumentFragment();
+		if (!row) {
+			return fragment
+		}
+
+		// section_id (dedalo users only)
+			if (dedalo_logged===true) {
+
+				const link = common.create_dom_element({
+					element_type 	: "a",
+					class_name 		: "section_id go_to_dedalo",
+					text_content 	: row.section_id,
+					href 			: '/dedalo/lib/dedalo/main/?t=numisdata4&id=' + row.section_id,
+					parent 			: fragment
+				})
+				link.setAttribute('target', '_blank');
+			}
+
+		// Cite of record
+			/* const golden_separator = document.querySelector('.golden-separator')
+			const cite = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "cite_this_record",
+				text_content	: tstring.cite_this_record || 'cite this record',
+				parent			: golden_separator
+			})
+			cite.addEventListener('click', async function(){
+				const main_catalog_data = await page.load_main_catalog()
+				const cite_data = main_catalog_data.result[0];
+				const publication_data = cite_data.publication_data[0];
+				cite_data.autors = {
+					authorship_data		: row.authorship_data || null,
+					authorship_names	: row.authorship_names || null,
+					authorship_surnames	: row.authorship_surnames || null,
+					authorship_roles	: row.authorship_roles || null,
+				}
+				cite_data.catalog = null
+				cite_data.title = '<em>'+ page_globals.OWN_CATALOG_ACRONYM +' '+row.section_id + '</em>'
+				cite_data.publication_data = publication_data
+				cite_data.uri_location 	= window.location
+
+				const cite_data_node = biblio_row_fields.render_cite_this(cite_data)
+
+				const popUpContainer = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "float-cite",
+					parent 			: document.body
+				})
+				popUpContainer.addEventListener('mouseup',function() {
+
+   					popUpContainer.classList.add('copy')
+   					cite_data_node.classList.add('copy')
+
+   					const selection = window.getSelection();
+					//create a selection range
+					const copy_range = document.createRange();
+					//choose the element we want to select the text of
+					copy_range.selectNodeContents(cite_data_node);
+					//select the text inside the range
+					selection.removeAllRanges();
+       				selection.addRange( copy_range );
+
+       				//copy the text to the clipboard
+					document.execCommand("copy");
+
+					//remove our selection range
+					window.getSelection().removeAllRanges();
+				})
+
+				const title = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "float-label",
+					text_content	: tstring.cite_this_record || 'Cite this record',
+					parent 			: popUpContainer
+				})
+
+				const close_buttom = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "close-buttom",
+					parent 			: popUpContainer
+				})
+				close_buttom.addEventListener("click",function(){
+					// popUpContainer.remove()
+				})
+				document.body.addEventListener("click",function(event_cite){
+					document.body.removeEventListener("click", function(event_cite){})
+					popUpContainer.remove()
+				})
+
+				popUpContainer.appendChild(cite_data_node)
+
+				const click_to_copy = common.create_dom_element({
+					element_type	: "div",
+					class_name		: "float-text_copy",
+					text_content	: tstring.click_to_copy || 'Click to copy',
+					parent 			: popUpContainer
+				})
+			}) */
+
+		// identify_images
+			const identify_images = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "identify_images_wrapper gallery coins-sides-wrapper",
+				parent 			: fragment
+			})
+
+
+			// image_obverse
+				let coin_number = tstring.number || "Number"
+				coin_number += " "+row.section_id;
+
+				if (row.image_obverse && row.image_obverse.length>0) {
+					const image_link = common.create_dom_element({
+						element_type	: "a",
+						class_name		: "image_link",
+						href			: row.image_obverse,
+						parent			: identify_images
+					})
+
+					const image_obverse = common.create_dom_element({
+						element_type	: "img",
+						class_name		: "image image_obverse",
+						title			: coin_number,
+						src				: row.image_obverse,
+						parent			: image_link
+					})
+
+					//GALLERY IMAGE CAPTIONS
+					if (row.collection && row.collection.length>0){
+						const collection_former = (row.former_collection && row.former_collection.length>0)
+							? row.collection + " ("+row.former_collection+")"
+							: row.collection
+
+						const collection_label = (row.number && row.number.length>0)
+							? collection_former+ " "+ row.number
+							: collection_former
+
+						//put gallery attributes to img
+						image_obverse.setAttribute("data-caption",collection_label)
+					}
+					console.log(row)
+					if (row.ref_auction_group){
+
+						for (let i = 0; i < row.ref_auction_group.length; i++) {
+							const auction = row.ref_auction_group[i]
+							let auctionGalleryAttributes = ""
+						// name
+							if (auction.name) {
+								auctionGalleryAttributes += auction.name
+							}
+						// ref_auction_date
+							if (auction.date) {
+								auctionGalleryAttributes += " " + auction.date
+							}
+						// number
+							if (auction.number) {
+								auctionGalleryAttributes += ", "+ auction.number
+							}
+
+						// lot
+							if (row.number) {
+								auctionGalleryAttributes += ", "+(tstring.lot || 'lot') +" "+ row.number
+							}
+
+							image_obverse.setAttribute("data-caption",auctionGalleryAttributes)
+						}
+					}
+
+					if(row.image_obverse_data[0] && row.image_obverse_data[0].photographer){
+						const currentAttr = image_obverse.getAttribute("data-caption")
+						image_obverse.setAttribute("data-caption", currentAttr + '<spam> | </spam> <i class="fa fa-camera"></i> ' + row.image_obverse_data[0].photographer)
+					}
+					//END IMAGE GALLERY CAPTIONS
+				}
+			// image_reverse
+				if (row.image_reverse && row.image_reverse.length>0) {
+
+					const image_link = common.create_dom_element({
+						element_type	: "a",
+						class_name		: "image_link",
+						href			: row.image_reverse,
+						parent			: identify_images
+					})
+
+					const image_reverse = common.create_dom_element({
+						element_type	: "img",
+						class_name		: "image image_reverse",
+						title			: coin_number,
+						src				: row.image_reverse,
+						parent			: image_link
+					})
+				}
+
+		// info_container
+			const info_container = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "info_container",
+				parent 			: fragment
+			})
+
+		// id_block
+			// const id_block = common.create_dom_element({
+			// 	element_type	: "div",
+			// 	class_name		: "group block_wrapper",
+			// 	parent			: info_container
+			// })
+			// ID
+			
+				if (row.section_id && row.section_id>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: "ID",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.section_id,
+						parent			: info_container
+					})
+				}
+
+				if(row.denomination){
+					
+
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: "DENOMINACIÓN",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.denomination.split("|")[0],
+						parent			: info_container
+					})
+
+				}
+
+		// collection - former - number
+			const label_collection = []
+			const value_collection = []
+
+			if (row.collection && row.collection.length>0) {
+				label_collection.push(tstring.collection || "Collection")
+				value_collection.push(row.collection)
+			}
+
+			if (row.former_collection && row.former_collection.length>0) {
+				// label_collection.push(tstring.former_collection || "Former collection")
+				value_collection.push('('+row.former_collection+')')
+			}
+
+			if (value_collection.length > 0 && row.number && row.number.length>0) {
+				// label_collection.push(tstring.number || "Number")
+				value_collection.push(row.number)
+			}
+			
+			const label_collection_node = common.create_dom_element({
+				element_type	: "label",
+				class_name		: "left-labels",
+				text_content	: label_collection.join(''),
+				parent			: info_container
+			})
+
+			const value_collection_node = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "rigth-values",
+				inner_html		: value_collection.join(' '),
+				parent			: info_container
+			})
+			const num_link = row.findspot_data != null ? JSON.parse(row.findspot_data)[0] : null
+			if(num_link){
+			const findspot_node = common.create_dom_element({
+				element_type	: "label",
+				class_name		: "left-labels",
+				text_content	: "Hallazgo",
+				parent			: info_container
+			})
+			const value_findspot_node = common.create_dom_element({
+					element_type	: "a",
+					class_name		: "rigth-values type_label",
+					inner_html		: row.findspot + " " + "<a class=\"icon_link\"></a> ",
+					href 			: page_globals.__WEB_ROOT_WEB__ + "/findspot/"+ num_link  ,
+					target 			: "_blank",
+					parent			: info_container
+				})
+
+			}
+
+		
+		// auctions
+			// const value_auctions = []
+			// if (row.ref_auction_group && row.ref_auction_group.length>0) {
+			// 	for (let i=0;i<row.ref_auction_group.length;i++){
+			// 		if (row.ref_auction_group[i].name.length>0){
+			// 			label_auctions.push(tstring.auction || "Auction")
+			// 			value_auctions.push(row.ref_auction_group[i].name)
+			// 			if (row.ref_auction_group[i].number && row.ref_auction_group[i].number.length>0) {
+			// 				label_auctions.push(tstring.number || "Number")
+			// 				value_auctions.push(row.ref_auction_group[i].number)
+			// 			}
+			// 		}
+			// 	}
+			//	}
+			if (row.ref_auction_group){
+				const label_auctions = []
+
+				label_auctions.push(tstring.auction || "Auction")
+				// label_auctions.push(tstring.date || "Date")
+				// label_auctions.push(tstring.number || "Number")
+
+				const label_auctions_node = common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: label_auctions.join(' | '),
+					parent			: info_container
+				})
+
+				for (let i = 0; i < row.ref_auction_group.length; i++) {
+					const auction = row.ref_auction_group[i]
+
+					const auction_label = []
+					if (auction.name){
+						auction_label.push(auction.name)
+						auction_label.push(" ")
+					}
+
+					if (auction.date){
+						auction_label.push(auction.date)
+						auction_label.push(", ")
+					}
+
+					if (auction.number){
+						auction_label.push(auction.number || row.number)
+						auction_label.push(", ")
+					}
+
+					if (row.number){
+						auction_label.push(tstring.lot || "Lot")
+						auction_label.push(" "+row.number)
+					}
+
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html  	: auction_label.join(''),
+						parent 			: info_container
+					})
+				}
+			}//end if (row.ref_auction_group)
+
+
+			// if (row.number && row.number.length>0) {
+			// 	label_collection.push( tstring.number || "Number")
+			// 	value_collection.push(r)
+			// }
+
+			// const value_auctions_node = common.create_dom_element({
+			// 	element_type	: "span",
+			// 	class_name		: "rigth-values",
+			// 	inner_html		: value_auctions.join(' | '),
+			// 	parent			: info_container
+			// })
+
+		// equivalents auctions
+			const value_equivalents = []
+			if (row.ref_related_coin_auction_group && row.ref_related_coin_auction_group.length>0) {
+
+				for (let i=0;i<row.ref_related_coin_auction_group.length;i++){
+					const current_value_equivalents = []
+					if (row.ref_related_coin_auction_group[i].name.length>0){
+						current_value_equivalents.push('= '+row.ref_related_coin_auction_group[i].name)
+
+						if (row.ref_related_coin_auction_group[i].number && row.ref_related_coin_auction_group[i].number.length>0) {
+							current_value_equivalents.push(row.ref_related_coin_auction_group[i].number)
+						}
+					}
+					value_equivalents.push(current_value_equivalents.join(' | '))
+				}
+			}
+
+			const value_equivalents_node = common.create_dom_element({
+				element_type	: "span",
+				class_name		: "rigth-values",
+				inner_html		: value_equivalents.join(' <br> '),
+				parent			: info_container
+			})
+
+		// mint + mint number + type
+			// label
+			// const label_mint		= tstring.mint || "Mint"
+			// const label_number	= tstring.number_abv || "nº"
+			const label_type_name 	= tstring.type || "Type"
+
+			const label_type = label_type_name
+								// + ': '+ label_mint.toLowerCase()
+								// +' + '+label_number.toLowerCase()
+								// + ' ' +label_mint.toLowerCase()
+								// + ' / ' +label_number.toLowerCase()
+								// +' ' +label_type_name.toLowerCase();
+			const type_section = row.type_data.find(item => item.catalogue === page_globals.OWN_CATALOG_ACRONYM)
+				? row.type_data.find(item => item.catalogue === page_globals.OWN_CATALOG_ACRONYM)
+				: row.type_data[0]
+
+			// creators
+			const creators_data = typeof type_section!=="undefined"
+				? type_section.creators_data
+				: null
+			if (creators_data && creators_data.length>0) {
+
+				const data = JSON.parse(creators_data)
+
+				const ar_names		= type_section.creators_names
+					? type_section.creators_names.split(' | ')
+					: []
+				const ar_surnames	= type_section.creators_surnames
+					? type_section.creators_surnames.split(' | ')
+					: []
+				const ar_roles		= type_section.creators_roles
+					? type_section.creators_roles.split('|')
+					: []
+
+				const text_creators = []
+				const data_length = data.length
+
+				for (var i = 0; i < data_length; i++) {
+					const name		= ar_names[i]
+						? ar_names[i]
+						: ''
+					const surname	= ar_surnames[i]
+						? ar_surnames[i]
+						: ''
+					const rol		= ar_roles[i]
+						? '('+ ar_roles[i] + ')'
+						: ''
+
+					const creator_name = name + ' ' + surname
+					const creator = creator_name.trim() + ' ' + rol
+
+					text_creators.push(creator.trim())
+				}
+
+				common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: tstring.authorities || "Authorities",
+					parent			: info_container
+				})
+
+				const prompt_label = common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values",
+					inner_html		: text_creators,
+					parent 			: info_container
+				})
+			}
+
+			// value
+			const mint = (type_section.mint)
+				? type_section.mint
+				: ''
+
+			const mint_number = (type_section.mint_number)
+				? type_section.mint_number
+				: ''
+
+			const type_number = (type_section.number)
+				? type_section.number
+				: ''
+
+			const value_type = mint
+				? mint + ' ' +type_section.catalogue +' '+ mint_number+'/'+type_number
+				: +type_section.catalogue +' '+ type_number
+
+			const type_uri	= page_globals.__WEB_ROOT_WEB__ + "/type/" + type_section.section_id
+			const type_uri_text	= "<a class=\"icon_link\" href=\""+type_uri+"\"></a> "
+
+			const label_type_node = common.create_dom_element({
+				element_type	: "label",
+				class_name		: "left-labels",
+				inner_html		: label_type,
+				parent			: info_container
+			})
+
+			const value_type_node = common.create_dom_element({
+				element_type	: "a",
+				class_name		: "rigth-values type_label",
+				inner_html		: value_type +' '+type_uri_text,
+				href 			: type_uri,
+				target 			: "_blank",
+				parent			: info_container
+			})
+
+			for (let i = 0; i < row.catalogue_type_mint.length; i++) {
+				const catalogue = row.catalogue_type_mint[i]
+				if(catalogue === page_globals.OWN_CATALOG_ACRONYM ) continue;
+				try{
+
+				const value_type_node = common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values equivalents",
+					inner_html		: catalogue + " " + row.type[i],
+					parent			: info_container
+				})
+
+				}catch(e){
+
+				const value_type_node = common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values equivalents",
+					inner_html		: catalogue + " " + row.type_data.section_id,
+					parent			: info_container
+				})
+
+				}
+
+			}
+		// obverse
+			common.create_dom_element({
+				element_type	: "label",
+				class_name		: "left-labels",
+				text_content	: tstring.obverse.toUpperCase() || "OBVERSE",
+				parent			: info_container
+			})
+
+
+
+			// design_obverse
+				const design_obverse = typeof type_section!=="undefined"
+					? type_section.design_obverse
+					: null
+
+				const psqo_obverse = {
+					"$and":[{
+						id	: "design_obverse",
+						q	: design_obverse,
+						op	: '='
+					}]
+				}
+
+				const safe_psqo_observe		= psqo_factory.build_safe_psqo(psqo_obverse)
+				const parse_psqo_observe	= psqo_factory.encode_psqo(safe_psqo_observe)
+
+				if (design_obverse && design_obverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.design || "design",
+						parent			: info_container
+					})
+					const catalog_url	= page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+parse_psqo_observe;
+					const prompt_label	= common.create_dom_element({
+						element_type	: "a",
+						class_name		: "rigth-values",
+						inner_html 		: design_obverse,
+						href			: catalog_url,
+						parent 			: info_container
+					})
+				}
+
+			// symbol_obverse
+				const symbol_obverse = typeof type_section!=="undefined"
+					? type_section.symbol_obverse
+					: null
+				if (symbol_obverse && symbol_obverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.symbol || "symbol",
+						parent			: info_container
+					})
+
+
+					const catalog_url = page_globals.__WEB_ROOT_WEB__+"/catalog/?item_type=symbol_obverse"+"&label="+symbol_obverse+"&value="+symbol_obverse;
+					const prompt_label = common.create_dom_element({
+						element_type	: "a",
+						class_name		: "rigth-values",
+						inner_html 		: symbol_obverse,
+						href			: catalog_url,
+						parent 			: info_container
+					})
+				}
+
+			// legend_obverse
+				const legend_obverse = typeof type_section!=="undefined"
+					? type_section.legend_obverse
+					: null
+                //  
+					
+                    let legend_obverse_text = null;
+                    for (let i = 0; i < row.type_data.length && !legend_obverse_text; i++) {
+                        console.log('legend_obverse',row.type_data[i])
+                        if(row.type_data[i].legend_obverse){
+                            legend_obverse_text = row.type_data[i].legend_obverse;
+                        }
+
+                    }
+				if (legend_obverse_text && legend_obverse_text.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.legend || "legend",
+						parent			: info_container
+					})
+					const legend_node = page.render_legend({
+						value : legend_obverse_text,
+						style : 'median legend_obverse_box rigth-values'
+					})
+					info_container.appendChild(legend_node)
+				}
+
+			// legend_obverse transcription
+				const legend_obverse_transcription = typeof type_section!=="undefined"
+					? type_section.legend_obverse_transcription
+					: null
+				if (legend_obverse_transcription && legend_obverse_transcription.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.transcription || "Transcription",
+						parent			: info_container
+					})
+
+					const prompt_label = common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: legend_obverse_transcription,
+						parent 			: info_container
+					})
+				}
+
+			// countermark_obverse
+				if (row.countermark_obverse && row.countermark_obverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.countermark || "countermark",
+						parent			: info_container
+					})
+					const current_node = page.render_legend({
+						value : row.countermark_obverse,
+						style : 'median countermark_obverse_box rigth-values'
+					})
+					info_container.appendChild(current_node)
+				}
+
+		// reverse
+			common.create_dom_element({
+				element_type	: "label",
+				class_name		: "left-labels",
+				text_content	: tstring.reverse.toUpperCase() || "REVERSE",
+				parent			: info_container
+			})
+
+			// design_reverse
+				const design_reverse = typeof type_section!=="undefined"
+					? type_section.design_reverse
+					: null
+
+
+				const psqo_reverse = {
+					"$and":[{
+						id	: "design_reverse",
+						q	: design_reverse,
+						op	: '='
+					}]
+				}
+
+				const safe_psqo_reverse		= psqo_factory.build_safe_psqo(psqo_reverse)
+				const parse_psqo_reverse	= psqo_factory.encode_psqo(safe_psqo_reverse)
+
+				if (design_reverse && design_reverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.design || "design",
+						parent			: info_container
+					})
+					const catalog_url = page_globals.__WEB_ROOT_WEB__+"/catalog/?psqo="+parse_psqo_reverse;
+					const prompt_label = common.create_dom_element({
+						element_type	: "a",
+						class_name		: "rigth-values",
+						inner_html 		: design_reverse,
+						href			: catalog_url,
+						parent 			: info_container
+					})
+				}
+
+			// symbol_reverse
+				const symbol_reverse = typeof type_section!=="undefined"
+					? type_section.symbol_reverse
+					: null
+				if (symbol_reverse && symbol_reverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.symbol || "symbol",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: symbol_reverse,
+						parent			: info_container
+					})
+				}
+
+			// legend_reverse
+				const legend_reverse = typeof type_section!=="undefined"
+					? type_section.legend_reverse
+					: null
+
+                 let legend_reverse_text = null;
+                    for (let i = 0; i < row.type_data.length && !legend_reverse_text; i++) {
+                        console.log('legend_obverse',row.type_data[i])
+                        if(row.type_data[i].legend_reverse){
+                            legend_reverse_text = row.type_data[i].legend_reverse;
+                        }
+
+                    }
+
+				if (legend_reverse_text && legend_reverse_text.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.legend || "legend",
+						parent			: info_container
+					})
+					const legend_node = page.render_legend({
+						value : legend_reverse_text,
+						style : 'median legend_reverse_box rigth-values'
+					})
+					info_container.appendChild(legend_node)
+				}
+
+			// legend_reverse_transcription
+				const legend_reverse_transcription = typeof type_section!=="undefined"
+					? type_section.legend_reverse_transcription
+					: null
+				if (legend_reverse_transcription && legend_reverse_transcription.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.transcription || "Transcription",
+						parent			: info_container
+					})
+					const prompt_label = common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: legend_reverse_transcription,
+						parent 			: info_container
+					})
+				}
+
+			// countermark_reverse
+				if (row.countermark_reverse && row.countermark_reverse.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels sub-label",
+						text_content	: tstring.countermark || "countermark",
+						parent			: info_container
+					})
+					const current_node = page.render_legend({
+						value : row.countermark_reverse,
+						style : 'median countermark_reverse_box rigth-values'
+					})
+					info_container.appendChild(current_node)
+				}
+
+		// measures
+
+			// weight
+				if (row.weight && row.weight.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.weight || "weight",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.weight+" g",
+						parent			: info_container
+					})
+				}
+			// diameter
+				if (row.diameter && row.diameter.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.diameter || "diameter",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.diameter+" mm",
+						parent			: info_container
+					})
+				}
+			// dies
+				if (row.dies && row.dies.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.dies || "dies",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.dies,
+						parent			: info_container
+					})
+				}
+			// technique
+				if (row.technique && row.technique.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.technique || "technique",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.technique,
+						parent			: info_container
+					})
+				}
+
+		// find type
+			if (row.find_type && row.find_type.length>0) {
+				common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: tstring.find_type || "find_type",
+					parent			: info_container
+				})
+				common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values",
+					inner_html		: row.find_type,
+					parent			: info_container
+				})
+			}
+
+		// hoard
+			if (row.hoard && row.hoard.length>0) {
+				common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: tstring.hoard || "hoard",
+					parent			: info_container
+				})
+				common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values",
+					inner_html		: row.hoard,
+					parent			: info_container
+				})
+			}
+
+		// finds
+			// findspot_place
+				if (row.findspot_place && row.findspot_place.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.findspot_place || "findspot_place",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.findspot_place,
+						parent			: info_container
+					})
+				}
+			// find_date
+				if (row.find_date && row.find_date.length>0) {
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.find_date || "find_date",
+						parent			: info_container
+					})
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row.find_date,
+						parent			: info_container
+					})
+				}
+
+		// public info
+			if (row.public_info && row.public_info.length>1 && row.public_info!=='<br data-mce-bogus="1">') {
+				common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: tstring.public_info || "public_info",
+					parent			: info_container
+				})
+				common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values",
+					inner_html		: row.public_info,
+					parent			: info_container
+				})
+			}
+
+		// uri
+			const uri = row.coin_uri
+			const uri_text	= '<a class="icon_link info_value" target="_blank" href="' +uri+ '"> '+ uri +' </a> '
+			if (row.coin_uri && row.coin_uri.length>0) {
+				common.create_dom_element({
+					element_type	: "label",
+					class_name		: "left-labels",
+					text_content	: tstring.uri || "uri",
+					parent			: info_container
+				})
+				common.create_dom_element({
+					element_type	: "span",
+					class_name		: "rigth-values",
+					inner_html		: uri_text,
+					parent			: info_container
+				})
+			}
+
+			// other permanent uri
+				if (row.uri && row.uri.length>0) {
+					for (let i = 0; i < row.uri.length; i++) {
+
+						const currentUri		= row.uri[i]
+						const currentUri_text	= '<a class="icon_link info_value" target="_blank" href="'+ currentUri.value+'"> '+currentUri.label +'</a> '
+
+						// common.create_dom_element({
+						// 	element_type	: "label",
+						// 	class_name		: "left-labels",
+						// 	text_content	: (tstring.uri || "uri"),
+						// 	parent			: info_container
+						// })
+						common.create_dom_element({
+							element_type	: "span",
+							class_name		: "rigth-values",
+							inner_html		: currentUri_text,
+							parent			: info_container
+						})
+						// common.create_dom_element({
+						// 	element_type	: "a",
+						// 	href			: el.value,
+						// 	target			: "_blank",
+						// 	class_name		: "rigth-values",
+						// 	inner_html		: el.value,
+						// 	parent			: group
+						// })
+					}
+				}
+
+		// bibliography -- desactivada. por revisar el formato !!! ---
+				if (row.bibliography_data && row.bibliography_data.length>0) {
+
+					// const group = common.create_dom_element({
+					// 	element_type	: "div",
+					// 	class_name		: "group block_wrapper",
+					// 	parent			: info_container
+					// })
+
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: tstring.bibliography || "bibliography",
+						parent			: info_container
+					})
+
+					const bibliography_group = common.create_dom_element({
+						element_type	: "div",
+						class_name		: "vertical-group",
+						parent			: info_container
+					})
+
+					const ref_biblio		= row.bibliography_data
+					const ref_biblio_length	= ref_biblio.length
+					for (let i = 0; i < ref_biblio_length; i++) {
+
+						// build full ref biblio node
+						const biblio_row_node = biblio_row_fields.render_row_bibliography(ref_biblio[i])
+
+						const biblio_row_wrapper = common.create_dom_element({
+							element_type	: "div",
+							class_name		: "rigth-values sub-vertical-group",
+							parent			: bibliography_group
+						})
+						biblio_row_wrapper.appendChild(biblio_row_node)
+					}
+				}
+
+		// row_wrapper
+			const row_wrapper = common.create_dom_element({
+				element_type	: "div",
+				class_name		: "row_wrapper"
+			})
+			row_wrapper.appendChild(fragment)
+
+
+		return row_wrapper
+	},//end draw_coin
+
+
+
+	// default : function(name, value, label, fn) {
+		//
+		// 	const self = this
+		//
+		// 	// line
+		// 		const line = common.create_dom_element({
+		// 			element_type	: "div",
+		// 			class_name		: "info_line " + name
+		// 		})
+		//
+		// 	if (value && value.length>0) {
+		//
+		// 		// label
+		// 			if (label) {
+		// 				common.create_dom_element({
+		// 					element_type 	: "label",
+		// 					class_name 		: "",
+		// 					text_content 	: label,
+		// 					parent 			: line
+		// 				})
+		// 			}
+		//
+		// 		// value
+		// 			const item_text = (typeof fn==="function")
+		// 				? fn(value)
+		// 				: page.remove_gaps(value, " | ")
+		//
+		// 			common.create_dom_element({
+		// 				element_type	: "span",
+		// 				class_name		: "info_value",
+		// 				inner_html		: item_text.trim(),
+		// 				parent			: line
+		// 			})
+		// 	}
+		//
+		// 	return line
+		// },//end default
+		//
+		//
+		//
+		// image : function(item, name) {
+		//
+		// 	const self = this
+		//
+		// 	// line
+		// 		const line = common.create_dom_element({
+		// 			element_type	: "div",
+		// 			class_name		: "info_line inline " + name
+		// 		})
+		//
+		// 	if (item[name] && item[name].length>0) {
+		//
+		// 		common.create_dom_element({
+		// 			element_type 	: "img",
+		// 			class_name 		: "image " + name,
+		// 			src 			: item[name],
+		// 			parent 			: line
+		// 		})
+		// 	}
+		//
+		//
+		// 	return line
+		// },//end image
+		//
+		//
+		//
+		// identify_coin : function(item, name) {
+		//
+		// 	const self = this
+		//
+		// 	// line
+		// 		const line = common.create_dom_element({
+		// 			element_type	: "div",
+		// 			class_name		: "info_line inline " + name
+		// 		})
+		//
+		// 	const ar_str_coins = page.split_data(item.ref_coins, ' | ')
+		//
+		// 	const ar_coins = []
+		// 	for (var i = 0; i < ar_str_coins.length; i++) {
+		// 		ar_coins.push(JSON.parse(ar_str_coins[i]))
+		// 	}
+		// 	const identify_coin_id = ar_coins[0][0]
+		// 	const identify_coin = item.ref_coins_union.find(item => item.section_id === identify_coin_id)
+		//
+		// 	if (identify_coin) {
+		//
+		// 		common.create_dom_element({
+		// 			element_type 	: "span",
+		// 			class_name 		: name,
+		// 			text_content 	: identify_coin.ref_auction,
+		// 			parent 			: line
+		// 		})
+		//
+		// 		// final_date
+		// 			const split_time 	= (identify_coin.ref_auction_date)
+		// 				? identify_coin.ref_auction_date.split(' ')
+		// 				: [""]
+		// 			const split_date 	= split_time[0].split('-')
+		// 			const correct_date 	= split_date.reverse()
+		// 			const final_date 	= correct_date.join("-")
+		//
+		// 			if (final_date) {
+		// 				common.create_dom_element({
+		// 					element_type 	: "span",
+		// 					class_name 		: name,
+		// 					text_content 	: " | "+final_date,
+		// 					parent 			: line
+		// 				})
+		// 			}
+		//
+		// 		// ref_auction_number
+		// 			if(identify_coin.ref_auction_number){
+		// 				common.create_dom_element({
+		// 					element_type 	: "span",
+		// 					class_name 		: name,
+		// 					text_content 	: ", "+(tstring.n || "nº") +" "+ identify_coin.ref_auction_number,
+		// 					parent 			: line
+		// 				})
+		// 			}
+		//
+		// 		// size_text. weight / dies / diameter
+		// 			const ar_beats = []
+		// 			if (identify_coin.weight && identify_coin.weight.length>0) {
+		// 				ar_beats.push( identify_coin.weight + " g" )
+		// 			}
+		// 			if (identify_coin.dies && identify_coin.dies.length>0) {
+		// 				ar_beats.push( identify_coin.dies + " h" )
+		// 			}
+		// 			if (identify_coin.diameter && identify_coin.diameter.length>0) {
+		// 				ar_beats.push( identify_coin.diameter + " mm" )
+		// 			}
+		// 			const size_text = ar_beats.join("; ")
+		//
+		// 		common.create_dom_element({
+		// 			element_type 	: "span",
+		// 			class_name 		: name,
+		// 			text_content 	: " ("+size_text+")",
+		// 			parent 			: line
+		// 		})
+		// 	}
+		//
+		//
+		// 	return line
+		// },//end image
+
+
+
+}//end coin_row

@@ -608,6 +608,7 @@ var coin_row = {
 				const legend_obverse = typeof type_section!=="undefined"
 					? type_section.legend_obverse
 					: null
+					console.log('legend_obverse',legend_obverse)
 				if (legend_obverse && legend_obverse.length>0) {
 					common.create_dom_element({
 						element_type	: "label",

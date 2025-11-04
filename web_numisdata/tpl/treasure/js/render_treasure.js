@@ -330,7 +330,7 @@ var render_hoard = {
 								// Crear el texto
 								const span = common.create_dom_element({
 								element_type: "span",
-								text_content: "MIB",
+								text_content: "MONEDA",
 								parent: link
 								});
 

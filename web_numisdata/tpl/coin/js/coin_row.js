@@ -259,6 +259,59 @@ var coin_row = {
 
 				}
 
+				let coin_date = {
+					date_in : null,
+					date_out : null
+				}
+
+				for (let index = 0 ; index < row.type_data.length && !(coin_date.date_in || coin_date.date_out) ; index++) {
+					
+					if(!coin_date.date_in){
+
+						coin_date.date_in = (row.type_data[index].date_in ? row.type_data[index].date_in : null)
+
+					}
+
+					if(!coin_date.date_out){
+
+						coin_date.date_out = (row.type_data[index].date_out ? row.type_data[index].date_out : null)
+
+					}
+					
+				}
+
+				if(coin_date.date_in || coin_date.date_out){
+					
+
+					common.create_dom_element({
+						element_type	: "label",
+						class_name		: "left-labels",
+						text_content	: "FECHA DE EMISIÓN",
+						parent			: info_container
+					})
+
+					let row_date = "";
+
+					if(coin_date.date_in && coin_date.date_out){
+
+						row_date = coin_date.date_in + " <> " + coin_date.date_out;
+
+					}else{
+
+						row_date = coin_date.date_in ? coin_date.date_in : coin_date.date_out;
+
+					}
+
+					common.create_dom_element({
+						element_type	: "span",
+						class_name		: "rigth-values",
+						inner_html		: row_date,
+						parent			: info_container
+					})
+
+				}
+
+
 		// collection - former - number
 			const label_collection = []
 			const value_collection = []

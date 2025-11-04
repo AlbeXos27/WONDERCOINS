@@ -709,11 +709,12 @@ function form_factory() {
 						filter_line = (item_field.indexOf("AS")!==-1 || item_field.indexOf("CONCAT")!==-1 || (item.wrapper && item.wrapper.length>0))
 							? "(" +item_field+""  +" "+ item.op +" "+ item.value + (" AND "+item_field+"!='')")
 							: "(`"+item_field+"`" +" "+ item.op +" "+ item.value	+ (" AND `"+item_field+"`!='')")
+
 					}
 					if(item_field == "term"){
 							filter_line += ` AND term_section_label LIKE '%Grupo numismático%' AND parent LIKE  '["21057"]'`;
 					}
-
+					
 					if(global_search){
 						filter_line = "(" + filter_line;
 						filter_line += ` OR parents_text LIKE ${item.value})`;
@@ -725,8 +726,6 @@ function form_factory() {
 
 
 					filter_line += " AND lang = 'lg-spa'"
-					console.log("item_field ",item)
-					console.log("filter_line ",filter_line)
 					ar_filter.push(filter_line)
 
 					// group
@@ -923,7 +922,6 @@ function form_factory() {
 			}
 		});
 	})(jQuery);
-	const set_repetidos = new Set();
 	
 	const cache = {};
 	$(form_item.node_input).autocomplete({
@@ -949,7 +947,6 @@ function form_factory() {
 
 			const value_parsed = (form_item.eq_in) + term + (form_item.eq_out);
 			const safe_value = typeof value_parsed === 'string' ? value_parsed.replace(/(')/g, "''") : value_parsed;
-
 			filterObj[op].push({
 				field: form_item.q_column_filter || q_column,
 				value: `'${safe_value}'`,
@@ -1028,7 +1025,7 @@ function form_factory() {
 					table: table_resolved,
 					lang: lang,
 					ar_fields: [plain_field + " AS name", (table_resolved === "findspots" || table_resolved === "catalog") ? "parents_text" : "section_id"],
-					sql_filter: !id ? sql_filter : `parent LIKE  '["${section_id}"]'`,
+					sql_filter: !id ? sql_filter  + (table_resolved == "findspots" ? " AND coins != ''" : "") : `parent LIKE  '["${section_id}"]'`,
 					group: plain_field,
 					limit: 0,
 					offset : (pagData.currentPage - 1) * 20,
@@ -1074,8 +1071,8 @@ function form_factory() {
 							const splittable_values = item_name.split("|");
 
 							splittable_values.forEach(splittable_value => {
-								const clean_value = splittable_value.trim();
 
+								const clean_value = splittable_value.trim();
 								const split_value = clean_value.split(',');
 								if(split_value.length > 1){
 
@@ -1128,6 +1125,13 @@ function form_factory() {
 				}
 
 				let final_results = items_only.slice(offset, results_per_page + offset);
+				
+				const safe_value_final= safe_value.replace(/%/g, '')
+				if(safe_value_final != ''){
+					final_results = items_only.filter(item => normalize(item.label).includes(safe_value_final.trim()));
+				}
+
+				console.log("final_results ",final_results)
 
 				// 4. Reinsertar los botones de navegación
 				if (pagData.currentPage > 1) {
@@ -1192,7 +1196,12 @@ function form_factory() {
 
 	//end activate_autocomplete
 
-
+function normalize(str) {
+  return str
+    .normalize('NFD')                // separa letras y acentos
+    .replace(/[\u0300-\u036f]/g, '') // elimina los acentos
+    .toLowerCase();                  // pasa a minúsculas
+}
 
 		/**
 		* FORM_TO_SQL_FILTER (DEPRECATED!)

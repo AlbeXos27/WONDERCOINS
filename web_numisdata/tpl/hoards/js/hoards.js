@@ -100,8 +100,6 @@ var hoards =  {
 				parent: form_row,
 				callback: function(form_item) {
 
-					// Inicializamos la paginación
-					form_item.pagination = { currentPage: 1, lastTerm: "" };
 
 					const node_input = form_item.node_input;
 					let autocomplete_initialized = true;
@@ -202,7 +200,7 @@ var hoards =  {
 				eq_out: "%",
 				parent: form_row,
 				callback: function(form_item) {
-					form_item.pagination = { currentPage: 1, lastTerm: "" };
+
 					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
 						form_item: form_item,
@@ -223,7 +221,6 @@ var hoards =  {
 				eq_out: "%",
 				parent: form_row,
 				callback: function(form_item) {
-					form_item.pagination = { currentPage: 1, lastTerm: "" };
 					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
 						form_item: form_item,
@@ -243,12 +240,13 @@ var hoards =  {
 				eq_out: "%",
 				parent: form_row,
 				callback: function(form_item) {
-					form_item.pagination = { currentPage: 1, lastTerm: "" };
 					const table = self.table==='findspots' ? 'findspots' : 'findspots';
 					self.form.activate_autocomplete({
 						form_item: form_item,
-						table: table
+						table: table,
+						value_splittable : true
 					});
+
 				}
 			});
 
@@ -263,7 +261,6 @@ var hoards =  {
 				eq_out: "%",
 				parent: form_row,
 				callback: function(form_item) {
-					form_item.pagination = { currentPage: 1, lastTerm: "" };
 					const table = self.table==='findspots' ? 'findspots' : 'hoards';
 					self.form.activate_autocomplete({
 						form_item: form_item,
@@ -363,23 +360,34 @@ var hoards =  {
 				// parse_sql_filter
 				const group			= []
 				const parsed_filter	= self.form.parse_sql_filter(filter, group,true)
-				const base_filter = "(name != '' AND map != '' AND coins != '')"
+				const base_filter = "(name != '' AND map != '')"
 				let final_filter = base_filter
 				const sql_filter	= parsed_filter
-				
+
+
 
 				if(SHOW_DEBUG===true) {
 					//console.log("-> coins form_submit sql_filter:",sql_filter);
 				}
 				if (sql_filter) {
-					
 					final_filter = base_filter + ' AND ' + sql_filter
 					if(self.form.form_items.global_search_extra){
-						
-						final_filter = `name LIKE "%${self.form.form_items.global_search_extra.q_selected}%"`
-						
+						if(self.form.form_items.global_search_extra.q_selected.length > 0){
+							final_filter = `name LIKE "%${self.form.form_items.global_search_extra.q_selected}%"`
+							
+						}
 					}
+
+					if(self.form.form_items.typology.q == "" || self.form.form_items.typology.q_selected.length > 0){
+					
+						final_filter = final_filter.replace("(`typology` = '", "( typology LIKE '%");
+						final_filter = final_filter.replace("' AND `typology`","%' AND typology ");
+
+					}
+
 				}
+
+				console.log("final_filter ",final_filter)
 			
 				// if (!sql_filter|| sql_filter.length<3) {
 				// 	return new Promise(function(resolve){
@@ -395,7 +403,7 @@ var hoards =  {
 						buttons_move_group[0].removeChild(buttons_move_group[0].lastChild);
 					}
 				//console.log(final_filter)
-
+				
 			data_manager.request({
 				body : {
 					dedalo_get		: 'records',

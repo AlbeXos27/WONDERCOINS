@@ -210,7 +210,8 @@ var coins =  {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'coins'
+						table		: 'coins',
+						value_splittable : true
 					})
 				}
 			})
@@ -247,7 +248,8 @@ var coins =  {
 				callback		: function(form_item) {
 					self.form.activate_autocomplete({
 						form_item	: form_item,
-						table		: 'coins'
+						table		: 'coins',
+						value_splittable : true
 					})
 				}
 			})

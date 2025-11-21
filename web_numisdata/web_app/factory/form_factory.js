@@ -677,6 +677,8 @@ function form_factory() {
 
 					const item = ar_query[i]
 					const item_op = Object.keys(item)[0]
+					
+
 					if(item_op==="$and" || item_op==="$or") {
 
 						// recursion
@@ -938,12 +940,15 @@ function form_factory() {
 			}
 
 			const field = form_item.q_name;
+
 			const q_column = form_item.q_column;
 			const q_column_group = form_item.q_column_group || q_column;
 
 			const op = "$and";
 			const filterObj = {};
 			filterObj[op] = [];
+
+			console.log("filterObj", filterObj)
 
 			const value_parsed = (form_item.eq_in) + term + (form_item.eq_out);
 			const safe_value = typeof value_parsed === 'string' ? value_parsed.replace(/(')/g, "''") : value_parsed;
@@ -978,7 +983,7 @@ function form_factory() {
 							const safe_value2 = typeof value === 'string' ? value.replace(/(')/g, "''") : value;
 							c_filter[c_op].push({
 								field: current_form_item.q_column,
-								value: (current_form_item.is_term === true) ? `'%"${safe_value2}"%'` : `'${safe_value2}'`,
+								value: (current_form_item.is_term === true) ? `'%${safe_value2}%'` : `'${safe_value2}'`,
 								op: (current_form_item.is_term === true) ? "LIKE" : "=",
 								sql_filter: current_form_item.sql_filter,
 								wrapper: current_form_item.wrapper
@@ -1032,7 +1037,7 @@ function form_factory() {
 					order: order
 				}
 			}).then((api_response) => {
-
+				console.log("form_factory macaco",sql_filter)
 				const len = api_response.result.length;
 
 				if (pagData.currentPage > 1) {
@@ -1131,7 +1136,7 @@ function form_factory() {
 					final_results = items_only.filter(item => normalize(item.label).includes(safe_value_final.trim()));
 				}
 
-				console.log("final_results ",final_results)
+				//console.log("final_results ",final_results)
 
 				// 4. Reinsertar los botones de navegación
 				if (pagData.currentPage > 1) {
@@ -1170,7 +1175,6 @@ function form_factory() {
 				return false;
 			}
 			if (ui.item.value === "__prev__") {
-				// 🔹 Evitar que currentPage baje de 1
 				pagData.currentPage = Math.max(1, pagData.currentPage - 1);
 				setTimeout(() => $(form_item.node_input).focus().autocomplete('search', pagData.lastTerm), 0);
 				return false;

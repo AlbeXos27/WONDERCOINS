@@ -1098,6 +1098,7 @@ var catalog = {
 			}
 
 		// search rows exec against API
+		//TODO EMPIEZA AQUI
 			const js_promise = self.search_rows({
 				filter			: filter,
 				limit			: 300,
@@ -1108,7 +1109,54 @@ var catalog = {
 			})
 			.then((parsed_data)=>{
 
-				event_manager.publish('form_submit', parsed_data)
+
+				const types_parsed_data = parsed_data.filter( item => (item.term_table === "types" && item.p_group != null));
+				const set_group_parsed_data = new Set();
+
+				for (let index = 0; index < types_parsed_data.length; index++) {
+					set_group_parsed_data.add(JSON.parse(types_parsed_data[index].p_group)[0]);
+				}
+				
+				const keys_group = Array.from(set_group_parsed_data);
+				const structure_tree = {};
+
+				for (let index = 0; index < keys_group.length; index++) {
+					
+					const base_key = {
+						people : {},
+						no_people : {mints: {},
+							no_mints : []
+						}
+					};
+					structure_tree[keys_group[index]] = base_key;
+				}
+
+				const set_people_parsed_data = new Set();
+				let types_without_people = 0;
+
+				for (let index = 0; index < types_parsed_data.length; index++) {
+
+					if(types_parsed_data[index].ref_type_creators_names == null || !types_parsed_data[index].ref_type_creators_roles || !types_parsed_data[index].ref_type_creators_roles.includes("Autoridad")){
+
+						types_without_people +=1;
+
+					}else{
+
+						set_people_parsed_data.add(types_parsed_data[index]);
+
+					}
+
+				}
+				
+				const array_people_data =  Array.from(set_people_parsed_data);
+
+				this.get_authors_from_find(array_people_data,structure_tree);
+				this.get_mints_from_find(types_parsed_data,structure_tree);
+				this.get_types_from_find(types_parsed_data,structure_tree);
+				//console.log("macaco ",structure_tree)
+
+
+				//event_manager.publish('form_submit', parsed_data)
 
 				// draw
 				// clean container_rows_list and add_spinner
@@ -1121,7 +1169,8 @@ var catalog = {
 				// draw rows
 					self.draw_rows({
 						target  : self.rows_list_container,
-						ar_rows : parsed_data
+						ar_rows : parsed_data,
+						structure_tree : structure_tree
 					})
 					.then(function(){
 						self.export_data_container.classList.remove("hide")
@@ -1530,6 +1579,7 @@ var catalog = {
 		// options
 			const target	= options.target // self.rows_list_container
 			const ar_rows	= options.ar_rows || []
+			const structure_tree = options.structure_tree || []
 
 		return new Promise(function(resolve){
 
@@ -1567,191 +1617,118 @@ var catalog = {
 				// page.add_spinner(container)
 
 			// const render_nodes = async () => {
-				const render_nodes = async function() {
-
-					const fragment = new DocumentFragment();
-
-					const ar_mints = ar_rows.filter(item => item.term_table==='mints')
-					//console.log("ar_mints ",ar_mints)
-					let ar_parent = []
-					for (let i = 0; i < ar_mints.length; i++) {
-						const parent = (ar_mints[i].parent && typeof ar_mints[i].parent[0]!=="undefined")
-							? ar_mints[i].parent[0]
-							: null
-						const mint_parent = parent
-							? ar_rows.find(item => item.section_id==parent)
-							: null
-						if(!mint_parent){
-							console.warn("mint don't have public parent:",ar_mints[i]);
-							continue
-						}
-						// check if the parent is inside the ar_parents, if not push inside else nothing
-						const unique_parent = ar_parent.find(item => item.section_id==parent)
-						if(typeof unique_parent==='undefined'){
-							ar_parent.push(mint_parent)
-						}
-					}
-
-					if(ar_mints.length == 0){
-
-						const ar_numismatic_group = ar_rows.filter(item => item.term_section_label[0] === "Grupo numismático");
-						const SetParents = new Set(ar_numismatic_group.flatMap(item => item.parents));
-						const filteredItems = ar_numismatic_group.filter(item => !SetParents.has(String(item.section_id)));
-						
-						filteredItems.forEach(item => {
-							ar_parent.push(ar_rows.find(itemrows => item.parent == String(itemrows.section_id)));
-							});
-						//console.log("ar_parent_todo",ar_parent)
-						const padres_encontrados = new Set(); 
-						ar_parent.forEach(item =>{
-
-							const padre_encontrado = ar_rows.find(itemrows  => itemrows.section_id == item.parent)
-
-							if(padre_encontrado){
-								
-								const found = ar_rows.find(item => 
-									item.parent == padre_encontrado.section_id && item.term_table !== "mints"
-								);
-
-								if (found) {
-									found.term_table = "mints";
-								}
-																
-								padres_encontrados.add(padre_encontrado)
-
-							}
-
-						});
-						console.log(ar_rows)
-						ar_parent = [];
-
-						padres_encontrados.forEach(item => ar_parent.push(item));
-						//console.log(ar_parent)
-					}
-					//console.log(ar_parent)
-
-					self.parents = ar_parent
-					//console.log("self_parents ",self.parents)
-					// create the nodes with the unique parents: ar_parents
-					for (let i = 0; i < ar_parent.length; i++) {
-						// render_mints
-						self.get_children(ar_rows, ar_parent[i], fragment)
-					}
-
-					// sort rows
-						// let collator = new Intl.Collator('es',{ sensitivity: 'base', ignorePunctuation:true});
-						// ar_rows.sort( (a,b) => {
-						// 		let order_a = a.autoria +" "+ a.fecha_publicacion
-						// 		let order_b = b.autoria +" "+ b.fecha_publicacion
-						// 		//console.log("order_a",order_a, order_b);
-						// 		//console.log(collator.compare(order_a , order_b));
-						// 	return collator.compare(order_a , order_b)
-						// });
-
-					return fragment
-				}
-
-			render_nodes()
-			.then(fragment => {
+				
 
 				while (container.hasChildNodes()) {
 					container.removeChild(container.lastChild);
 				}
 
-				// bulk fragment nodes to container
-				container.appendChild(fragment)
 
-				// activate images lightbox
-					setTimeout(function(){
-						const images_gallery_containers = container
-						page.activate_images_gallery(images_gallery_containers, true)
-					}, 600)
+				//Generar filas aqui
 
+				const numismatic_group_fields = Object.keys(structure_tree);
+				for (let index = 0; index < numismatic_group_fields.length; index++) {
+					
+					self.render_numismatic_group(structure_tree,numismatic_group_fields[index],container);
+					
+				}
+
+				//container.appendChild(fragment)
 				resolve(container)
-			})
-
 			return true
 		})
 	},//end draw_rows
 
 
+	render_numismatic_group : function(structure_tree,numismatic_group,container){
 
-	get_children : function(ar_rows, parent, parent_node){
+			const numismatic_group_div = common.create_dom_element({
+						element_type	: 'div',
+						class_name		: "numismatic_group",
+						inner_html		: numismatic_group || "Sin grupo asociado",
+						parent			: container
+					})
+			numismatic_group_div.addEventListener("click", (e) => {
+    			e.stopPropagation();
 
-		const self = this
-
-		const children = parent.children
-		
-		// wrapper
-			const catalog_row_wrapper = common.create_dom_element({
-				element_type	: "div",
-				class_name		: parent.term_table != "mints" ? "children_contanier" : "children_contanier hide"
-			})
-			parent_node.appendChild( catalog_row_wrapper )
-			
-
-		if(children){
-			for (let i = 0; i < children.length; i++) {
-
-				self.get_child(ar_rows, children[i], catalog_row_wrapper)
-			}
-		}
+			const children = numismatic_group_div.querySelectorAll(":scope > .people, :scope > .mint_div");
+			children.forEach(child => {
+				child.style.display = child.style.display === "none" ? "block" : "none";
+			});
+		});		
+			this.render_people_numismatic_group(structure_tree[numismatic_group],numismatic_group_div);
 	},
 
-	get_child : function(ar_rows, section_id, parent_node){
+	render_people_numismatic_group : function(numismatic_group,container){
 
-		const self = this
+		const people_numismatic_group = Object.keys(numismatic_group.people);
 
-		const row_object 	= ar_rows.find(item => item.section_id==section_id)
-		if (row_object) {
-			const row_node 	= self.render_rows(row_object, ar_rows);
-			parent_node.appendChild(row_node);
+			for (let index = 0; index < people_numismatic_group.length; index++) {
+				
+				const person_numismatic_group = people_numismatic_group[index];
+				const people_numismatic_group_div = common.create_dom_element({
+						element_type	: 'div',
+						class_name		: "people",
+						inner_html		: person_numismatic_group || "Sin grupo asociado",
+						parent			: container
+					})
 
+				people_numismatic_group_div.style.paddingLeft = '1.5em';
+				people_numismatic_group_div.style.color = '#2d8525';
+				const mints_person_numismatic_group = Object.keys(numismatic_group.people[person_numismatic_group].mints);
 
-			if(parent_node.parentElement){
+				people_numismatic_group_div.addEventListener("click", (e) => {
+					e.stopPropagation();
+					const children = people_numismatic_group_div.querySelectorAll(":scope > .mint_div");
+					children.forEach(child => {
+						child.style.display = child.style.display === "none" ? "block" : "none";
+					});
+				});
 
-				const padre = parent_node.parentElement;
-
-				if (padre.classList.contains("mints")){
-
-					const mintElemento = padre.getElementsByClassName("mint")[0];
-					if (mintElemento) {
-
-						if(row_object.ref_type_creators_full_name){
-
-							if(!mintElemento.textContent.toLowerCase().trim().includes(row_object.ref_type_creators_full_name.split("|")[0].trim().toLowerCase())){
-								mintElemento.textContent += " / ("+row_object.ref_type_creators_full_name.split("|")[0].trim()+")";
-
-							}
-
-						}
-						
-					}
-
+				for (let index = 0; index < mints_person_numismatic_group.length; index++) {
+					const mint_person = mints_person_numismatic_group[index];
+					this.render_mints_numismatic_group(numismatic_group.people[person_numismatic_group].mints[mint_person],mint_person,people_numismatic_group_div);
 				}
 
 			}
+
 			
 
-			if(row_object.children){
-				self.get_children(ar_rows, row_object, row_node)
-				row_node.addEventListener('mouseup', (event) => {
-					event.preventDefault()
-					const target = event.target.tagName === 'SPAN'
-						? event.target.parentNode
-						: event.target
-						// console.log("event.target:",event.target);
-					if (target === row_node.firstChild ){
-						const children_node = row_node.querySelector('.children_contanier')
-						children_node.classList.toggle("hide")
-					}
+			const mints_no_people_numismatic_group = Object.keys(numismatic_group.no_people.mints);
+			for (let index = 0; index < mints_no_people_numismatic_group.length; index++) {
+					const mint = mints_no_people_numismatic_group[index];
+					this.render_mints_numismatic_group(numismatic_group.no_people.mints[mint],mint,container);
+				}
 
-				}, false);
-			}
-		}
+
+
 	},
 
+	render_mints_numismatic_group : function(types_mint,mint,container){
+		const mints_person_numismatic_group_div = common.create_dom_element({
+						element_type	: 'div',
+						class_name		: "mint_div",
+						inner_html		: mint || "Sin grupo asociado",
+						parent			: container
+					})
+		mints_person_numismatic_group_div.style.paddingLeft = '1.5em';
+		mints_person_numismatic_group_div.style.color = '#e2c832';
 
+		mints_person_numismatic_group_div.addEventListener("click", (e) => {
+			e.stopPropagation();
+			if (e.target !== mints_person_numismatic_group_div) return;
+			const children = mints_person_numismatic_group_div.querySelectorAll(":scope > .row_node");
+					children.forEach(child => {
+						child.style.display = child.style.display === "none" ? "block" : "none";
+					});
+
+		});
+
+		for (let index = 0; index < types_mint.length; index++) {
+			mints_person_numismatic_group_div.appendChild(this.render_rows(types_mint[index],types_mint));
+		}
+
+	},
 
 	render_rows : function(row_object, ar_rows){
 
@@ -1825,7 +1802,141 @@ var catalog = {
 				resolve(data)
 			})
 		})
-	}//end get_catalog_range_years
+	},//end get_catalog_range_years
+
+	get_authors_from_find : function(array_people_data,structure_tree) {
+	
+		for (let index = 0; index < array_people_data.length; index++) {
+			
+			const author = this.get_author(array_people_data[index]);
+			const numismatic_group = JSON.parse(array_people_data[index].p_group)[0];
+
+			if(!(author in structure_tree[numismatic_group].people) && author != null){
+				//console.log("Creo a ",name_roles ," dentro del grupo numismatico con 2 o mas personas ", numismatic_group);
+
+				const people_base = {mints: {},
+									no_mints : []
+									}
+
+				structure_tree[numismatic_group].people[author] = people_base;
+			}
+
+		}
+		
+	},
+
+	get_author: function(type_data) {
+		let creators_data_parsed = null;
+
+		try {
+			creators_data_parsed = JSON.parse(type_data.ref_type_creators_data);
+		} catch (e) {
+			return null;
+		}
+
+		if (!creators_data_parsed || creators_data_parsed.length === 0) {
+			return null;
+		}
+
+		const roles_raw  = type_data.ref_type_creators_roles || "";
+		const names_raw  = type_data.ref_type_creators_names || "";
+		const creators_roles = roles_raw.split(" | ");
+		const creators_names = names_raw.split(" | ");
+
+		if (creators_data_parsed.length > 1) {
+			const index_author = creators_roles.findIndex(r => r && r.includes("Autoridad emisora"));
+			if (index_author >= 0 && creators_names[index_author]) {
+				return creators_names[index_author];
+			}
+
+			return null;
+		}
+
+		return creators_names[0] || null;
+	},
+
+	get_mints_from_find : function(types_parsed_data,structure_tree){
+
+		for (let index = 0; index < types_parsed_data.length; index++) {
+			
+			const author = this.get_author(types_parsed_data[index]);
+			const numismatic_group = JSON.parse(types_parsed_data[index].p_group)[0];
+			const p_mint = types_parsed_data[index].p_mint;
+			const mint_type = Array.isArray(p_mint) ? p_mint[0] : null;
+
+			if(author){
+				try {
+					if(!(mint_type in structure_tree[numismatic_group].people[author].mints) && mint_type != null){
+					structure_tree[numismatic_group].people[author].mints[mint_type] = [];
+					}
+				} catch (error) {
+					console.log(structure_tree[numismatic_group].people)
+				}
+				
+
+			}else{
+				if(mint_type){
+					structure_tree[numismatic_group].no_people.mints[mint_type] = [];
+				}
+				
+
+			}
+			
+		}
+
+	},
+
+	get_types_from_find : function(types_parsed_data, structure_tree) {
+
+		for (let index = 0; index < types_parsed_data.length; index++) {
+
+			const author = this.get_author(types_parsed_data[index]);
+			const numismatic_group = JSON.parse(types_parsed_data[index].p_group)[0];
+
+			const p_mint = types_parsed_data[index].p_mint;
+			const mint_type = Array.isArray(p_mint) && p_mint.length > 0 ? p_mint[0] : undefined;
+
+			if (author) {
+
+				if (!structure_tree[numismatic_group].people[author]) {
+					structure_tree[numismatic_group].people[author] = { mints: {}, no_mints: [] };
+				}
+
+				if (mint_type) {
+
+					if (!structure_tree[numismatic_group].people[author].mints[mint_type]) {
+						structure_tree[numismatic_group].people[author].mints[mint_type] = [];
+					}
+
+					structure_tree[numismatic_group].people[author].mints[mint_type].push(types_parsed_data[index]);
+
+				} else {
+
+					structure_tree[numismatic_group].people[author].no_mints.push(types_parsed_data[index]);
+
+				}
+
+			} else {
+
+				if (mint_type) {
+
+					if (!structure_tree[numismatic_group].no_people.mints[mint_type]) {
+						structure_tree[numismatic_group].no_people.mints[mint_type] = [];
+					}
+
+					structure_tree[numismatic_group].no_people.mints[mint_type].push(types_parsed_data[index]);
+
+				} else {
+
+					structure_tree[numismatic_group].no_people.no_mints.push(types_parsed_data[index]);
+
+				}
+
+			}
+
+		}
+	}
+
 
 
 

@@ -27,7 +27,7 @@ var render_hoard = {
 
 			const coins =  await this.cargarMonedasHallazgos(row.coins);
 
-				console.log("MONEDAS ",coins);
+				//console.log("MONEDAS ",coins);
 		const fragment = new DocumentFragment();
 
 		// line
@@ -69,9 +69,18 @@ var render_hoard = {
 					})
 
 				// place
-					if (row.place && row.place.length>0) {
+					if (row.parents_text && row.parents_text.length>0) {
+						const place = "| "+Array.from(JSON.parse(row.parents_text)).join(" - ");	
+						common.create_dom_element({
+							element_type	: "div",
+							class_name		: "info_value",
+							text_content	: place,
+							parent			: lineTittleWrap
+						})
+					}
+					if (row.indexation && row.indexation.length>0) {
 
-						const place = "| "+row.place;
+						const place = "Indexación | "+row.indexation;
 						common.create_dom_element({
 							element_type	: "div",
 							class_name		: "info_value",
@@ -87,11 +96,19 @@ var render_hoard = {
 				common.create_dom_element ({
 					element_type	: 'div',
 					class_name		: 'info_text_block',
-					inner_html		: (tstring.total_coins || 'Total coins') + ': ' + n_coins,
+					inner_html		: (tstring.total_coins || 'Total monedas') + ': ' + n_coins,
 					parent			: fragment
 				})
 			}
 
+			if(row.abstract){
+				common.create_dom_element ({
+					element_type	: 'div',
+					class_name		: 'info_text_block',
+					inner_html		: row.abstract,
+					parent			: fragment
+				})
+			}
 		// public_info
 			if (row.public_info) {
 				common.create_dom_element ({
@@ -223,7 +240,7 @@ var render_hoard = {
 							const parts = typeValue ? typeValue.split("|") : [];
 							const lastPart = parts.length > 0 ? parts[parts.length - 1].trim() : "";
 
-							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination + " | " + lastPart.replace(coins.result[index].denomination, "").trim(): coins.result[index].type_full_value;
+							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination.split(" | ")[0] + " | " + lastPart.replace(coins.result[index].denomination, "").trim(): coins.result[index].type_full_value;
 							const type_none = type_full_val ? type_full_val : "Tipo";
 
 							let value = coins.result[index].type_data ? coins.result[index].type_data.replace('"',"").replace("[","").replace("]","").replace('"','') : 0;

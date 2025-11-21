@@ -706,8 +706,8 @@ cargarTodoYCrearMapa : async function(resultado,sql_filter,location) {
 								console.log(data_ceca.lat, data_ceca.lon);
 
 								if (data_ceca.lat != null && data_ceca.lon != null) {
-								data_ceca_lat += data_ceca.lat;
-								data_ceca_lon += data_ceca.lon;
+								data_ceca_lat += parseFloat(data_ceca.lat);
+								data_ceca_lon += parseFloat(data_ceca.lon);
 								}
 
 							}

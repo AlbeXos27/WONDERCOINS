@@ -205,7 +205,7 @@ var hoards =  {
 					self.form.activate_autocomplete({
 						form_item: form_item,
 						table: table,
-						parent_in: true
+						parent_in: true,
 					});
 				}
 			});
@@ -234,6 +234,7 @@ var hoards =  {
 				id: "typology",
 				name: "typology",
 				label: tstring.typology || "Typology",
+				is_term : true,
 				q_column: "typology",
 				eq: "LIKE",
 				eq_in: "%",
@@ -244,7 +245,7 @@ var hoards =  {
 					self.form.activate_autocomplete({
 						form_item: form_item,
 						table: table,
-						value_splittable : true
+						value_splittable : true,
 					});
 
 				}
@@ -387,7 +388,7 @@ var hoards =  {
 
 				}
 
-				console.log("final_filter ",final_filter)
+				//console.log("final_filter ",final_filter)
 			
 				// if (!sql_filter|| sql_filter.length<3) {
 				// 	return new Promise(function(resolve){
@@ -419,7 +420,7 @@ var hoards =  {
 				}
 			})
 			.then(async function(api_response){
-				console.log("--------------- api_response:",api_response);
+				//console.log("--------------- api_response:",api_response);
 				// parse data
 					const data	= page.parse_hoard_data(api_response.result)
 					const total	= api_response.total;
@@ -545,7 +546,7 @@ var hoards =  {
 						element_type	: "p",
 						class_name 		: "bilbiografia_mobile",
 						parent 			: movil,
-						text_content	: bibliografia
+						text_content	: bibliografia == "" ? "Sin información": bibliografia
 					})
 
 					const title_autores = common.create_dom_element({
@@ -601,8 +602,8 @@ var hoards =  {
 					contentDiv.id = "titulo-ficha";
 
 					const map_fact = new map_factory() // creates / get existing instance of map
-							
-					const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="https://wondercoins.uca.es${api_response.result[hallazgo_resultado].identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
+					const identify_image =  api_response.result[hallazgo_resultado].identify_image ? "https://wondercoins.uca.es" + api_response.result[hallazgo_resultado].identify_image : "tpl/assets/images/default.jpg"
+					const imagen_ident = grid.addWidget({w:4,h:4,content: `<img src="${identify_image}" alt="Imagen dinámica" style="width:100%; height:100%; object-fit:cover; overflow: hidden;"`})
 					const img_ident = imagen_ident.querySelector('.grid-stack-item-content');
 					img_ident.id = "img_ident"
 					const ubicacion = grid.addWidget({w:4,h:4,content: ``}) //ubicacion
@@ -684,7 +685,7 @@ var hoards =  {
 				
 						}
 
-						const categorizacion = grid.addWidget({w:8,h:1,content:`<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Categorización:</span> ${categorizacion_array.join(" - ")}</p>` })
+						const categorizacion = grid.addWidget({w:8,h:1,content:`<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Categorización:</span> ${categorizacion_array.length > 0 ? categorizacion_array.join(" - ") : "Sin Información"}</p>` })
 
 
 						//FUNCIONALIDAD DEL HALLAZGO
@@ -709,10 +710,9 @@ var hoards =  {
 								: ""
 							funcionalidad_array.push(term)
 						}
-
+						funcionalidad_array.length == 0 ? funcionalidad_array.push("Sin Información") : "";
 						const funcionalidad = grid.addWidget({w:8,h:1,content:`<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Funcionalidad:</span> ${funcionalidad_array.join(" - ")}</p>` })
-
-						const periodohallazgo = api_response.result[id_hallazgo].period || "";
+						const periodohallazgo = api_response.result[id_hallazgo].period != null   ? api_response.result[id_hallazgo].period : "Sin Información";
 
 						const periodo = grid.addWidget({w:8,h:1,content: `<p  style = "font-size: 1.3rem !important;margin: 0 !important;"><span style = "font-weight: bold !important;color: #9b6c29 !important;">Cronología:</span> ${periodohallazgo}</p>` })
 
@@ -770,7 +770,7 @@ var hoards =  {
 									Información pública
 								</h2>
 								<div style="text-align: left; margin-top: 16px;">
-									${api_response.result[hallazgo_resultado].public_info}
+									${api_response.result[hallazgo_resultado].public_info || "Sin Información"}
 								</div>
 								</div>
 							`
@@ -810,7 +810,7 @@ var hoards =  {
 							Autores
 							</h2>
 							<div style="text-align: left; margin-top: 6px;">
-							${nombres_array.join("<br>")}
+							${autores.length >1 ? nombres_array.join("<br>") : "Sin Información"}
 							</div>
 						</div>`})
 					}
@@ -1170,7 +1170,7 @@ cargarMonedasHallazgos : async function(ids) {
 								parent: slide1
 							});
 
-							flipCard1.classList.add(`flip-card_${coins.result[index].section_id}`)
+							flipCard1.classList.add(`flip-card_${coins.result[index].section_id}_${node.info_nodo.section_id}`)
 							flipCard1.style.fontWeight = "normal"
 							
 							// Flip inner
@@ -1221,7 +1221,7 @@ cargarMonedasHallazgos : async function(ids) {
 								class_name: "type_container",
 								parent: flipBack1
 							});
-							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination + coins.result[index].type_full_value.split(`${coins.result[index].denomination}`)[1] : coins.result[index].type_full_value;
+							const type_full_val = coins.result[index].denomination ? coins.result[index].denomination.split(" | ")[0] + coins.result[index].type_full_value.split(`${coins.result[index].denomination}`)[1] : coins.result[index].type_full_value;
 							const type_none = type_full_val ? type_full_val : "Tipo";
 							common.create_dom_element({
 								element_type: "a",
@@ -1458,7 +1458,7 @@ cargarMonedasHallazgos : async function(ids) {
 
 							document.addEventListener("click", (e) => {
 
-								const card = e.target.closest(`.flip-card_${coins.result[index].section_id}`);
+								const card = e.target.closest(`.flip-card_${coins.result[index].section_id}_${node.info_nodo.section_id}`);
 								if (card) {
 									card.classList.toggle("flipped");
 								}

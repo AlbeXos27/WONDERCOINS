@@ -23,8 +23,8 @@ set_up: function(options) {
     self.section_id = options.section_id;
     self.export_data_container = options.export_data_container;
 
-    const export_data_buttons = page.render_export_data_buttons();
-    self.export_data_container.appendChild(export_data_buttons);
+   /*  const export_data_buttons = page.render_export_data_buttons();
+    self.export_data_container.appendChild(export_data_buttons); */
     self.export_data_container.classList.add('hide');
 
     const contact_form_button = page.create_suggestions_button();

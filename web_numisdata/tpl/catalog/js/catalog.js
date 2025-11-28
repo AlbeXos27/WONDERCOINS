@@ -1098,7 +1098,6 @@ var catalog = {
 			}
 
 		// search rows exec against API
-		//TODO EMPIEZA AQUI
 			const js_promise = self.search_rows({
 				filter			: filter,
 				limit			: 300,
@@ -1625,7 +1624,7 @@ var catalog = {
 
 
 				//Generar filas aqui
-
+				console.log("structure_tree ",structure_tree)
 				const numismatic_group_fields = Object.keys(structure_tree);
 				for (let index = 0; index < numismatic_group_fields.length; index++) {
 					
@@ -1679,20 +1678,24 @@ var catalog = {
 
 				people_numismatic_group_div.addEventListener("click", (e) => {
 					e.stopPropagation();
-					const children = people_numismatic_group_div.querySelectorAll(":scope > .mint_div");
+					const children = people_numismatic_group_div.querySelectorAll(":scope > .mint_div, :scope > .row_node");
 					children.forEach(child => {
 						child.style.display = child.style.display === "none" ? "block" : "none";
 					});
 				});
 
-				for (let index = 0; index < mints_person_numismatic_group.length; index++) {
-					const mint_person = mints_person_numismatic_group[index];
+				for (let j = 0; j < mints_person_numismatic_group.length; j++) {
+					const mint_person = mints_person_numismatic_group[j];
 					this.render_mints_numismatic_group(numismatic_group.people[person_numismatic_group].mints[mint_person],mint_person,people_numismatic_group_div);
 				}
 
-			}
+				for (let j = 0; j < numismatic_group.people[person_numismatic_group].no_mints.length; j++) {
+					
+					people_numismatic_group_div.appendChild(this.render_rows(numismatic_group.people[person_numismatic_group].no_mints[j],numismatic_group.people[person_numismatic_group].no_mints))
+					
+				}
 
-			
+			}
 
 			const mints_no_people_numismatic_group = Object.keys(numismatic_group.no_people.mints);
 			for (let index = 0; index < mints_no_people_numismatic_group.length; index++) {
@@ -1700,6 +1703,7 @@ var catalog = {
 					this.render_mints_numismatic_group(numismatic_group.no_people.mints[mint],mint,container);
 				}
 
+			
 
 
 	},

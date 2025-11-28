@@ -105,8 +105,12 @@ page.render_export_data_buttons = function() {
 					})
 			})
 			.then(function(rows){
-				// console.log("----> render_export_data_buttons rows:",rows);
-
+				 console.log("----> render_export_data_buttons rows:",rows);
+				 
+				let rows_catalog = Array.isArray(rows);
+				if(rows_catalog){
+				 	rows = rows.filter(r => r.term_table == "types")
+				}
 				// data_object.data. parsed rows is optional
 				data_object.data = (export_data_parser && typeof export_data_parser==='function')
 					? export_data_parser(rows)

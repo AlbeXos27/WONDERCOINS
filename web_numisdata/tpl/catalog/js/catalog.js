@@ -1624,7 +1624,8 @@ var catalog = {
 
 
 				//Generar filas aqui
-				console.log("structure_tree ",structure_tree)
+				//console.log("structure_tree ",structure_tree)
+	
 				const numismatic_group_fields = Object.keys(structure_tree);
 				for (let index = 0; index < numismatic_group_fields.length; index++) {
 					
@@ -1632,8 +1633,13 @@ var catalog = {
 					
 				}
 
+				image_gallery.removeGallery?.(); // limpia listeners antiguos
+				image_gallery.set_up({ galleryNode: container });
+
+				
 				//container.appendChild(fragment)
 				resolve(container)
+				
 			return true
 		})
 	},//end draw_rows
@@ -1739,7 +1745,7 @@ var catalog = {
 		// Build dom row
 		// item row_object
 			// const row_object = ar_rows[i]
-
+		const self = this	
 			if(SHOW_DEBUG===true) {
 				// console.log("i row_object:", i, row_object);
 			}
@@ -1748,7 +1754,8 @@ var catalog = {
 			catalog_row_fields.ar_rows = ar_rows
 			catalog_row_fields.rows_painted = []
 		// catalog_row_fields set
-			const node = catalog_row_fields.draw_item(row_object)
+			//console.log("self.rows_list_container:",self.rows_list_container);
+			const node = catalog_row_fields.draw_item(row_object,self.rows_list_container)
 
 		return node
 	},

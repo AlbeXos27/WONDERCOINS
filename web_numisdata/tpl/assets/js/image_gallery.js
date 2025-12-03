@@ -26,7 +26,7 @@ var image_gallery = {
         const self = this
         //setup
         self.setup = {...self.setup, ...options}
-
+        //console.log("gallery_node setup ", self.setup)
         self.galleryListener = function(e){
             if (e.target.tagName == "IMG"){
                 e.preventDefault()
@@ -34,7 +34,7 @@ var image_gallery = {
                 self.OpenGallery(e)
             }
         }
-
+        
         self.setup.galleryNode.addEventListener("click", self.galleryListener)
 
     },
@@ -48,7 +48,7 @@ var image_gallery = {
         self.result = options.result
         const coins = self.result.result[0].result[0].coin_references[0];
         const parsedGallery = self.ParseGallery(galleryNode)
-
+       
         this.popup = document.createRange().createContextualFragment('<div id="'+self.setup.galleryPrimId+'"><div id="gallery-wrapper"><div class="nav-button" id="pre-button"></div><div id="images-wrapper"><img id="img1" src=""><img id="img2" src=""></div><div class="nav-button" id="next-button"></div></div></div>')
 
         this.img1 = this.popup.getElementById('img1')
@@ -89,8 +89,8 @@ var image_gallery = {
         const clickedTittle = currentClick.target.attributes.title.textContent
 
         let imgNodes = galleryNode.getElementsByTagName('a')
-        const parsedGallery = self.ParseGallery(imgNodes)
 
+        const parsedGallery = self.ParseGallery(imgNodes)
         for (let i=0;i<parsedGallery.length;i++){
             if (parsedGallery[i][0].children[0].attributes.title.textContent == clickedTittle){
                 this.currentIndex = i
@@ -101,6 +101,7 @@ var image_gallery = {
         //Generate popup html content
         this.popup = document.createRange().createContextualFragment('<div id="'+self.setup.galleryPrimId+'"><div id="gallery-wrapper"><div id="images-wrapper"><img id="img1" src=""><img id="img2" src=""></div><div id="caption-wrapper"><p></p></div><div class="nav-button" id="pre-button"></div><div class="nav-button" id="next-button"></div></div></div>')
 
+
         //Get popup elements node
         this.img1 = this.popup.getElementById('img1')
         this.img2 = this.popup.getElementById('img2')
@@ -108,6 +109,8 @@ var image_gallery = {
         //put first open images
         this.img1.src = parsedGallery[this.currentIndex][0].attributes.href.value
         this.img2.src = parsedGallery[this.currentIndex][1].attributes.href.value
+        console.log("img1 ",this.img1)
+        console.log("img2 ",this.img2)
 
 
         this.caption = this.popup.getElementById('caption-wrapper').getElementsByTagName('p')[0]

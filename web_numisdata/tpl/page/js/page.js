@@ -709,8 +709,9 @@ var page = {
 		// const newGallery = new image_gallery2({
 		// 	galleryNode: images_gallery_container
 		// })
-
+		//console.log("newGallery", image_gallery)
 		const newGallery = Object.create(image_gallery);
+		
 		newGallery.set_up ({
 			galleryNode: images_gallery_container
 		})

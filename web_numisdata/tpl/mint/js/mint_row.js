@@ -172,49 +172,90 @@ var mint_row = {
 				parent 			: row_type
 			})
 
+
+
+			let diameter = row.ref_type_averages_diameter
+
+			// Load data FIRST
+			const coins_row = await this.get_data_coins(row.term_data[0].section_id);
+
+			// Get image or fallback
+			let obverse;
+			try {
+				 obverse = coins_row.result[0].image_obverse;
+			} catch (error) {
+				 obverse = null;
+			}
+		
+
+			// Build final URL
+			const final_obverse_img = obverse
+				? "https://wondercoins.uca.es" + obverse
+				: "/web_numisdata/tpl/assets/images/default.jpg";
+
+
 			const img_link_ob = common.create_dom_element({
 				element_type	: "a",
 				class_name		: "image_link",
-				// href			: common.local_to_remote_path(row.ref_coins_image_obverse),
-				href			: row.ref_coins_image_obverse,
+				//href			: common.local_to_remote_path(row.ref_coins_image_obverse),
+				href			: final_obverse_img,
 				parent			: img_wrap
 			})
 
-			const diameter = row.ref_type_averages_diameter
-
-			const coins_row = await this.get_data_coins(row.term_data[0].section_id);
-			console.log(coins_row.result[0])
-
+			// Create DOM element
 			const img_obverse = common.create_dom_element({
-				element_type	: "img",
-				src				: "https://wondercoins.uca.es"+coins_row.result[0].image_obverse,
-				title 			: row.section_id,
-				dataset 		: {caption: page_globals.OWN_CATALOG_ACRONYM + " " + mint_number + c_name  },
-				parent			: img_link_ob
-			})
+				element_type: "img",
+				src: final_obverse_img,
+				title: row.section_id,
+				dataset: {
+					caption: page_globals.OWN_CATALOG_ACRONYM + " " + mint_number + c_name
+				},
+				parent: img_link_ob
+			});
+
+			if(diameter==null || diameter==0 || isNaN(diameter)){
+				diameter = 30 //default size
+			}
 			img_obverse.style.width = (diameter + (diameter * 8/100)) + 'mm'
 			img_obverse.style.height = (diameter + (diameter * 8/100)) + 'mm'
-			img_obverse.hires	= "https://wondercoins.uca.es"+coins_row.result[0].image_obverse
+			img_obverse.hires	= final_obverse_img
 			img_obverse.loading	= "lazy"
 			img_obverse.addEventListener("load", page.load_hires, false)
+
+
+
+
+
+
+			let reverse;
+			try {
+				 reverse = coins_row.result[0].image_reverse;
+			} catch (error) {
+				 reverse = null;
+			}
+			
+			const final_reverse_img = reverse
+				? "https://wondercoins.uca.es" + reverse
+				: "/web_numisdata/tpl/assets/images/default.jpg";
 
 			const img_link_re = common.create_dom_element({
 				element_type 	: "a",
 				class_name		: "image_link",
-				href 			: row.ref_coins_image_reverse,
+				href 			: final_reverse_img,
 				parent 			: img_wrap,
 			})
 
+
 			const img_reverse = common.create_dom_element({
 				element_type	: "img",
-				src 			: "https://wondercoins.uca.es"+coins_row.result[0].image_reverse,
+				src 			: final_reverse_img,
 				title 			: row.section_id,
 				dataset 		: {caption: page_globals.OWN_CATALOG_ACRONYM +" " + mint_number + c_name  },
 				parent 			: img_link_re
 			})
 			img_reverse.style.width = (diameter + (diameter * 8/100)) + 'mm'
 			img_reverse.style.height = (diameter + (diameter * 8/100)) + 'mm'
-			img_reverse.hires	= "https://wondercoins.uca.es"+coins_row.result[0].image_reverse
+			img_reverse.hires	= final_reverse_img
 			img_reverse.loading	= "lazy"
 			img_reverse.addEventListener("load", page.load_hires, false)
 

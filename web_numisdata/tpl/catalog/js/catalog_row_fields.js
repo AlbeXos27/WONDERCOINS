@@ -14,7 +14,7 @@ var catalog_row_fields = {
 
 	
 
-	draw_item : function(item) {
+	draw_item : function(item,rows_list_container) {
 
 		
 
@@ -207,10 +207,16 @@ var catalog_row_fields = {
 							class_name		: "coins_images_container",
 							parent			: type_container
 						})
+						coins_images_container.addEventListener("click", function(e) {
+							if(e.target.tagName == "IMG"){
+								e.preventDefault();
+								image_gallery.OpenGallery(e);
+							}
+						});
 
 						const coins_images = common.create_dom_element({
 							element_type	: "div",
-							class_name		: "coins_images",
+							class_name		: "types_img gallery",
 							parent			: coins_images_container
 						})
 						
@@ -259,7 +265,7 @@ var catalog_row_fields = {
 									class_name		: "image_reverse",
 									src				: "https://wondercoins.uca.es" + imageObverse.image_reverse,
 									title			: item.section_id,
-									//dataset		: {caption: type_number},
+									dataset			: {caption: page_globals.OWN_CATALOG_ACRONYM + " " + mint_number + c_name  },
 									parent			: image_link_reverse
 								})
 								img_reverse.style.width = (diameter * 2 ) + 'mm'
@@ -347,7 +353,7 @@ var catalog_row_fields = {
 
 			case "mints":
 				const filas_sin_inicio = self.ar_rows.filter(el => el.section_id == item.parent)
-				console.log(filas_sin_inicio)
+				//console.log(filas_sin_inicio)
 				common.create_dom_element({
 					element_type	: "div",
 					class_name		: "mint",

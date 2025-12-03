@@ -191,8 +191,10 @@ var render_hoard = {
 							datos: []
 						}
 						};
-					const mints = await this.get_mint_points(row.types);
-					resultado.cecas.datos = mints.result;
+					if(row.types){
+						const mints = await this.get_mint_points(row.types);
+						resultado.cecas.datos = mints.result;
+					}
 					resultado.hallazgos.datos.push(row)
 					
 						const map = map_fact.init({

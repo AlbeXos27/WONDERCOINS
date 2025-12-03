@@ -74,8 +74,22 @@ var mint = {
 						};
 					const hallazgos = await self.get_findspots_points(mint_data.relations_types);
 					resultado.hallazgos.datos = hallazgos.result;
-					resultado.cecas.datos.push(mint_data)
-					console.log(resultado)
+					
+					const cecas = await data_manager.request({
+						body: {
+							dedalo_get: 'records',
+							table: 'mints',
+							ar_fields: ["*"],
+							sql_filter: "section_id=" + parseInt(self.section_id),
+							limit: 0,
+							count: true,
+							offset: 0,
+							order: 'name',
+							process_result: null
+						}
+					});
+					resultado.cecas.datos = cecas.result;
+					//console.log(resultado)
 						const map = map_fact.init({
 							map_container : map_container,
 							map_position  : mint_data.map,
@@ -97,21 +111,19 @@ var mint = {
 								// 	target	: document.getElementById('types'),
 								// 	ar_rows	: result
 								// })
-
-								//RESTORE term_section_id info
-								for (let i=0;i<result.length;i++){
-									result[i].catalog_info = result[i].term_section_id
-									//result[i].term_section_id = result[i].term_section_id.section_id
-								}
+							
 
 								const types_node = await self.draw_types2({
 									ar_rows			: result,
 									mint_section_id	: _mint_catalog.section_id
 								})
+
 								if (types_node) {
 									const target = document.getElementById('types')
 									target.appendChild(types_node)
-									page.activate_images_gallery(target)
+									//console.log("target", target)
+									image_gallery.removeGallery?.(); // limpia listeners antiguos
+									image_gallery.set_up({ galleryNode: target});
 								}
 							})
 						}else{

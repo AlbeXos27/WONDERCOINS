@@ -11,3 +11,4 @@
 <h3>Web_Numisdata para <a href='(https://wwwondercoins.uca.es/web_numisdata/tpl/generic/html/Icono_WonderCoins.png)'>WonderCoins</a></h3>
 
 <img src='https://raw.githubusercontent.com/hispanicode/tool_leaflet_special_tools/main/dedalo.svg' width='145' height='154'>
+<img src='https://gabcomunicacion.uca.es/wp-content/uploads/2021/07/logo_V1_COLOR_100-x-40mm.png?u' width='300' height='154'>
